@@ -11,10 +11,11 @@
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS",
-		// Unknown paths get dist/client/404.html with a 404 status. Every page is prerendered, so there is no
-		// worker to render it. If on-demand (SSR) pages are added later, list them in "run_worker_first":
-		// with not_found_handling set, browser navigations otherwise skip the worker.
-		"not_found_handling": "404-page"
+		// Unknown paths get dist/client/404.html with a 404 status. Pages are prerendered; only /api/* runs on
+		// the worker (newsletter + comments). Add any future on-demand route to "run_worker_first": with
+		// not_found_handling set, browser navigations and form posts otherwise skip the worker.
+		"not_found_handling": "404-page",
+		"run_worker_first": ["/api/*"]
 	},
 	"observability": {
 		"enabled": true

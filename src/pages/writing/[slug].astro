@@ -1,0 +1,535 @@
+---
+// A post, from Paper ("Writing Detail" / "Writing Detail — Mobile"; comment states "Comments — Sending / Sent / Error /
+// Empty"). Body comes from the Notion page (lib/notion-blocks.ts); comments from Notion Comments with Approved ticked.
+// New comments post to /api/comments and wait for approval, so nothing a reader types shows up unreviewed.
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import Button from '../../components/ui/Button.astro';
+import Newsletter from '../../components/writing/Newsletter.astro';
+import Contact from '../../components/home/Contact.astro';
+import { live } from '../../lib/content';
+import { coverFor, day, postHref, posts, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const all = await posts();
+  // "Next post" walks down the archive (older), and the oldest wraps round to the newest.
+  return all.map((post, i) => ({ params: { slug: post.data.slug }, props: { post, next: all.length > 1 ? all[(i + 1) % all.length] : null } }));
+}
+
+interface Props {
+  post: Post;
+  next: Post | null;
+}
+const { post, next } = Astro.props;
+const { title, excerpt, slug, published, readingTime, tags, seoDescription } = post.data;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+const cover = coverFor(slug);
+const topic = tags[0] ?? null;
+
+const comments = (await live('comments'))
+  .filter((c) => c.data.postId === post.id)
+  .sort((a, b) => a.data.received.getTime() - b.data.received.getTime());
+
+// The last word of the title goes coral, with a full stop added when the title has no closing punctuation.
+const words = title.split(' ');
+const lastWord = words.pop() ?? '';
+const tail = /[.!?]$/.test(lastWord) ? lastWord : `${lastWord}.`;
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join('');
+
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const crumb = 'flex min-h-11 items-center text-[12.5px] leading-4';
+const statValue = 'mt-2 text-[19px] leading-none font-semibold tracking-[-0.03em] tabular-nums md:text-[36px] md:tracking-[-0.045em]';
+const label = 'text-[14.5px] leading-[130%] font-medium';
+const field =
+  'w-full min-w-0 rounded-[14px] bg-field px-[18px] text-[16px] text-ink shadow-[inset_0_0_0_1px_var(--color-rule-strong)] outline-none placeholder:text-muted focus-visible:shadow-[inset_0_0_0_1.5px_var(--color-coral)] aria-invalid:shadow-[inset_0_0_0_1.5px_var(--color-error)] aria-invalid:focus-visible:shadow-[inset_0_0_0_1.5px_var(--color-error)]';
+const fieldMsg = 'hidden text-[13.5px] leading-[140%] text-error';
+const arrow = 'M5 12h14M13 6l6 6-6 6';
+---
+
+<Base title={title} description={seoDescription || excerpt}>
+  <article aria-labelledby="post-title">
+    <div class="page pt-[112px] pb-16 md:pt-[208px] md:pb-[112px]">
+      <header class:list={['grid items-end gap-8 md:gap-24', cover ? 'md:grid-cols-[minmax(0,1fr)_minmax(0,420px)]' : 'grid-cols-[minmax(0,1fr)]']}>
+        <div class="grid max-w-[940px] min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
+          <nav aria-label="Breadcrumb" class:list={[mono, 'min-w-0']}>
+            <ol class="flex flex-wrap items-center gap-x-2">
+              <li class="flex items-center"><a href="/" class:list={[crumb, 'min-w-3 text-muted hover:text-ink']} aria-label="Home">~</a></li>
+              <li class="flex items-center gap-2">
+                <span class="text-rule-strong" aria-hidden="true">/</span><a href="/writing" class:list={[crumb, 'text-muted hover:text-ink']}>Writing</a>
+              </li>
+              <li class="flex min-w-0 items-center gap-2">
+                <span class="text-rule-strong" aria-hidden="true">/</span><span aria-current="page" class="text-[12.5px] leading-4">{title}</span>
+              </li>
+            </ol>
+          </nav>
+          <Eyebrow data-reveal="eyebrow">Writing</Eyebrow>
+          <h1 id="post-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[72px]">
+            {words.join(' ')} <span class="text-coral">{tail}</span>
+          </h1>
+          {excerpt && <p data-reveal data-reveal-delay="200" class="max-w-[684px] text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">{excerpt}</p>}
+          <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
+            {
+              readingTime && (
+                <div class="min-w-0 flex-1 basis-0 pr-[10px] md:min-w-[120px] md:pr-5">
+                  <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>to read</dt>
+                  <dd class={statValue}>{readingTime} min</dd>
+                </div>
+              )
+            }
+            {
+              published && (
+                <div class="min-w-0 flex-1 basis-0 pr-[10px] md:min-w-[120px] md:pr-5">
+                  <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>published</dt>
+                  <dd class={statValue}>
+                    <time datetime={day(published)}>{day(published)}</time>
+                  </dd>
+                </div>
+              )
+            }
+            {
+              topic && (
+                <div class="min-w-0 flex-1 basis-0 pr-[10px] md:min-w-[120px] md:pr-5">
+                  <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>filed under</dt>
+                  <dd class={statValue}>{topic}</dd>
+                </div>
+              )
+            }
+          </dl>
+        </div>
+        {
+          cover && (
+            <div data-reveal data-reveal-delay="300" class="min-w-0 rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+              <div class="relative aspect-[4/3] overflow-clip rounded-[9px] bg-field">
+                <Image src={cover} alt="" widths={[420, 840]} sizes="(min-width: 768px) 420px, 100vw" class="absolute inset-0 size-full object-cover saturate-[0.92] contrast-[1.04]" loading="eager" />
+                <span class="pointer-events-none absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]" aria-hidden="true" />
+              </div>
+            </div>
+          )
+        }
+      </header>
+
+      <div class="mt-12 border-t border-rule pt-10 md:mt-24 md:pt-16">
+        <div class="grid grid-cols-[minmax(0,1fr)] items-start justify-between gap-8 md:grid-cols-[minmax(0,720px)_minmax(0,300px)] md:gap-12">
+          <div class="post-body min-w-0">
+            <Content />
+          </div>
+          <aside class="grid min-w-0 gap-7 md:sticky md:top-[110px]">
+            {
+              toc.length > 1 && (
+                <nav aria-labelledby="toc-title" class="hidden gap-[10px] md:grid">
+                  <h2 id="toc-title" class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>On this page</h2>
+                  <ol class="grid border-t border-rule">
+                    {toc.map((h, i) => (
+                      <li class="border-b border-rule">
+                        <a href={`#${h.slug}`} class="toc-link flex min-h-11 items-center gap-3 py-1.5">
+                          <span class="shrink-0 font-mono text-[12px] leading-[130%] text-muted tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                          <span class="text-[14.5px] leading-[130%] text-pretty">{h.text}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              )
+            }
+            <p class="text-[14.5px] leading-[155%] text-pretty text-muted">
+              A thought on this post?{' '}
+              <a href={`mailto:hello@bokoisaac.com?subject=${encodeURIComponent(`Re: ${title}`)}`} class="text-ink underline decoration-coral decoration-1 [text-underline-position:from-font] hover:text-coral">
+                Write to me
+              </a>
+            </p>
+          </aside>
+        </div>
+      </div>
+
+      <section id="comments" aria-labelledby="comments-title" class="scroll-mt-[110px] pt-16 md:pt-24">
+        <div class="flex flex-col gap-8 border-t border-rule pt-12 md:flex-row md:items-start md:justify-between md:gap-[88px] md:pt-16">
+          <div class="flex min-w-0 flex-col gap-8 md:w-[720px] md:shrink-0 md:gap-10">
+            <div class="flex flex-col gap-[14px]">
+              <Eyebrow>Comments</Eyebrow>
+              <h2 id="comments-title" class="flex items-baseline gap-[14px] text-[28px] leading-[108%] font-semibold tracking-[-0.04em] md:text-[34px] md:tracking-[-0.045em]">
+                {comments.length ? 'What readers said' : 'Start the conversation'}
+                {comments.length > 0 && <span class:list={[mono, 'text-[13px] leading-[150%] font-medium tracking-normal text-muted']}>{String(comments.length).padStart(2, '0')}</span>}
+              </h2>
+            </div>
+            <ol class="flex flex-col border-t border-rule">
+              {
+                comments.length ? (
+                  comments.map((c) => (
+                    <li class="flex gap-3 border-b border-rule py-6 md:gap-4 md:py-7">
+                      <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-[14px] leading-none font-medium shadow-[inset_0_0_0_1px_var(--color-rule)] md:size-10" aria-hidden="true">
+                        {initials(c.data.name)}
+                      </span>
+                      <div class="flex min-w-0 flex-1 flex-col gap-2">
+                        <p class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                          <span class="text-[15px] leading-[130%] font-medium">{c.data.name}</span>
+                          <time datetime={day(c.data.received)} class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{day(c.data.received)}</time>
+                        </p>
+                        <p class="text-[15.5px] leading-[165%] whitespace-pre-line text-ink/86 md:text-[16px]">{c.data.comment}</p>
+                        {c.data.reply && (
+                          <div class="flex gap-[10px] pt-5 md:gap-[14px]">
+                            <span class="w-[2px] shrink-0 self-stretch rounded-[2px] bg-coral" aria-hidden="true" />
+                            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-coral text-[12px] leading-none font-semibold text-coral-ink" aria-hidden="true">
+                              BI
+                            </span>
+                            <div class="flex min-w-0 flex-1 flex-col gap-2">
+                              <p class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                                <span class="text-[15px] leading-[130%] font-medium">Boko Isaac</span>
+                                <span class:list={[mono, 'text-[12px] leading-[140%] text-coral']}>Author</span>
+                                {c.data.replyDate && (
+                                  <time datetime={day(c.data.replyDate)} class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>
+                                    {day(c.data.replyDate)}
+                                  </time>
+                                )}
+                              </p>
+                              <p class="text-[15.5px] leading-[165%] whitespace-pre-line text-ink/86 md:text-[16px]">{c.data.reply}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li class="flex items-center gap-4 border-b border-rule py-7">
+                    <span class="flex size-10 shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1px_var(--color-rule-strong)]" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M5 5h14v10H10l-4 4v-4H5z" fill="none" stroke="var(--color-muted)" stroke-width="1.8" stroke-linejoin="round" />
+                      </svg>
+                    </span>
+                    <p class="text-[16px] leading-[155%] text-ink/86">No comments yet. Be the first.</p>
+                  </li>
+                )
+              }
+            </ol>
+          </div>
+
+          <div data-comment-card class="flex min-w-0 flex-1 flex-col gap-5 rounded-[14px] bg-surface p-[22px] shadow-[inset_0_0_0_1px_var(--color-rule)] md:gap-[22px] md:p-8">
+            <div class="flex flex-col gap-[6px]">
+              <h3 class="text-[22px] leading-[120%] font-semibold tracking-[-0.03em]">Leave a comment</h3>
+              <p class="text-[14.5px] leading-[155%] text-muted">No account needed. I actually read every comment :)</p>
+            </div>
+            <form action="/api/comments" method="post" novalidate data-comment-form class="flex flex-col gap-5 md:gap-[22px]">
+              <div data-comment-error hidden role="alert" class="flex items-center gap-3 rounded-[12px] bg-error/10 px-4 py-[14px] shadow-[inset_0_0_0_1px_#f0525f59]">
+                <svg viewBox="0 0 24 24" width="18" height="18" class="shrink-0" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" fill="none" stroke="var(--color-error)" stroke-width="2" />
+                  <path d="M12 7.5v5.5" fill="none" stroke="var(--color-error)" stroke-width="2" stroke-linecap="round" />
+                  <circle cx="12" cy="16.5" r="1.2" fill="var(--color-error)" />
+                </svg>
+                <p class="text-[14.5px] leading-[140%]">Couldn’t post. Try again in a moment.</p>
+              </div>
+              <div class="flex flex-col gap-5 md:flex-row md:gap-4">
+                <div class="flex min-w-0 flex-1 flex-col gap-[10px]">
+                  <label for="c-name" class={label}>Name</label>
+                  <input id="c-name" name="name" required maxlength="80" autocomplete="name" placeholder="Ada Lovelace" aria-describedby="c-name-msg" class:list={[field, 'h-[54px]']} />
+                  <p id="c-name-msg" class={fieldMsg}></p>
+                </div>
+                <div class="flex min-w-0 flex-1 flex-col gap-[10px]">
+                  <div class="flex h-[19px] items-center justify-between gap-3">
+                    <label for="c-email" class={label}>Email</label>
+                    <span id="c-email-hint" class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Optional · never shown</span>
+                  </div>
+                  <input id="c-email" name="email" type="email" maxlength="254" autocomplete="email" inputmode="email" placeholder="ada@example.com" aria-describedby="c-email-hint c-email-msg" class:list={[field, 'h-[54px]']} />
+                  <p id="c-email-msg" class={fieldMsg}></p>
+                </div>
+              </div>
+              <div class="flex flex-col gap-[10px]">
+                <label for="c-comment" class={label}>Comment</label>
+                <textarea id="c-comment" name="comment" required maxlength="2000" rows="5" placeholder="What did you think? Questions are welcome too." aria-describedby="c-comment-msg" class:list={[field, 'h-[148px] resize-y py-4 leading-[150%]']}></textarea>
+                <p id="c-comment-msg" class={fieldMsg}></p>
+              </div>
+              <input type="hidden" name="post" value={post.id} />
+              <input type="hidden" name="slug" value={slug} />
+              <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+              <div class="pt-1">
+                <Button type="submit" class="w-full justify-between md:w-auto" data-busy-label="Posting…">Post comment</Button>
+              </div>
+            </form>
+            <div data-comment-sent hidden role="status" class="flex items-start gap-[18px]">
+              <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-coral" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="var(--color-coral-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+              <div class="flex min-w-0 flex-1 flex-col gap-2 pt-[2px]">
+                <p class="text-[22px] leading-[120%] font-semibold tracking-[-0.03em]">Thanks, your comment is waiting for approval</p>
+                <p class="text-[16px] leading-[155%] text-muted">It’ll show up once I’ve read it.</p>
+                <p class="pt-[10px]">
+                  <button type="button" data-comment-again class="min-h-11 text-[14.5px] leading-[140%] underline decoration-coral decoration-1 underline-offset-[5px] hover:text-coral">
+                    Write another comment
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="pt-16 md:pt-24">
+        <Newsletter class="border-t border-rule pt-12 md:pt-14" />
+      </div>
+
+      {
+        next && (
+          <a
+            href={postHref(next.data.slug)}
+            data-cursor="Read"
+            class="post-next mt-16 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-4 gap-y-[10px] rounded-[14px] bg-surface p-6 md:mt-[112px] md:gap-x-8 md:p-11"
+          >
+            <span class="col-span-full flex min-w-0 items-center gap-[9px]">
+              <span class="size-[7px] shrink-0 rounded-full bg-coral" aria-hidden="true" />
+              <span class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Next post</span>
+              {next.data.tags[0] && <span class:list={[mono, 'ml-auto text-[12px] leading-[140%] text-muted']}>{next.data.tags[0]}</span>}
+            </span>
+            <span class="col-start-1 min-w-0 text-[30px] leading-none font-semibold tracking-[-0.04em] wrap-anywhere md:text-[68px] md:tracking-[-0.045em]">{next.data.title}</span>
+            {next.data.excerpt && <span class="col-start-1 max-w-[704px] text-[15px] leading-[155%] text-pretty text-muted md:text-[16px]">{next.data.excerpt}</span>}
+            <span class="post-next-tile col-start-2 row-span-2 row-start-2 grid size-12 place-items-center rounded-[14px] bg-coral text-coral-ink md:size-14" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path d={arrow} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </span>
+          </a>
+        )
+      }
+    </div>
+  </article>
+
+  <Contact />
+</Base>
+
+<style>
+  /* Body copy from Paper: 16/17px at 165%, ink at 86%; blocks 18px apart; headings get 16/26px more above. */
+  .post-body {
+    display: grid;
+    gap: 18px;
+    font-size: 16px;
+    line-height: 165%;
+    color: color-mix(in srgb, var(--color-ink) 86%, transparent);
+    text-wrap: pretty;
+  }
+  .post-body :global(h2) {
+    margin-top: 16px;
+    color: var(--color-ink);
+    font-size: 26px;
+    line-height: 108%;
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    scroll-margin-top: 110px;
+    text-wrap: balance;
+  }
+  .post-body :global(h3) {
+    margin-top: 8px;
+    color: var(--color-ink);
+    font-size: 21px;
+    line-height: 115%;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    scroll-margin-top: 110px;
+  }
+  .post-body :global(ul),
+  .post-body :global(ol) {
+    display: grid;
+    gap: 8px;
+    padding-left: 18px;
+  }
+  .post-body :global(ul > li) {
+    position: relative;
+  }
+  .post-body :global(ul > li)::before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-coral);
+  }
+  .post-body :global(ol) {
+    list-style: decimal;
+    padding-left: 22px;
+  }
+  .post-body :global(ol > li)::marker {
+    color: var(--color-coral);
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+  }
+  .post-body :global(li > ul),
+  .post-body :global(li > ol) {
+    margin-top: 8px;
+  }
+  .post-body :global(blockquote) {
+    border-left: 2px solid var(--color-coral);
+    padding: 2px 0 2px 18px;
+    color: var(--color-ink);
+    font-size: 17px;
+    line-height: 145%;
+  }
+  .post-body :global(a) {
+    color: var(--color-ink);
+    text-decoration: underline 1px var(--color-coral);
+    text-underline-position: from-font;
+  }
+  .post-body :global(a:hover) {
+    color: var(--color-coral);
+  }
+  .post-body :global(strong) {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .post-body :global(:not(pre) > code) {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: var(--color-field);
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+  }
+  .post-body :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--color-rule);
+    margin-block: 8px;
+  }
+  .post-body :global(.post-img img) {
+    width: 100%;
+    border-radius: 12px;
+  }
+  .post-body :global(.post-img figcaption) {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-muted);
+  }
+
+  /* Code block: dark field card, "ts" + Copy bar on top. */
+  .post-body :global(.post-code) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: clip;
+    border-radius: 12px;
+    background: var(--color-field);
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+  }
+  .post-body :global(.post-code figcaption) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 40px;
+    padding: 0 6px 0 16px;
+    border-bottom: 1px solid #f1f2ec1a;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 140%;
+    color: var(--color-muted);
+  }
+  .post-body :global([data-copy]) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    padding-inline: 10px;
+    border-radius: 7px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 100%;
+    color: var(--color-muted);
+    transition:
+      color 0.2s,
+      background-color 0.2s;
+  }
+  .post-body :global([data-copy]:hover) {
+    color: var(--color-ink);
+    background: color-mix(in srgb, var(--color-ink) 6%, transparent);
+  }
+  .post-body :global([data-copy] svg) {
+    display: none;
+    color: var(--color-coral);
+  }
+  .post-body :global([data-copy][data-copied]) {
+    color: var(--color-ink);
+  }
+  .post-body :global([data-copy][data-copied] svg) {
+    display: block;
+  }
+  .post-body :global(.post-code pre) {
+    overflow-x: auto;
+    padding: 16px 14px 18px;
+    overscroll-behavior-x: contain;
+  }
+  .post-body :global(.post-code code) {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 165%;
+    color: var(--color-ink);
+    tab-size: 2;
+  }
+
+  @media (width >= 48rem) {
+    .post-body {
+      font-size: 17px;
+    }
+    .post-body :global(h2) {
+      margin-top: 26px;
+      font-size: 34px;
+    }
+    .post-body :global(h3) {
+      margin-top: 12px;
+      font-size: 24px;
+    }
+    .post-body :global(ul) {
+      padding-left: 20.4px;
+    }
+    .post-body :global(ul > li)::before {
+      top: 11px;
+    }
+    .post-body :global(blockquote) {
+      font-size: 19.04px;
+    }
+    .post-body :global(.post-code pre) {
+      padding-inline: 18px;
+    }
+    .post-body :global(.post-code code) {
+      font-size: 13px;
+    }
+  }
+
+  .toc-link:hover span:last-child {
+    color: var(--color-coral);
+  }
+
+  /* #27 card lift on the next-post card. */
+  .post-next {
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+    transition:
+      translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s ease;
+  }
+  .post-next-tile svg {
+    transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .post-next:hover,
+  .post-next:focus-visible {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  .post-next:hover .post-next-tile svg,
+  .post-next:focus-visible .post-next-tile svg {
+    translate: 3px 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .post-next:hover,
+    .post-next:focus-visible {
+      translate: none;
+    }
+  }
+</style>
+
+<script>
+  import '../../scripts/writing/forms';
+</script>

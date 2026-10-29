@@ -1,0 +1,54 @@
+---
+// "New posts, once a month." Posts to /api/subscribe (Buttondown). States from Paper ("Newsletter — Success / Error"):
+// success swaps the form for a confirmation row; a bad email rings the field red with a message under it.
+// Without JS the form still posts and the endpoint redirects back with ?newsletter=ok|invalid|error.
+import Button from '../ui/Button.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+const field =
+  'h-[54px] w-full min-w-0 rounded-[14px] bg-surface px-[18px] text-[16px] leading-[120%] text-ink shadow-[inset_0_0_0_1px_var(--color-rule-strong)] outline-none placeholder:text-muted focus-visible:shadow-[inset_0_0_0_1.5px_var(--color-coral)] aria-invalid:shadow-[inset_0_0_0_1.5px_var(--color-error)] aria-invalid:focus-visible:shadow-[inset_0_0_0_1.5px_var(--color-error)] md:flex-1';
+---
+
+<section id="newsletter" aria-labelledby="newsletter-title" data-newsletter class={className}>
+  <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-12">
+    <div class="flex min-w-0 flex-col gap-3 md:flex-1">
+      <p class="eyebrow text-ink"><span class="text-coral">//</span> Newsletter</p>
+      <h2 id="newsletter-title" class="text-[28px] leading-[108%] font-semibold tracking-[-0.04em] md:text-[34px] md:tracking-[-0.045em]">New posts, once a month</h2>
+      <p class="text-[16px] leading-[155%] text-muted">No spam. Unsubscribe in one click.</p>
+    </div>
+
+    <div class="flex w-full shrink-0 flex-col gap-[10px] md:w-[560px]">
+      <form action="/api/subscribe" method="post" novalidate data-newsletter-form class="flex flex-col gap-3 md:flex-row md:items-center">
+        <label for="newsletter-email" class="sr-only">Email address</label>
+        <input
+          id="newsletter-email"
+          name="email"
+          type="email"
+          required
+          autocomplete="email"
+          inputmode="email"
+          placeholder="you@example.com"
+          aria-describedby="newsletter-msg"
+          class={field}
+        />
+        <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+        <Button type="submit" class="w-full justify-between md:w-auto" data-busy-label="Subscribing…">Subscribe</Button>
+      </form>
+      <p id="newsletter-msg" data-newsletter-msg role="alert" class="hidden text-[13.5px] leading-[140%] text-error"></p>
+
+      <div data-newsletter-done hidden class="flex h-[54px] items-center gap-[14px] rounded-[14px] bg-surface pr-[18px] pl-2 shadow-[inset_0_0_0_1px_var(--color-rule)]" role="status">
+        <span class="grid size-[38px] shrink-0 place-items-center rounded-[9px] bg-coral" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="var(--color-coral-ink)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+        <span class="text-[15.5px] leading-[140%]">You’re in. Check your inbox to confirm.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../../scripts/writing/forms';
+</script>

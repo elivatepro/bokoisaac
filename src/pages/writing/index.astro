@@ -1,0 +1,195 @@
+---
+// Writing index from Paper ("Boko Isaac - Writing" → "Writing" / "Writing — Mobile"; empty state "Writing — Empty").
+// Posts come from Notion Blog (only Status = Published in production). The chips filter by each post's first tag.
+import Base from '../../layouts/Base.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import Newsletter from '../../components/writing/Newsletter.astro';
+import Contact from '../../components/home/Contact.astro';
+import { day, postHref, posts as allPosts, readTime } from '../../lib/posts';
+
+const posts = await allPosts();
+const topic = (p: (typeof posts)[number]) => p.data.tags[0] ?? null;
+const topics = [...new Set(posts.map(topic).filter((t): t is string => !!t))].map((t) => ({ name: t, count: posts.filter((p) => topic(p) === t).length }))
+  .sort((a, b) => b.count - a.count); // biggest first, ties keep newest-first order
+
+// "a month, roughly": posts per month across the span of the archive, never below 1.
+const dates = posts.map((p) => p.data.published?.getTime()).filter((t): t is number => !!t);
+const months = dates.length > 1 ? Math.max(1, (Math.max(...dates) - Math.min(...dates)) / (30.44 * 864e5)) : 1;
+const perMonth = Math.max(1, Math.round(posts.length / months));
+
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const chip = 'flex h-10 items-center gap-2 rounded-[10px] px-[14px] text-[12.5px] leading-none font-medium tracking-[0.01em]';
+const stat = 'min-w-0 flex-1 basis-0 pr-3 md:pr-5';
+const arrow = 'M5 12h14M13 6l6 6-6 6';
+---
+
+<Base title="Writing" description="Notes from shipping real software. Written after the project, with the numbers and the code.">
+  <section aria-labelledby="writing-title">
+    <div class="page pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]">
+      <div class="grid max-w-[940px] grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
+        <Eyebrow data-reveal="eyebrow">Writing</Eyebrow>
+        <h1 id="writing-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+          Notes from shipping <span class="text-coral">real software.</span>
+        </h1>
+        <p data-reveal data-reveal-delay="200" class="max-w-[760px] text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">
+          Written after the project, with the numbers and the code. About one a month.
+        </p>
+        {
+          posts.length > 0 && (
+            <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
+              <div class={stat}>
+                <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>articles</dt>
+                <dd class="mt-2 text-[28px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]">{posts.length}</dd>
+              </div>
+              <div class={stat}>
+                <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>a month, roughly</dt>
+                <dd class="mt-2 text-[28px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]">{perMonth}</dd>
+              </div>
+            </dl>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Posts">
+    <div class="page pb-16 md:pb-[112px]">
+      {
+        posts.length > 0 ? (
+          <>
+            <div data-reveal data-reveal-delay="300" class="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 pb-6">
+              <div class="flex min-w-0 flex-wrap gap-2" role="group" aria-label="Filter by topic">
+                <button type="button" data-filter="" aria-pressed="true" class:list={[chip, 'wf-chip']}>
+                  All <span class="wf-count">{posts.length}</span>
+                </button>
+                {topics.map((t) => (
+                  <button type="button" data-filter={t.name} aria-pressed="false" class:list={[chip, 'wf-chip']}>
+                    {t.name} <span class="wf-count">{t.count}</span>
+                  </button>
+                ))}
+              </div>
+              <p class:list={[mono, 'ml-auto text-[12.5px] leading-[150%] text-muted']} aria-live="polite">
+                // <span data-filter-count>{posts.length}</span> posts
+              </p>
+            </div>
+
+            <ul data-reveal-stagger="60" data-reveal-delay="340" class="border-t border-rule">
+              {posts.map((p) => (
+                <li data-topic={topic(p) ?? ''} class="border-b border-rule">
+                  <a
+                    href={postHref(p.data.slug)}
+                    data-cursor="Read"
+                    class="wf-row group grid grid-cols-[minmax(0,1fr)_40px] items-start gap-x-4 gap-y-[10px] py-6 md:grid-cols-[minmax(0,150px)_minmax(0,1fr)_auto_40px] md:gap-x-12 md:py-[30px]"
+                  >
+                    <time datetime={day(p.data.published)} class:list={[mono, 'text-[12.5px] leading-[150%] text-muted md:pt-[7px]']}>
+                      {day(p.data.published)}
+                    </time>
+                    <span class="grid min-w-0 gap-[10px] max-md:row-start-2">
+                      <span class="text-[24px] leading-[105%] font-semibold tracking-[-0.045em] text-balance md:text-[36px]">{p.data.title}</span>
+                      {p.data.excerpt && <span class="max-w-[704px] text-[15px] leading-[155%] text-pretty text-muted md:text-[16px]">{p.data.excerpt}</span>}
+                    </span>
+                    <span class="flex min-w-0 items-center gap-[14px] pt-1 max-md:row-start-3 md:justify-end md:pt-[3px]">
+                      {topic(p) && (
+                        <span class:list={[mono, 'flex h-[26px] items-center rounded-[7px] px-[9px] text-[12px] leading-none shadow-[inset_0_0_0_1px_var(--color-rule-strong)]']}>
+                          {topic(p)}
+                        </span>
+                      )}
+                      <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted md:min-w-[82px] md:text-right']}>{readTime(p.data.readingTime)}</span>
+                    </span>
+                    <span class="wf-tile grid size-10 place-items-center justify-self-end rounded-[10px] max-md:col-start-2 max-md:row-span-3 max-md:row-start-1 max-md:self-center" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="15" height="15">
+                        <path d={arrow} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <div data-reveal data-reveal-delay="300" class="flex items-start gap-4 border-y border-rule py-6 md:gap-5 md:py-[30px]">
+            <span class="grid size-10 shrink-0 place-items-center rounded-[10px] shadow-[inset_0_0_0_1px_var(--color-rule-strong)]" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18">
+                <path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4" fill="none" stroke="var(--color-coral)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+            <div class="flex max-w-[704px] min-w-0 flex-col gap-[10px]">
+              <p class="text-[24px] leading-[105%] font-semibold tracking-[-0.045em] md:text-[36px]">The first post is on its way.</p>
+              <p class="text-[15px] leading-[155%] text-muted md:text-[16px]">
+                I write after a project ships, with the numbers and the code. Subscribe below and it lands in your inbox.
+              </p>
+            </div>
+          </div>
+        )
+      }
+
+      <Newsletter class="pt-14 md:pt-[88px]" />
+    </div>
+  </section>
+
+  <Contact />
+</Base>
+
+<style>
+  .wf-chip {
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition:
+      background-color 0.25s,
+      color 0.25s,
+      box-shadow 0.25s;
+  }
+  .wf-chip:hover {
+    box-shadow: inset 0 0 0 1px #f1f2ec66;
+  }
+  .wf-chip .wf-count {
+    color: var(--color-muted);
+  }
+  .wf-chip[aria-pressed='true'] {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    box-shadow: none;
+  }
+  .wf-chip[aria-pressed='true'] .wf-count {
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  /* #29 row slide plus the arrow tile filling coral. */
+  .wf-row {
+    transition:
+      padding-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 0.3s ease;
+  }
+  .wf-tile {
+    color: var(--color-coral);
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  @media (hover: hover) {
+    .wf-row:hover {
+      padding-left: 14px;
+      background-color: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    }
+  }
+  .wf-row:focus-visible {
+    padding-left: 14px;
+  }
+  .wf-row:hover .wf-tile,
+  .wf-row:focus-visible .wf-tile {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    box-shadow: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wf-row {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import '../../scripts/writing/filter';
+</script>

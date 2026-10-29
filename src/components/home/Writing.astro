@@ -2,21 +2,11 @@
 // "Notes from the build." Latest post as a card, the next four as a list.
 // Rows come from Notion Blog (newest first); the section is hidden when there are none.
 import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
-import { live } from '../../lib/content';
+import { coverFor, day, postHref as href, posts, readTime as read } from '../../lib/posts';
 
-const posts = (await live('blog')).sort((a, b) => (b.data.published?.getTime() ?? 0) - (a.data.published?.getTime() ?? 0));
-const [latest, ...rest] = posts;
+const [latest, ...rest] = await posts();
 const earlier = rest.slice(0, 4);
 
-// Notion file URLs expire after an hour, so covers are bundled in src/assets/home/writing/<slug>.webp for now.
-// TODO: replace with a Notion image download step at build time.
-const covers = import.meta.glob<{ default: ImageMetadata }>('../../assets/home/writing/*.{webp,jpg,jpeg,png}', { eager: true });
-const coverFor = (slug: string) => Object.entries(covers).find(([path]) => path.split('/').pop()!.replace(/\.\w+$/, '') === slug)?.[1].default;
-
-const href = (slug: string) => `/writing/${slug}`;
-const day = (d: Date | null) => d?.toISOString().slice(0, 10) ?? '';
-const read = (m: number | null) => (m ? `${m} min read` : '');
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
 const arrow = 'M5 12h14M13 6l6 6-6 6';
 const latestCover = latest && coverFor(latest.data.slug);

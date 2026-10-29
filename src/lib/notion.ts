@@ -1,6 +1,7 @@
 import { Client, isFullPage } from '@notionhq/client';
 import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import type { Loader } from 'astro/loaders';
+import { renderPage } from './notion-blocks';
 
 // Data source IDs for the databases on the "Boko Isaac — Website CMS" page in Notion.
 export const DATA_SOURCES = {
@@ -81,7 +82,8 @@ export function flatten(page: PageObjectResponse): Record<string, unknown> {
 }
 
 // Astro content loader: one entry per Notion row, keyed by page id, with flattened properties as data.
-export function notionLoader(dataSourceId: string): Loader {
+// With { body: true } the page content is rendered too, so `render(entry)` gives <Content /> and its headings.
+export function notionLoader(dataSourceId: string, opts: { body?: boolean } = {}): Loader {
   return {
     name: 'notion',
     async load({ store, parseData, generateDigest, logger }) {
@@ -90,7 +92,13 @@ export function notionLoader(dataSourceId: string): Loader {
       for (const page of pages) {
         const raw = flatten(page);
         const data = await parseData({ id: page.id, data: raw });
-        store.set({ id: page.id, data, digest: generateDigest({ edited: page.last_edited_time }) });
+        const rendered = opts.body ? await renderPage(page.id) : undefined;
+        store.set({
+          id: page.id,
+          data,
+          digest: generateDigest({ edited: page.last_edited_time }),
+          rendered: rendered && { html: rendered.html, metadata: { headings: rendered.headings } },
+        });
       }
       logger.info(`Loaded ${pages.length} rows`);
     },

@@ -10,7 +10,7 @@ const flag = z.boolean().nullish().transform(Boolean);
 const date = z.string().nullish().transform((v) => (v ? new Date(v) : null));
 
 const blog = defineCollection({
-  loader: notionLoader(DATA_SOURCES.blog),
+  loader: notionLoader(DATA_SOURCES.blog, { body: true }),
   schema: z
     .object({
       id: z.string(),

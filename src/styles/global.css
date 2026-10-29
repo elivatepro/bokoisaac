@@ -200,6 +200,33 @@ html.lenis body {
 .btn:focus-visible .btn-drop {
   animation: btn-drop 0.6s var(--ease-icon);
 }
+/* Sending state (Paper "Comments — Sending"): the button dims and its arrow turns into a spinner. */
+.btn[aria-busy] {
+  opacity: 0.75;
+  cursor: progress;
+}
+.btn[aria-busy].bg-coral {
+  background-color: var(--color-coral); /* no hover fill while sending */
+}
+.btn[aria-busy] .btn-ico-a,
+.btn[aria-busy] .btn-ico-b {
+  visibility: hidden;
+}
+.btn[aria-busy] > span:last-child::after {
+  content: '';
+  grid-area: 1 / 1;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.4px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-top-color: currentColor;
+  animation: btn-spin 0.8s linear infinite;
+}
+@keyframes btn-spin {
+  to {
+    rotate: 1turn;
+  }
+}
 @keyframes btn-drop {
   40% {
     transform: translateY(22px);
