@@ -1,0 +1,7 @@
+---
+// The "// Label" line above section headings (JetBrains Mono 13px, coral slashes).
+interface Props { class?: string }
+const { class: className = '' } = Astro.props;
+---
+
+<p class:list={['eyebrow text-ink', className]}><span class="text-coral">//</span> <slot /></p>

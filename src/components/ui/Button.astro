@@ -1,0 +1,44 @@
+---
+// Buttons from Paper: label + 38px square icon tile. Primary = coral; secondary = outlined dark.
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary';
+  icon?: 'arrow' | 'download' | 'none';
+  type?: 'button' | 'submit';
+  class?: string;
+  [key: string]: unknown;
+}
+const { href, variant = 'primary', icon = 'arrow', type = 'button', class: className = '', ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+const primary = variant === 'primary';
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : type}
+  class:list={[
+    'group inline-flex h-[54px] items-center gap-3.5 rounded-[14px] pr-2 text-sm font-semibold tracking-[-0.005em] transition-colors',
+    icon === 'none' ? 'pr-[22px]' : '',
+    'pl-[22px]',
+    primary ? 'bg-coral text-coral-ink hover:bg-[#ff8f66]' : 'border border-rule-strong bg-bg/55 text-ink hover:border-ink/40',
+    className,
+  ]}
+  {...rest}
+>
+  <span class="whitespace-nowrap"><slot /></span>
+  {
+    icon !== 'none' && (
+      <span class:list={['grid size-[38px] shrink-0 place-items-center overflow-hidden rounded-[9px]', primary ? 'bg-field text-coral' : 'bg-ink/[0.08] text-ink']}>
+        {icon === 'arrow' ? (
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-0.5">
+            <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+            <path d="M12 4v11m0 0l-5-5m5 5l5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        )}
+      </span>
+    )
+  }
+</Tag>
