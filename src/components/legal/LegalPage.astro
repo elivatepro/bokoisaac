@@ -1,0 +1,144 @@
+---
+// Privacy and Terms, from Paper ("Boko Isaac - Legal" → "Privacy" / "Terms" + mobile). One layout, fed with
+// sections: the "On this page" list is built from the section titles, and "Other documents" links the pair.
+// Per the template, legal pages have no hero grid and no "Start a project" section.
+import Base from '../../layouts/Base.astro';
+import Eyebrow from '../ui/Eyebrow.astro';
+import { slugify } from '../../lib/notion-blocks';
+
+export type Block = string | { list: string[] };
+export interface Section {
+  title: string;
+  blocks: Block[];
+}
+
+interface Props {
+  title: string;
+  accent: string;
+  description: string;
+  intro: string;
+  sections: Section[];
+  current: 'privacy' | 'terms';
+  updated: { iso: string; label: string };
+}
+const { title, accent, description, intro, sections, current, updated } = Astro.props;
+const docs = [
+  { id: 'privacy', label: 'Privacy', href: '/privacy' },
+  { id: 'terms', label: 'Terms', href: '/terms' },
+] as const;
+const email = 'hello@bokoisaac.com';
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const body = 'text-[15.5px] leading-[165%] text-pretty text-ink/86 md:text-[17px]';
+// The address is a mailto link wherever it appears in the copy.
+const linkify = (s: string) =>
+  s.replace(email, `<a href="mailto:${email}" class="text-ink underline decoration-coral decoration-1 [text-underline-position:from-font] hover:text-coral">${email}</a>`);
+---
+
+<Base title={`${title} ${accent.replace(/\.$/, '')}`} {description}>
+  <article aria-labelledby="legal-title">
+    <div class="page pt-[112px] pb-16 md:pt-[208px] md:pb-[112px]">
+      <header class="mb-10 grid grid-cols-[minmax(0,1fr)] justify-items-start gap-4 border-b border-rule pb-7 md:mb-[72px] md:gap-5 md:pb-11">
+        <Eyebrow data-reveal="eyebrow">The small print</Eyebrow>
+        <h1 id="legal-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+          {title} <span class="text-coral">{accent}</span>
+        </h1>
+        <p data-reveal data-reveal-delay="200" class:list={[mono, 'text-[12.5px] leading-[150%]']}>
+          Last updated <time datetime={updated.iso}>{updated.label}</time>
+        </p>
+      </header>
+
+      <div class="grid grid-cols-[minmax(0,1fr)] items-start justify-between gap-12 md:grid-cols-[minmax(0,720px)_minmax(0,300px)]">
+        <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[18px]">
+          <p class={body} set:html={linkify(intro)} />
+          {
+            sections.map((s) => (
+              <>
+                <h2 id={slugify(s.title)} class="mt-4 scroll-mt-[110px] text-[26px] leading-[108%] font-semibold tracking-[-0.04em] md:mt-[26px] md:text-[34px] md:tracking-[-0.045em]">
+                  {s.title}
+                </h2>
+                {s.blocks.map((b) =>
+                  typeof b === 'string' ? (
+                    <p class={body} set:html={linkify(b)} />
+                  ) : (
+                    <ul class="flex min-w-0 flex-col gap-2 pl-[2px] md:pl-1">
+                      {b.list.map((item) => (
+                        <li class="flex items-start gap-3 md:gap-[14px]">
+                          <span class="flex h-[26px] shrink-0 items-center md:h-7" aria-hidden="true">
+                            <span class="size-[5px] rounded-full bg-coral" />
+                          </span>
+                          <span class:list={[body, 'min-w-0 flex-1']} set:html={linkify(item)} />
+                        </li>
+                      ))}
+                    </ul>
+                  ),
+                )}
+              </>
+            ))
+          }
+        </div>
+
+        <aside class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-7 md:sticky md:top-[110px]">
+          <nav aria-labelledby="legal-toc" class="hidden gap-[10px] md:grid">
+            <h2 id="legal-toc" class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>On this page</h2>
+            <ol class="grid border-t border-rule">
+              {
+                sections.map((s, i) => (
+                  <li class="border-b border-rule">
+                    <a href={`#${slugify(s.title)}`} class="legal-toc flex min-h-11 items-center gap-3 py-1.5">
+                      <span class="shrink-0 font-mono text-[12px] leading-[130%] text-muted tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                      <span class="text-[14.5px] leading-[130%] text-pretty">{s.title}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ol>
+          </nav>
+          <nav aria-labelledby="legal-docs" class="grid gap-3">
+            <h2 id="legal-docs" class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Other documents</h2>
+            <ul class="flex flex-wrap gap-2">
+              {
+                docs.map((d) => (
+                  <li>
+                    <a
+                      href={d.href}
+                      aria-current={d.id === current ? 'page' : undefined}
+                      class:list={[mono, 'legal-doc inline-flex h-11 items-center rounded-[10px] px-[14px] text-[12.5px] leading-none']}
+                    >
+                      {d.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+          <p class="text-[14.5px] leading-[155%] text-muted">
+            A question about this page? Write to{' '}
+            <a href={`mailto:${email}`} class="underline decoration-rule-strong decoration-1 [text-underline-position:from-font] hover:text-ink">{email}</a>
+          </p>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .legal-toc:hover span:last-child {
+    color: var(--color-coral);
+  }
+  /* "Other documents": outlined chips, the current page in coral (same look as the filter chips). */
+  .legal-doc {
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition:
+      background-color 0.25s,
+      color 0.25s,
+      box-shadow 0.25s;
+  }
+  .legal-doc:hover {
+    box-shadow: inset 0 0 0 1px #f1f2ec66;
+  }
+  .legal-doc[aria-current='page'] {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    box-shadow: none;
+  }
+</style>
