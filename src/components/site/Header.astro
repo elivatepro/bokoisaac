@@ -57,22 +57,6 @@ const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
         <span class="font-mono text-[12.5px] leading-[130%] font-medium tracking-[0.01em] text-ink">Open to new work</span>
       </p>
 
-      {/* TODO: wire up site search (⌘K palette). Non-functional placeholder for now. */}
-      <button
-        type="button"
-        aria-label="Search"
-        aria-keyshortcuts="Meta+K"
-        data-cursor="Search"
-        class:list={[glass, 'flex w-11 shrink-0 items-center justify-center xl:w-auto xl:justify-start xl:gap-2.5 xl:pr-2 xl:pl-3.5']}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0 xl:size-[15px]">
-          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"></circle>
-          <path d="M20 20l-4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-        </svg>
-        <span class="hidden text-[13px] leading-none text-muted xl:inline">Search</span>
-        <kbd class="hidden h-[26px] items-center rounded-[7px] bg-ink/8 px-[7px] font-mono text-xs leading-none font-medium text-ink shadow-[inset_0_0_0_1px_var(--color-rule)] xl:flex">⌘K</kbd>
-      </button>
-
       <a
         href="/contact"
         data-cursor="Say hello"
@@ -105,12 +89,6 @@ const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
         <span class="caret-blink h-[17px] w-[9px] shrink-0 translate-y-0.5 bg-coral" aria-hidden="true"></span>
       </a>
       <div class="flex shrink-0 items-center gap-2.5">
-        <button type="button" aria-label="Search" class:list={[glass, 'flex w-11 shrink-0 items-center justify-center']}>
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0">
-            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"></circle>
-            <path d="M20 20l-4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-          </svg>
-        </button>
         <a href="/contact" class:list={[glass, 'flex items-center px-[18px] text-[13px] leading-none font-semibold tracking-[-0.005em] whitespace-nowrap text-ink']}>
           Get in touch
         </a>
