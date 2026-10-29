@@ -1,0 +1,105 @@
+---
+// Stack, from Paper ("Boko Isaac - Stack" → "Stack" / "Stack — Mobile"). Four tables of tools with years and a
+// usage level. They stay real <table>s; on phones each row is laid out as a small card (name + level, years, note),
+// with explicit ARIA roles so the table semantics survive the display change.
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import Button from '../components/ui/Button.astro';
+import CommitCard from '../components/ui/CommitCard.astro';
+import Contact from '../components/home/Contact.astro';
+import { LEVELS, MAX_YEARS, STACK, type Level } from '../lib/stack';
+
+const total = STACK.reduce((n, g) => n + g.tools.length, 0);
+const words = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty'];
+const pad = (n: number) => String(n).padStart(2, '0');
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const chip = (level: Level) =>
+  level === 'Daily'
+    ? 'inline-flex h-[26px] items-center rounded-[7px] px-[9px] font-mono text-[12px] leading-none font-medium tracking-[0.01em] text-coral shadow-[inset_0_0_0_1px_#ff7f5073]'
+    : 'inline-flex h-[26px] items-center rounded-[7px] px-[9px] font-mono text-[12px] leading-none font-medium tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)]';
+const th = 'border-y border-rule py-[11px] pr-6 align-middle font-mono text-[12px] leading-[140%] font-normal tracking-[0.01em] text-muted';
+---
+
+<Base title="Stack" description="What Boko Isaac builds with: languages, frameworks, data and shipping tools, with years of use and how often.">
+  <PageHero
+    id="stack-title"
+    eyebrow="Stack"
+    title={`${words[total] ?? total} tools,`}
+    accent="used on purpose."
+    lead="What I build with, how long I have used it and how often. If a tool is not here, I will say so before I learn it on your budget."
+    padClass="pt-[112px] pb-10 md:pt-[208px] md:pb-[60px]"
+    gapClass="gap-[22px]"
+  >
+    <Button slot="actions" href="/uses" variant="secondary" icon="none">See what I use daily</Button>
+    <CommitCard slot="aside" repo="boko/stack" message="chore(stack): keep it boring" meta={`${total} tools · ${STACK.length} groups`} />
+  </PageHero>
+
+  <section aria-label="Tools">
+    <div class="page pt-10 pb-16 md:py-[112px]">
+      <div data-reveal class="grid gap-[14px]">
+        <h2 class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>How to read the levels</h2>
+        <dl class="grid min-w-0 grid-cols-[minmax(0,1fr)] border-t border-rule md:grid-cols-3 md:gap-x-10">
+          {
+            LEVELS.map((l) => (
+              <div class="grid min-w-0 content-start justify-items-start gap-[10px] pt-[18px] pb-1">
+                <dt class={chip(l.level)}>{l.level}</dt>
+                <dd class="max-w-[390px] text-[15px] leading-[150%] text-pretty text-muted">{l.note}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div class="mt-14 grid grid-cols-[minmax(0,1fr)] gap-14 md:mt-[88px] md:gap-[88px]">
+        {
+          STACK.map((g, i) => (
+            <table data-reveal role="table" class="st-table block w-full min-w-0 border-collapse text-left md:table md:table-fixed">
+              <caption class="block pb-[18px] max-md:border-b max-md:border-rule md:table-caption">
+                <span class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                  <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>{pad(i + 1)}</span>
+                  <span class="text-[26px] leading-[105%] font-semibold tracking-[-0.04em] md:text-[36px] md:tracking-[-0.045em]">{g.name}</span>
+                  <span class:list={[mono, 'ml-auto text-[12.5px] leading-[150%] text-muted']}>{g.tools.length} tools</span>
+                </span>
+              </caption>
+              <thead class="max-md:sr-only md:table-header-group" role="rowgroup">
+                <tr role="row">
+                  <th scope="col" role="columnheader" class:list={[th, 'w-[24%]']}>Tool</th>
+                  <th scope="col" role="columnheader" class:list={[th, 'w-[19%]']}>Years</th>
+                  <th scope="col" role="columnheader" class:list={[th, 'w-[15%]']}>Level</th>
+                  <th scope="col" role="columnheader" class:list={[th, 'pr-0']}>What I use it for</th>
+                </tr>
+              </thead>
+              <tbody class="block md:table-row-group" role="rowgroup">
+                {g.tools.map((t) => (
+                  <tr role="row" class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-[10px] border-b border-rule py-4 md:table-row md:py-0">
+                    <th scope="row" role="rowheader" class="col-start-1 row-start-1 min-w-0 p-0 text-left text-[19px] leading-[115%] font-semibold tracking-[-0.032em] wrap-anywhere md:py-[19px] md:pr-6 md:align-middle md:text-[23px] md:tracking-[-0.045em]">
+                      {t.name}
+                    </th>
+                    <td role="cell" class="col-span-full row-start-2 block p-0 md:table-cell md:py-[19px] md:pr-6 md:align-middle">
+                      <span class="flex items-center gap-3 md:gap-0">
+                        <span class:list={[mono, 'w-max min-w-11 text-[12.5px] leading-[150%]']}>{t.years} yr</span>
+                        <span class="ml-3 h-1 w-[min(100%_-_64px,120px)] shrink-0 rounded-[2px] bg-rule" aria-hidden="true">
+                          <span class="block h-full rounded-[2px] bg-coral" style={`width:${Math.round((t.years / MAX_YEARS) * 100)}%`} />
+                        </span>
+                      </span>
+                    </td>
+                    <td role="cell" class="col-start-2 row-start-1 p-0 md:table-cell md:py-[19px] md:pr-6 md:align-middle">
+                      <span class={chip(t.level)}>{t.level}</span>
+                    </td>
+                    <td role="cell" class="col-span-full row-start-3 p-0 text-[15.5px] leading-[155%] text-pretty text-muted md:table-cell md:py-[19px] md:align-middle">
+                      {t.note}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ))
+        }
+      </div>
+
+      <p class:list={[mono, 'mt-7 text-[12px] leading-[140%] text-muted']}>Years are counted from the first paid project, not the first tutorial.</p>
+    </div>
+  </section>
+
+  <Contact />
+</Base>

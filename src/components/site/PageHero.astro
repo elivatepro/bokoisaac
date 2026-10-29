@@ -2,8 +2,9 @@
 // Top of an index page (Work, Writing, Services…), from Paper: "// Label", big title, lead, optional stat row.
 // The template's faint grid sits behind it, fading from the top right (84% / 8%).
 // Title: pass `title` and `accent` (the coral tail), e.g. title="Eight products, each one" accent="shipped.".
-// Optional buttons go in the `actions` slot (About). `wrapStats` lets the stats wrap two to a row on mobile
-// (About) instead of squeezing three into one line.
+// Optional slots: `actions` (buttons under the lead, e.g. About) and `aside` (a card on the right, e.g. the commit
+// card on Stack / Now; it drops below the copy on mobile). `wrapStats` lets stats wrap two to a row on mobile
+// (About). `padClass` / `gapClass` override the default spacing where a page's Paper artboard differs.
 import Eyebrow from '../ui/Eyebrow.astro';
 import GridBg from '../ui/GridBg.astro';
 
@@ -17,38 +18,61 @@ interface Props {
   /** Lead paragraph max width in px (Paper: 684 on most pages, 760 on Writing). */
   leadMax?: number;
   wrapStats?: boolean;
+  padClass?: string;
+  gapClass?: string;
 }
-const { eyebrow, title, accent, lead, stats = [], id = 'page-title', leadMax = 684, wrapStats = false } = Astro.props;
-const hasActions = Astro.slots.has('actions');
+const {
+  eyebrow,
+  title,
+  accent,
+  lead,
+  stats = [],
+  id = 'page-title',
+  leadMax = 684,
+  wrapStats = false,
+  padClass = 'pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]',
+  gapClass = 'gap-4 md:gap-[22px]',
+} = Astro.props;
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const hasActions = Astro.slots.has('actions');
+const hasAside = Astro.slots.has('aside');
 ---
 
 <section aria-labelledby={id} class="relative isolate">
   <GridBg x="84%" y="8%" />
-  <div class="page relative pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]">
-    <div class="grid max-w-[940px] grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
-      <Eyebrow data-reveal="eyebrow">{eyebrow}</Eyebrow>
-      <h1 {id} data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
-        {title} <span class="text-coral">{accent}</span>
-      </h1>
-      <p data-reveal data-reveal-delay="200" style={`max-width:${leadMax}px`} class="text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">{lead}</p>
+  <div class:list={['page relative', padClass]}>
+    <div class:list={['grid grid-cols-[minmax(0,1fr)]', hasAside && 'gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:items-end md:gap-24']}>
+      <div class:list={['grid max-w-[940px] min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start', gapClass]}>
+        <Eyebrow data-reveal="eyebrow">{eyebrow}</Eyebrow>
+        <h1 {id} data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+          {title} <span class="text-coral">{accent}</span>
+        </h1>
+        <p data-reveal data-reveal-delay="200" style={`max-width:${leadMax}px`} class="text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">{lead}</p>
+        {
+          hasActions && (
+            <div data-reveal data-reveal-delay="240" class="mt-2 flex w-full min-w-0 flex-wrap gap-3 md:w-auto">
+              <slot name="actions" />
+            </div>
+          )
+        }
+        {
+          stats.length > 0 && (
+            <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
+              {stats.map((s) => (
+                <div class:list={['min-w-0 flex-1 pr-3 md:min-w-[120px] md:basis-0 md:pr-5', wrapStats ? 'basis-[40%] pb-4 md:pb-0' : 'basis-0']}>
+                  <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{s.label}</dt>
+                  <dd class:list={['mt-2 leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]', wrapStats ? 'text-[26px]' : 'text-[28px]']}>{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
       {
-        hasActions && (
-          <div data-reveal data-reveal-delay="240" class="mt-2 flex w-full min-w-0 flex-wrap gap-3 md:w-auto">
-            <slot name="actions" />
+        hasAside && (
+          <div data-reveal data-reveal-delay="300" class="grid min-w-0 justify-items-start md:justify-items-end">
+            <slot name="aside" />
           </div>
-        )
-      }
-      {
-        stats.length > 0 && (
-          <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
-            {stats.map((s) => (
-              <div class:list={['min-w-0 flex-1 pr-3 md:min-w-[120px] md:basis-0 md:pr-5', wrapStats ? 'basis-[40%] pb-4 md:pb-0' : 'basis-0']}>
-                <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{s.label}</dt>
-                <dd class:list={['mt-2 leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]', wrapStats ? 'text-[26px]' : 'text-[28px]']}>{s.value}</dd>
-              </div>
-            ))}
-          </dl>
         )
       }
     </div>

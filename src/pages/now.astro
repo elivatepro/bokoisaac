@@ -1,0 +1,59 @@
+---
+// Now, from Paper ("Boko Isaac - Now" → "Now" / "Now — Mobile"). A dated list, newest first, edited by hand.
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import CommitCard from '../components/ui/CommitCard.astro';
+import Contact from '../components/home/Contact.astro';
+import { NOW, NOW_UPDATED } from '../lib/stack';
+
+const entries = [...NOW].sort((a, b) => b.date.localeCompare(a.date));
+const month = NOW_UPDATED.split(' ')[0];
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+---
+
+<Base title="Now" description="What Boko Isaac is working on this month: a dated list, updated by hand about once a month.">
+  <PageHero
+    id="now-title"
+    eyebrow="Now"
+    title="What I am doing"
+    accent="this month."
+    lead="A dated list instead of a feed. It changes about once a month, and the status line at the top of the site matches it."
+    padClass="pt-[112px] pb-10 md:pt-[208px] md:pb-[60px]"
+    gapClass="gap-[22px]"
+  >
+    <CommitCard slot="aside" repo="boko/now" message={`docs(now): update for ${month}`} meta={`edited ${NOW_UPDATED}`} />
+  </PageHero>
+
+  <section aria-labelledby="now-list">
+    <h2 id="now-list" class="sr-only">This month</h2>
+    <div class="page pt-10 pb-16 md:py-[112px]">
+      <div data-reveal class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 pb-[18px]">
+        <p class="flex min-w-0 items-center gap-[10px]">
+          <span class="pulse-dot size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+          <span class:list={[mono, 'text-[12.5px] leading-[150%]']}>Open to one new project</span>
+        </p>
+        <p class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>Updated {NOW_UPDATED}</p>
+      </div>
+      <ol data-reveal-stagger="60" data-reveal-delay="120" class="border-t border-rule">
+        {
+          entries.map((e, i) => (
+            <li class="border-b border-rule">
+              <div class="grid items-baseline gap-x-7 gap-y-2 py-[22px] md:min-h-[76px] md:grid-cols-[minmax(120px,1.4fr)_minmax(0,4.2fr)_minmax(0,5fr)]">
+                <time datetime={e.date} class:list={[mono, 'min-w-0 text-[12.5px] leading-[150%]', i === 0 ? 'text-ink' : 'text-muted']}>
+                  {e.date}
+                </time>
+                <h3 class="min-w-0 text-[21px] leading-[112%] font-semibold tracking-[-0.038em] text-balance md:text-[26px] md:tracking-[-0.045em]">{e.title}</h3>
+                <p class="min-w-0 text-[15.5px] leading-[155%] text-pretty text-muted">{e.detail}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <p class:list={[mono, 'mt-[26px] max-w-[624px] text-[12px] leading-[140%] text-balance text-muted']}>
+        Edited by hand, about once a month. If the date above is older than six weeks, write and ask.
+      </p>
+    </div>
+  </section>
+
+  <Contact />
+</Base>
