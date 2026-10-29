@@ -7,8 +7,10 @@ import type { Project } from '../../lib/projects';
 
 interface Props {
   project: Project;
+  /** First row on /work: load the image straight away (it is the largest paint). */
+  priority?: boolean;
 }
-const { project: p } = Astro.props;
+const { project: p, priority = false } = Astro.props;
 const mono12 = 'font-mono text-[12px] leading-[140%] font-medium tracking-[0.01em]';
 ---
 
@@ -19,6 +21,8 @@ const mono12 = 'font-mono text-[12px] leading-[140%] font-medium tracking-[0.01e
       alt={p.alt}
       widths={[400, 700, 1000, 1400]}
       sizes="(min-width: 1520px) 692px, (min-width: 768px) 46vw, 100vw"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : 'auto'}
       class="work-img absolute inset-0 size-full object-cover saturate-[0.92] contrast-[1.04]"
     />
     <span class="absolute top-3 left-3 flex h-[26px] items-center rounded-[7px] bg-coral px-[9px] font-mono text-[12px] leading-none font-medium tracking-[0.01em] text-coral-ink">

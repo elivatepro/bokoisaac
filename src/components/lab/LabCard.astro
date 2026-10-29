@@ -6,8 +6,10 @@ import { num, type LabItem } from '../../lib/lab';
 
 interface Props {
   item: LabItem;
+  /** First row on /lab: load the image straight away (it is the largest paint). */
+  priority?: boolean;
 }
-const { item } = Astro.props;
+const { item, priority = false } = Astro.props;
 const mono = 'font-mono text-[12.5px] leading-[150%] font-medium tracking-[0.01em] tabular-nums';
 const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
@@ -17,6 +19,8 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
     <Image
       src={item.image}
       alt={item.alt}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : 'auto'}
       widths={[400, 700, 1000]}
       sizes="(min-width: 1520px) 456px, (min-width: 768px) 31vw, 100vw"
       class="lab-img absolute inset-0 size-full object-cover brightness-[62%] contrast-[108%] grayscale-[55%]"

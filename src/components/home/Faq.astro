@@ -30,6 +30,8 @@ const {
 const faqs = (await live('faqs')).slice(0, limit);
 const pad = (n: number) => String(n).padStart(2, '0');
 const email = 'hello@bokoisaac.com';
+// Without the section heading (/faq) the card's title is the first h2 on that level, so it can't be an h3.
+const CardHeading = heading ? 'h3' : 'h2';
 ---
 
 {
@@ -53,7 +55,7 @@ const email = 'hello@bokoisaac.com';
             )}
             <div data-reveal data-reveal-delay="260" class="hidden w-full max-w-[400px] md:block">
               <div class="grid justify-items-start gap-3 rounded-[14px] bg-surface p-6 shadow-[inset_0_0_0_1px_var(--color-rule)]">
-                <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</h3>
+                <CardHeading class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</CardHeading>
                 <p class="mb-2 text-[15px] leading-[150%] text-muted">Replies within one working day</p>
                 <Button href={`mailto:${email}`} variant="secondary">Ask by email</Button>
               </div>
@@ -91,7 +93,7 @@ const email = 'hello@bokoisaac.com';
             </div>
 
             <div data-reveal data-reveal-delay="260" class="mt-9 grid justify-items-start gap-3 rounded-[14px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-rule)] md:hidden">
-              <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</h3>
+              <CardHeading class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</CardHeading>
               <p class="mb-2 text-[15px] leading-[150%] text-muted">Replies within one working day</p>
               <Button href={`mailto:${email}`} variant="secondary" class:list={[heading && 'w-full justify-between']}>
                 Ask by email

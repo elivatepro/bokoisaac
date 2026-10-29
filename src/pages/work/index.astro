@@ -45,9 +45,9 @@ const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text
 
       <ul data-reveal-stagger="80" data-reveal-delay="340" class="mt-6 grid grid-cols-[minmax(0,1fr)] gap-4 md:mt-8 md:grid-cols-2 md:gap-6">
         {
-          projects.map((p) => (
+          projects.map((p, i) => (
             <li data-topic={p.tag} class="min-w-0">
-              <ProjectCard project={p} />
+              <ProjectCard project={p} priority={i < 2} />
             </li>
           ))
         }
