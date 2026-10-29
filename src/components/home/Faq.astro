@@ -1,5 +1,101 @@
 ---
-// TODO: build from Paper
+// "Asked before the first call." FAQ accordion (native <details>) plus the "Something else?" card.
+// Rows come from Notion FAQs; the section is hidden when there are none.
+import Eyebrow from '../ui/Eyebrow.astro';
+import Button from '../ui/Button.astro';
+import { live } from '../../lib/content';
+
+const faqs = await live('faqs');
+const pad = (n: number) => String(n).padStart(2, '0');
+const email = 'hello@bokoisaac.com';
 ---
 
-<section data-section="Faq"></section>
+{
+  faqs.length > 0 && (
+    <section data-section="Faq" id="faq" aria-labelledby="faq-title" class="bg-bg">
+      <div class="page py-[68px] md:py-[151.2px]">
+        <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-[72px]">
+          <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-12">
+            <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+              <Eyebrow class="max-md:text-[12px]">Questions</Eyebrow>
+              <h2 id="faq-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+                Asked before the first <span class="text-coral">call.</span>
+              </h2>
+              <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+                The things most teams want to know before we talk. If yours is not here, ask it directly.
+              </p>
+            </div>
+            <div class="hidden w-full max-w-[400px] md:block">
+              <div class="grid justify-items-start gap-3 rounded-[14px] bg-surface p-6 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+                <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</h3>
+                <p class="mb-2 text-[15px] leading-[150%] text-muted">Replies within one working day</p>
+                <Button href={`mailto:${email}`} variant="secondary">Ask by email</Button>
+              </div>
+            </div>
+          </div>
+
+          <div class="min-w-0">
+            <div class="border-b border-rule">
+              {
+                faqs.map((f, i) => (
+                  <details class="faq group border-t border-rule" open={i === 0}>
+                    <summary class="grid w-full cursor-pointer list-none grid-cols-[24px_minmax(0,1fr)_36px] items-center gap-[10px] py-[18px] md:grid-cols-[34px_minmax(0,1fr)_40px] md:gap-4 md:px-1 md:py-[22px] [&::-webkit-details-marker]:hidden">
+                      <span class="font-mono text-[12.5px] leading-[150%] font-medium tracking-[0.01em] text-muted tabular-nums group-open:text-coral">
+                        {pad(i + 1)}
+                      </span>
+                      <span class="text-[19px] leading-[114%] font-semibold tracking-[-0.045em] text-balance md:text-[26px] md:text-wrap">
+                        {f.data.question}
+                      </span>
+                      <span
+                        class="relative size-9 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-colors group-open:bg-coral group-open:shadow-none md:size-10"
+                        aria-hidden="true"
+                      >
+                        <span class="absolute inset-x-[11px] top-[calc(50%-1px)] h-[2px] rounded-[2px] bg-ink transition-colors group-open:bg-field md:inset-x-[13px]" />
+                        <span class="absolute inset-x-[11px] top-[calc(50%-1px)] h-[2px] rotate-90 rounded-[2px] bg-ink transition-[rotate,background-color] duration-300 group-open:rotate-0 group-open:bg-field md:inset-x-[13px]" />
+                      </span>
+                    </summary>
+                    {f.data.answer && (
+                      <div class="max-w-[682px] pr-2 pb-[22px] pl-[34px] md:max-w-[704px] md:pr-[60px] md:pb-[26px] md:pl-[54px]">
+                        <p class="text-[15.5px] leading-[160%] text-pretty whitespace-pre-line text-muted md:text-[16px]">{f.data.answer}</p>
+                      </div>
+                    )}
+                  </details>
+                ))
+              }
+            </div>
+
+            <div class="mt-9 grid justify-items-start gap-3 rounded-[14px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-rule)] md:hidden">
+              <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</h3>
+              <p class="mb-2 text-[15px] leading-[150%] text-muted">Replies within one working day</p>
+              <Button href={`mailto:${email}`} variant="secondary" class="w-full justify-between">Ask by email</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  /* Smooth open/close where supported (Chrome 131+); elsewhere <details> just toggles. */
+  @supports (interpolate-size: allow-keywords) {
+    .faq {
+      interpolate-size: allow-keywords;
+    }
+    .faq::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 0.3s ease,
+        content-visibility 0.3s allow-discrete;
+    }
+    .faq[open]::details-content {
+      block-size: auto;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq::details-content {
+      transition: none;
+    }
+  }
+</style>

@@ -1,5 +1,162 @@
 ---
-// TODO: build from Paper
+// "Six years, every one committed." Career as a git log. Static copy from Paper (Home, desktop + mobile).
+import Button from '../ui/Button.astro';
+
+type Entry = {
+  from: string;
+  to?: string;
+  hash: string;
+  company: string;
+  ref?: 'head' | 'initial';
+  role: string;
+  summary: string;
+  stack: string[];
+};
+
+// "20XX" years are placeholders in Paper, waiting on the real dates.
+const entries: Entry[] = [
+  {
+    from: '2025',
+    to: 'Now',
+    hash: 'c618ff5',
+    company: 'Quality Installs Co.',
+    ref: 'head',
+    role: 'Lead software engineer',
+    summary: 'Leading QPIMS, QPAS and QP Invoicing: the platforms field crews and the office run on every day.',
+    stack: ['Next.js', 'TypeScript', 'Supabase'],
+  },
+  {
+    from: '20XX',
+    to: '2025',
+    hash: '7e0230a',
+    company: 'Elivate',
+    role: 'Full-stack engineer',
+    summary: 'Built the Elivate Wallet across web and mobile, from the API to the screens people tap.',
+    stack: ['React', 'Node.js', 'PostgreSQL'],
+  },
+  {
+    from: '20XX',
+    to: '20XX',
+    hash: '0cec1ce',
+    company: 'Freelance',
+    role: 'Software developer',
+    summary: 'Shipped products for clients in education and media, including the EduSkillUp LMS and Roudio.',
+    stack: ['React', 'Python', 'Docker'],
+  },
+  {
+    from: '20XX',
+    hash: '39a7e40',
+    company: 'Startix Media',
+    ref: 'initial',
+    role: 'Junior web developer',
+    summary: 'First job: websites and landing pages for agency clients. Learned to ship on a deadline.',
+    stack: ['HTML', 'CSS', 'JavaScript'],
+  },
+];
+
+const mono = 'font-mono font-medium text-[12.5px] leading-[150%] tracking-[0.01em] tabular-nums';
 ---
 
-<section data-section="Timeline"></section>
+<section id="career" data-section="Timeline" aria-labelledby="timeline-title" class="bg-bg">
+  <div class="page py-[68px] md:py-[151.2px]">
+    <div class="grid items-start gap-[22px] lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)] lg:items-end lg:gap-14">
+      <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+        <p class="font-mono text-[12px] leading-[150%] font-medium tracking-[0.01em] md:text-[13px]">
+          <span class="text-coral">//</span> git log --career
+        </p>
+        <h2 id="timeline-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+          Six years, every one <span class="text-coral">committed.</span>
+        </h2>
+      </div>
+      <div class="grid min-w-0 justify-items-start gap-6">
+        <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+          Four teams, one direction: closer to the people who use the thing. The short version is below, the long one is a page away.
+        </p>
+        <div class="flex w-full min-w-0 flex-wrap items-center gap-x-7 gap-y-2.5">
+          <Button href="/cv.pdf" variant="secondary" icon="download" download class="grow justify-between backdrop-blur-[8px] md:grow-0 md:justify-start">
+            Download CV
+          </Button>
+          <a href="/resume" class="group flex min-h-11 items-center gap-[9px] rounded-sm font-mono text-[13px] leading-none font-medium tracking-[0.01em]">
+            <span class="text-muted">01</span>
+            <span class="py-1.5 underline-offset-4 group-hover:underline">Read the full resume</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 text-coral transition-transform group-hover:translate-x-0.5">
+              <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative mt-11 lg:mt-[72px]">
+      <div class="absolute inset-y-5 left-1.5 w-0.5 rounded-[2px] bg-coral lg:inset-y-[22px] lg:left-[195px]" aria-hidden="true"></div>
+      <ol class="grid">
+        {
+          entries.map((e, i) => {
+            const last = i === entries.length - 1;
+            return (
+              <li
+                class:list={[
+                  'relative grid min-w-0 grid-cols-[30px_minmax(0,1fr)] items-start lg:grid-cols-[176px_40px_minmax(0,1fr)_minmax(0,auto)]',
+                  last ? 'py-4 lg:py-[22px]' : 'pt-4 pb-[30px] lg:pt-[22px] lg:pb-[34px]',
+                ]}
+              >
+                <p class="col-start-2 flex min-w-0 flex-wrap gap-x-3.5 gap-y-1 pb-2.5 lg:col-start-1 lg:row-start-1 lg:grid lg:gap-1 lg:pt-px lg:pb-0">
+                  <span class:list={[mono]}>
+                    {e.from}
+                    {e.to && (
+                      <>
+                        <span class="text-muted italic lg:text-ink lg:not-italic"> to </span>
+                        {e.to}
+                      </>
+                    )}
+                  </span>
+                  <span class:list={[mono, 'text-muted']}>{e.hash}</span>
+                </p>
+                <div class="relative col-start-1 row-span-3 row-start-1 h-full min-w-0 lg:col-start-2 lg:row-span-1" aria-hidden="true">
+                  <span class="dot absolute top-0.5 left-0 size-3.5 rounded-full lg:top-px lg:left-[13px]" />
+                </div>
+                <div class="col-start-2 grid max-w-[760px] min-w-0 gap-2 lg:col-start-3 lg:row-start-1 lg:pr-10 lg:pl-4">
+                  <p class="flex min-w-0 flex-wrap items-center gap-x-3.5 gap-y-1.5">
+                    {e.ref === 'head' && (
+                      <span class:list={[mono, 'flex items-center gap-2 text-coral']}>
+                        <span class="size-2 shrink-0 rounded-full bg-coral" />
+                        HEAD → main
+                      </span>
+                    )}
+                    {e.ref === 'initial' && <span class:list={[mono, 'text-muted']}># initial commit</span>}
+                    <span class:list={[mono]}>{e.company}</span>
+                  </p>
+                  <h3 class="text-[23px] leading-[108%] font-semibold tracking-[-0.045em] text-balance lg:text-[28px]">{e.role}</h3>
+                  <p class="mt-0.5 max-w-[589px] text-[15.5px] leading-[160%] text-pretty text-muted lg:max-w-[608px] lg:text-[16px]">{e.summary}</p>
+                </div>
+                <ul class="col-start-2 flex min-w-0 flex-wrap gap-1.5 pt-3.5 lg:col-start-4 lg:row-start-1 lg:max-w-[300px] lg:justify-end lg:pt-0">
+                  {e.stack.map((s) => (
+                    <li class="inline-flex h-[26px] items-center rounded-[7px] px-[9px] font-mono text-[12px] leading-none font-medium tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)]">
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Mobile: filled coral commits with a soft halo. Desktop: hollow muted rings on the coral line. */
+  .dot {
+    background: var(--color-coral);
+    box-shadow:
+      inset 0 0 0 2px var(--color-coral),
+      0 0 0 5px rgb(255 127 80 / 16%);
+  }
+  @media (width >= 64rem) {
+    .dot {
+      background: var(--color-bg);
+      box-shadow: inset 0 0 0 2px var(--color-muted);
+    }
+  }
+</style>

@@ -1,5 +1,202 @@
 ---
-// TODO: build from Paper
+// "Four ways to put me to work." An accordion of services from the Notion Services database.
+// Paper features four of the eight services, so only these slugs render here, in this order.
+import Button from '../ui/Button.astro';
+import { live } from '../../lib/content';
+
+const FEATURED = ['full-stack-build', 'mobile-app', 'apis-integrations', 'team-embed'];
+
+// The longer paragraph shown when a row is open. Notion has no field for it yet, so it lives here by slug.
+const DESCRIPTIONS: Record<string, string> = {
+  'full-stack-build':
+    'I join your team or start from a blank repo and take the product the whole way: data model, API, interface, tests and the release pipeline. You get working software every week, not a big reveal at the end.',
+};
+
+const all = await live('services');
+const services = FEATURED.map((slug) => all.find((s) => s.data.slug === slug)?.data).filter((s) => s !== undefined);
+
+const money = (n: number) => `$${n.toLocaleString('en-US')}`;
+function price(from: number | null, unit: 'project' | 'month' | 'hour') {
+  if (from == null) return '';
+  if (unit === 'hour') return `${money(from)} an hour`;
+  if (unit === 'month') return `From ${money(from)} a month`;
+  return `From ${money(from)}`;
+}
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const mono = 'font-mono font-medium';
+const cols = 'lg:grid-cols-[76px_minmax(0,5fr)_minmax(0,6fr)_200px_44px]';
 ---
 
-<section data-section="Services"></section>
+{
+  services.length > 0 && (
+    <section id="services" data-section="Services" aria-labelledby="services-title" class="bg-bg">
+      <div class="page py-[68px] md:py-[151.2px]">
+        <div class="grid items-start gap-x-14 gap-y-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+          <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+            <p class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>
+              <span class="text-coral">//</span> Services
+            </p>
+            <h2 id="services-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+              Four ways to put me to <span class="text-coral">work.</span>
+            </h2>
+            <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+              A clear scope, a written plan before any code, and a price agreed up front. Open a row to see what is in it.
+            </p>
+          </div>
+          <a href="/services" class:list={[mono, 'group inline-flex min-h-11 items-center gap-[9px] justify-self-start rounded-sm text-[13px] leading-none tracking-[0.01em]']}>
+            <span class="text-muted">03</span>
+            <span class="py-1.5 underline-offset-4 group-hover:underline">All services</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 text-coral transition-transform group-hover:translate-x-0.5">
+              <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
+
+        <ul class="mt-9 border-b border-rule md:mt-16" data-services>
+          {services.map((s, i) => {
+            const open = i === 0;
+            const id = `service-${s.slug}`;
+            const label = price(s.priceFrom, s.priceUnit);
+            const description = DESCRIPTIONS[s.slug];
+            return (
+              <li class="service border-t border-rule" data-open={open ? '' : undefined}>
+                <h3>
+                  <button
+                    type="button"
+                    aria-expanded={open ? 'true' : 'false'}
+                    aria-controls={id}
+                    class:list={[
+                      'group grid w-full cursor-pointer grid-cols-[28px_minmax(0,1fr)_40px] items-start gap-x-3 gap-y-2 py-[22px] text-left lg:items-center lg:gap-x-6 lg:py-[30px]',
+                      cols,
+                    ]}
+                  >
+                    <span class:list={[mono, 'service-num col-start-1 row-start-1 pt-[7px] text-[12.5px] leading-[150%] tracking-[0.01em] text-muted tabular-nums lg:pt-0']}>
+                      {pad(i + 1)}
+                    </span>
+                    <span class="col-start-2 row-start-1 text-[25px] leading-[105%] font-semibold tracking-[-0.045em] text-balance lg:text-[40px]">
+                      {s.name}
+                    </span>
+                    <span class="col-span-2 col-start-2 row-start-2 max-w-[510px] text-[15px] leading-[150%] text-pretty text-muted lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:max-w-[544px] lg:text-[16px]">
+                      {s.summary}
+                    </span>
+                    <span class:list={[mono, 'col-span-2 col-start-2 row-start-3 text-[12.5px] leading-[150%] tracking-[0.01em] text-muted tabular-nums lg:col-span-1 lg:col-start-4 lg:row-start-1 lg:text-right lg:text-ink']}>
+                      {label}
+                    </span>
+                    <span class="service-toggle col-start-3 row-start-1 grid size-10 place-items-center rounded-[9px] lg:col-start-5 lg:size-11" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="16" height="16" class="service-icon">
+                        <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                      </svg>
+                    </span>
+                  </button>
+                </h3>
+                <div id={id} role="region" aria-label={s.name} class="service-panel grid" inert={open ? undefined : true}>
+                  <div class="-mx-[7px] min-h-0 min-w-0 overflow-clip px-[7px]">
+                    <div class:list={['grid items-start gap-6 pt-1 pb-[30px] lg:gap-x-6 lg:gap-y-0 lg:pt-1.5 lg:pb-11', cols]}>
+                      <div class="grid min-w-0 justify-items-stretch gap-5 lg:col-start-2 lg:justify-items-start lg:gap-[26px] lg:py-[5px] lg:pr-1">
+                        {description && (
+                          <p class="max-w-[528px] text-[15.5px] leading-[160%] text-pretty lg:text-[16px]">{description}</p>
+                        )}
+                        <Button href={`/services/${s.slug}`} class="w-full justify-between lg:w-auto lg:justify-start">
+                          See the service
+                        </Button>
+                      </div>
+                      {s.includes.length > 0 && (
+                        <div class="grid min-w-0 content-start gap-3.5 lg:col-start-3">
+                          <p class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>Includes</p>
+                          <ul class="grid gap-[11px]">
+                            {s.includes.map((item) => (
+                              <li class="grid grid-cols-[20px_minmax(0,1fr)] items-start gap-2.5">
+                                <span class="mt-px grid size-5 place-items-center rounded-[5px] shadow-[inset_0_0_0_1px_rgb(255_127_80/45%)]" aria-hidden="true">
+                                  <svg viewBox="0 0 24 24" width="11" height="11">
+                                    <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="var(--color-coral)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+                                  </svg>
+                                </span>
+                                <span class="text-[15px] leading-[145%] text-pretty">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      <dl class="grid min-w-0 rounded-[14px] bg-surface px-5 py-1.5 shadow-[inset_0_0_0_1px_var(--color-rule)] lg:col-span-2 lg:col-start-4">
+                        <div class="grid gap-[7px] py-4">
+                          <dt class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>Price</dt>
+                          <dd class:list={[mono, 'text-[14px] leading-[150%] tracking-[0.01em] tabular-nums']}>{label}</dd>
+                        </div>
+                        {s.timeline && (
+                          <div class="grid gap-[7px] border-t border-rule py-4">
+                            <dt class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>Timeline</dt>
+                            <dd class:list={[mono, 'text-[14px] leading-[150%] tracking-[0.01em] tabular-nums']}>{s.timeline}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .service-panel {
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows 300ms ease,
+      visibility 300ms;
+  }
+  .service[data-open] .service-panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+  }
+  .service-toggle {
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition:
+      background-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .service-icon {
+    transition: rotate 200ms ease;
+  }
+  button:hover .service-toggle {
+    box-shadow: inset 0 0 0 1px rgb(241 242 236 / 40%);
+  }
+  .service[data-open] .service-toggle {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    box-shadow: none;
+  }
+  .service[data-open] .service-icon {
+    rotate: 45deg;
+  }
+  .service[data-open] .service-num {
+    color: var(--color-coral);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .service-panel,
+    .service-toggle,
+    .service-icon {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-services] .service').forEach((row) => {
+    const button = row.querySelector<HTMLButtonElement>('button[aria-expanded]');
+    const panel = row.querySelector<HTMLElement>('.service-panel');
+    if (!button || !panel) return;
+    button.addEventListener('click', () => {
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(open));
+      row.toggleAttribute('data-open', open);
+      panel.inert = !open;
+    });
+  });
+</script>

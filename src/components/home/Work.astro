@@ -1,5 +1,205 @@
 ---
-// TODO: build from Paper
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+// JetBrains Mono 600 for the "after" figures (global.css only loads 500).
+import '@fontsource/jetbrains-mono/600.css';
+import Button from '../ui/Button.astro';
+import qpimsImg from '../../assets/home/work-qpims-platform.webp';
+import walletImg from '../../assets/home/work-elivate-wallet.webp';
+import qpasImg from '../../assets/home/work-qpas.webp';
+import pdpImg from '../../assets/home/work-pdp-enrichment-engine.webp';
+import bookImg from '../../assets/home/work-book-read-along.webp';
+
+interface Project {
+  slug: string;
+  name: string;
+  client: string;
+  year: string;
+  summary: string;
+  role: string;
+  before: string;
+  after: string;
+  metric: string;
+  stack: string[];
+  tag: string;
+  image: ImageMetadata;
+  alt: string;
+}
+
+// Static copy from Paper. "20XX" years are placeholders still to be confirmed.
+const projects: Project[] = [
+  {
+    slug: 'qpims-platform',
+    name: 'QPIMS Platform',
+    client: 'Quality Installs Co.',
+    year: '2025',
+    summary: 'Jobs, crews and installs in one platform that the field and the office both run on.',
+    role: 'Lead software engineer',
+    before: '2.9 s',
+    after: '0.8 s',
+    metric: 'LCP on a mid-range phone',
+    stack: ['Next.js', 'TypeScript', 'Supabase', 'PostgreSQL'],
+    tag: 'Platform',
+    image: qpimsImg,
+    alt: 'A laptop showing a dark dashboard on an office desk, a team working in the background',
+  },
+  {
+    slug: 'elivate-wallet',
+    name: 'Elivate Wallet',
+    client: 'Elivate',
+    year: '20XX',
+    summary: 'A digital wallet across web and mobile, from the API to the screens people tap.',
+    role: 'Full-stack engineer',
+    before: '14 min',
+    after: '95 s',
+    metric: 'From merge to production',
+    stack: ['React', 'Node.js', 'TypeScript', 'PostgreSQL'],
+    tag: 'Mobile',
+    image: walletImg,
+    alt: 'A developer at a desk lamp-lit workstation, reading code on two monitors',
+  },
+  {
+    slug: 'qpas',
+    name: 'QPAS',
+    client: 'Quality Installs Co.',
+    year: '2025',
+    summary: 'Part of the Quality Installs suite, built on the same data model as QPIMS.',
+    role: 'Lead software engineer',
+    before: '380 ms',
+    after: '48 ms',
+    metric: 'INP on the transactions table',
+    stack: ['Next.js', 'TypeScript', 'Supabase', 'Redis'],
+    tag: 'Platform',
+    image: qpasImg,
+    alt: 'A laptop and phone showing a dark analytics dashboard with an orange revenue chart',
+  },
+  {
+    slug: 'pdp-enrichment-engine',
+    name: 'PDP Enrichment Engine',
+    client: 'Freelance',
+    year: '20XX',
+    summary: 'An API that fills product detail pages with clean, complete data from messy sources.',
+    role: 'Software developer',
+    before: '12 fps',
+    after: '60 fps',
+    metric: 'Pan and zoom at 1M points',
+    stack: ['Node.js', 'Python', 'Redis', 'Docker'],
+    tag: 'API',
+    image: pdpImg,
+    alt: 'A monitor in a dark room showing orange line charts and a heatmap',
+  },
+  {
+    slug: 'book-read-along',
+    name: 'Book Read-Along',
+    client: 'Freelance',
+    year: '20XX',
+    summary: 'A reading app that follows along with the reader, page by page.',
+    role: 'Software developer',
+    before: '71',
+    after: '100',
+    metric: 'Lighthouse accessibility, product average',
+    stack: ['React', 'TypeScript', 'Node.js', 'Docker'],
+    tag: 'Mobile',
+    image: bookImg,
+    alt: 'A desktop monitor showing a colourful app layout, with books and prints on shelves behind',
+  },
+];
+const total = String(projects.length).padStart(2, '0');
+const mono12 = 'font-mono text-xs leading-[1.4] font-medium tracking-[0.01em]';
 ---
 
-<section data-section="Work"></section>
+<section aria-labelledby="work-title" class="relative z-10 bg-bg">
+  <div class="page py-[68px] lg:py-[151.2px]">
+    <div class="flex flex-wrap items-end justify-between gap-[18px] md:gap-x-14 md:gap-y-8">
+      <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+        <p class="eyebrow max-w-full text-xs/[1.5] text-ink md:text-[13px]"><span class="text-coral">//</span> Selected work</p>
+        <h2 id="work-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance text-ink md:text-[64px]">
+          Eight products, each one <span class="text-coral">shipped.</span>
+        </h2>
+        <p class="max-w-[527px] text-[15.5px] leading-[1.6] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+          Field-service platforms, invoicing, wallets and learning tools, each built to hold up under real users. Open any of them for the full write-up.
+        </p>
+      </div>
+      <a href="/work" class="group flex min-h-11 shrink-0 items-center gap-[9px] font-mono text-[13px] leading-none font-medium tracking-[0.01em]">
+        <span class="text-muted">08</span>
+        <span class="py-1.5 text-ink">All projects</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0 text-coral transition-transform group-hover:translate-x-0.5">
+          <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </a>
+    </div>
+
+    <ol class="mt-9 flex flex-col gap-4 lg:mt-14 lg:gap-7">
+      {
+        projects.map((p, i) => (
+          <li>
+            <article class="grid grid-cols-1 overflow-clip rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)] lg:min-h-[640px] lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)] lg:gap-2.5 lg:p-2.5">
+              <div class="flex min-w-0 flex-col gap-[18px] px-3 pt-[18px] pb-3.5 lg:gap-7 lg:py-[26px] lg:pr-[30px] lg:pl-7">
+                <div class:list={[mono12, 'flex flex-wrap items-center justify-between gap-x-4 gap-y-2']}>
+                  <p class="text-muted">
+                    <span class="text-coral">{String(i + 1).padStart(2, '0')}</span> of {total}
+                  </p>
+                  <p class="text-ink">
+                    {p.client} · {p.year}
+                  </p>
+                </div>
+
+                <div class="flex min-w-0 flex-col gap-3 lg:mt-auto lg:gap-4">
+                  <h3 class="text-[34px] leading-none font-semibold tracking-[-0.045em] text-balance text-ink lg:text-[54px]">
+                    <a href={`/work/${p.slug}`} class="rounded-[6px] hover:text-ink/85">
+                      {p.name}
+                    </a>
+                  </h3>
+                  <p class="max-w-[465px] text-[15.5px] leading-[1.5] text-pretty text-muted lg:max-w-[510px] lg:text-[17px]">{p.summary}</p>
+                  <p class:list={[mono12, 'text-muted']}>{p.role}</p>
+                </div>
+
+                <div class="flex min-w-0 flex-col items-start gap-4 border-t border-rule pt-[18px] lg:gap-5 lg:pt-6">
+                  <div class="flex flex-col gap-2">
+                    <p class="flex flex-wrap items-baseline gap-x-[13px] gap-y-[2.6px] font-mono leading-[1.1] tracking-[-0.02em] [font-feature-settings:'tnum'] lg:gap-x-[19px] lg:gap-y-[3.8px]">
+                      <s class="text-[26px] font-medium text-muted decoration-1 lg:text-[38px]">{p.before}</s>
+                      <svg viewBox="0 0 24 24" aria-hidden="true" class="h-[14px] w-[14px] self-center text-muted lg:h-5 lg:w-5">
+                        <path d="M3 12h17M14 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                      <span class="sr-only">to</span>
+                      <span class="text-[26px] font-semibold text-coral lg:text-[38px]">{p.after}</span>
+                    </p>
+                    <p class:list={[mono12, 'text-muted']}>{p.metric}</p>
+                  </div>
+
+                  <ul class="flex flex-wrap gap-1.5" aria-label="Stack">
+                    {p.stack.map((s) => (
+                      <li class="flex h-[26px] items-center rounded-[7px] px-[9px] font-mono text-xs leading-none font-medium tracking-[0.01em] text-ink shadow-[inset_0_0_0_1px_var(--color-rule-strong)]">
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button href={`/work/${p.slug}`} variant="secondary" class="w-full justify-between lg:w-auto" aria-label={`Open case: ${p.name}`}>
+                    Open case
+                  </Button>
+                </div>
+              </div>
+
+              <a href={`/work/${p.slug}`} tabindex="-1" aria-hidden="true" class="-order-1 block min-w-0 rounded-[9px] lg:order-none">
+                <div class="relative aspect-[16/10] w-full overflow-clip rounded-[9px] bg-field lg:aspect-auto lg:h-full lg:min-h-[260px]">
+                  <Image
+                    src={p.image}
+                    alt={p.alt}
+                    widths={[480, 800, 1400]}
+                    sizes="(min-width: 1520px) 757px, (min-width: 1024px) 50vw, 100vw"
+                    class="absolute inset-0 size-full object-cover saturate-[.92] contrast-[1.04]"
+                  />
+                  <span class="absolute top-3 left-3 flex h-[26px] items-center rounded-[7px] bg-coral px-[9px] font-mono text-xs leading-none font-medium tracking-[0.01em] text-coral-ink">
+                    {p.tag}
+                  </span>
+                  <span class="absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]" />
+                </div>
+              </a>
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

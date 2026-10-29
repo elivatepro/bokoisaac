@@ -1,5 +1,122 @@
 ---
-// TODO: build from Paper
+// Site footer from Paper: headline, email, link columns, status line and the giant wordmark.
+const email = 'hello@bokoisaac.com';
+const year = new Date().getFullYear();
+
+// TODO: real profile URLs for GitHub, LinkedIn and Bluesky are not known yet.
+const columns: { title: string; links: { label: string; href: string; external?: boolean }[] }[] = [
+  {
+    title: 'Site',
+    links: [
+      { label: 'Work', href: '/work' },
+      { label: 'Services', href: '/services' },
+      { label: 'Process', href: '/process' },
+      { label: 'Reviews', href: '/reviews' },
+      { label: 'Contact', href: '/contact' },
+    ],
+  },
+  {
+    title: 'About',
+    links: [
+      { label: 'About', href: '/about' },
+      { label: 'Resume', href: '/resume' },
+      { label: 'Stack', href: '/stack' },
+      { label: 'Uses', href: '/uses' },
+      { label: 'Now', href: '/now' },
+    ],
+  },
+  {
+    title: 'More',
+    links: [
+      { label: 'Lab', href: '/lab' },
+      { label: 'Writing', href: '/writing' },
+      { label: 'FAQ', href: '/faq' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms', href: '/terms' },
+    ],
+  },
+  {
+    title: 'Elsewhere',
+    links: [
+      { label: 'GitHub', href: '#', external: true },
+      { label: 'LinkedIn', href: '#', external: true },
+      { label: 'Bluesky', href: '#', external: true },
+    ],
+  },
+];
+
+const mono = 'font-mono font-medium tracking-[0.01em]';
 ---
 
-<div data-site="Footer"></div>
+<footer data-site="Footer" class="relative overflow-clip border-t border-rule bg-field">
+  <div class="page pt-[60px] pb-5 md:pt-[112px] md:pb-[212px]">
+    <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-11 md:grid-cols-[minmax(0,1fr)_auto] md:gap-[72px]">
+      <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-[22px]">
+        <p class="max-w-[378px] text-[27px] leading-[106%] font-semibold tracking-[-0.045em] text-balance md:max-w-[560px] md:text-[40px]">
+          Full-stack engineer, Remote
+        </p>
+        <div class="grid max-w-full gap-1 py-1.5">
+          <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']} id="footer-email-label">Write to me</p>
+          <a
+            href={`mailto:${email}`}
+            aria-describedby="footer-email-label"
+            class="pb-[5px] text-[17px] leading-[130%] font-medium [overflow-wrap:anywhere] underline-offset-[5px] hover:underline hover:decoration-coral md:text-[19px]"
+          >
+            {email}
+          </a>
+        </div>
+        <p class="flex items-center gap-[10px]">
+          <span class="size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+          <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted tabular-nums']}>Open to new work</span>
+        </p>
+      </div>
+
+      <nav aria-label="Footer" class="grid min-w-0 grid-cols-2 items-start gap-x-5 gap-y-9 md:auto-cols-[minmax(132px,auto)] md:grid-flow-col md:grid-cols-none md:gap-16">
+        {
+          columns.map((col) => (
+            <div class="grid min-w-0 content-start gap-[10px]">
+              <h2 class:list={[mono, 'pb-1.5 text-[12px] leading-[140%] text-muted']}>
+                <span class="text-coral">// </span>
+                {col.title}
+              </h2>
+              <ul class="grid min-w-0">
+                {col.links.map((l) => (
+                  <li class="min-w-0">
+                    <a
+                      href={l.href}
+                      class="group inline-flex min-h-11 items-center gap-1.5 text-[16px] leading-[120%] md:min-h-10"
+                      {...(l.external && l.href !== '#' ? { rel: 'me noopener', target: '_blank' } : {})}
+                    >
+                      <span class="underline-offset-4 group-hover:underline group-hover:decoration-coral">{l.label}</span>
+                      {l.external && (
+                        <span class="text-[12px] leading-[120%] text-muted transition-transform group-hover:translate-x-px group-hover:-translate-y-px" aria-hidden="true">
+                          ↗
+                        </span>
+                      )}
+                      {l.external && l.href !== '#' && <span class="sr-only">(opens in a new tab)</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
+    </div>
+
+    <div class="mt-11 grid items-center gap-[10px] border-t border-rule pt-5 md:mt-24 md:flex md:flex-wrap md:justify-between md:gap-x-8">
+      <p class="flex flex-wrap items-center gap-x-[10px] gap-y-1.5">
+        <span class="size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+        <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted tabular-nums']}>Working remotely</span>
+        <span class:list={[mono, 'text-[12.5px] leading-[150%] tabular-nums']}>Worldwide</span>
+      </p>
+      <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>© {year} Boko Isaac. Written by hand, remotely.</p>
+    </div>
+
+    <div class="@container mt-5 w-full overflow-clip md:mt-10" aria-hidden="true">
+      <p class="w-max pt-px pb-px text-[58px] leading-[86%] font-semibold tracking-[-1.5px] whitespace-nowrap md:text-[min(17.9cqw,252px)] md:tracking-[-0.0238em]">
+        BokoIsaac
+      </p>
+    </div>
+  </div>
+</footer>

@@ -1,5 +1,112 @@
 ---
-// TODO: build from Paper
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import portrait from '../../assets/home/hero-portrait.png';
+
+const stats = [
+  { value: '6+', label: 'Years shipping product' },
+  { value: '8', label: 'Products shipped' },
+  { value: '2', label: 'Languages, EN & FR' },
+];
 ---
 
-<section data-section="Hero"></section>
+<section aria-labelledby="hero-title" class="relative isolate overflow-clip bg-bg">
+  <!-- Portrait: full-width 472px band on mobile, right 48% on desktop. -->
+  <div class="absolute inset-x-0 top-0 h-[472px] overflow-clip bg-field lg:bottom-0 lg:left-[52%] lg:h-auto">
+    <Image
+      src={portrait}
+      alt="Boko Isaac, in a dark suit and white shirt, looking at the camera"
+      widths={[480, 800, 1024]}
+      sizes="(min-width: 1024px) 48vw, 100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 size-full object-cover object-[50%_12%] saturate-[.92] contrast-[1.04] lg:object-top"
+    />
+    <div class="hero-fade absolute inset-0" aria-hidden="true"></div>
+  </div>
+
+  <div class="page relative flex flex-col lg:min-h-[939px]">
+    <div class="h-[68px] shrink-0 lg:h-[88px]" aria-hidden="true"></div>
+
+    <div class="flex flex-1 items-start pt-[322px] pb-11 lg:items-end lg:pt-10 lg:pb-[60px]">
+      <div class="w-full max-w-[900px] lg:w-[64%]">
+        <p class="mb-[18px] font-mono text-xs leading-4 font-medium tracking-[0.01em] text-ink lg:mb-[26px] lg:text-[13px]">
+          <span class="text-coral">//</span>{' '}
+          <span class="lg:hidden">Full-stack engineer · TypeScript, Node.js</span>
+          <span class="hidden lg:inline">Full-stack software engineer · TypeScript, Node.js, PostgreSQL</span>
+        </p>
+
+        <h1
+          id="hero-title"
+          class="text-[37.6px] leading-none font-semibold tracking-[-0.045em] text-ink lg:text-[clamp(56px,5.65vw,94px)] lg:leading-[0.95]"
+        >
+          <span class="block">Full-stack engineer</span>
+          <span class="block">shipping software</span>
+          <span class="block"><span class="lg:text-coral">that</span> <span class="text-coral">just works.</span></span>
+        </h1>
+
+        <div class="mt-6 flex max-w-[780px] flex-col gap-6 lg:mt-9 lg:flex-row lg:flex-wrap lg:items-end lg:justify-between lg:gap-10 xl:flex-nowrap">
+          <p class="text-[15px] leading-[1.6] text-pretty text-muted lg:max-w-[400px] lg:text-base">
+            Six years building web and mobile products, from field-service platforms to fintech wallets. TypeScript end to end, and a stubborn eye on what breaks in production.
+          </p>
+          <div class="flex shrink-0 flex-wrap gap-3 lg:flex-nowrap">
+            <Button href="/work" class="grow justify-between lg:grow-0">See the work</Button>
+            <!-- /cv.pdf doesn't exist yet. -->
+            <Button href="/cv.pdf" variant="secondary" icon="download" class="grow justify-between lg:grow-0" download>Download CV</Button>
+          </div>
+        </div>
+
+        <dl class="mt-9 flex max-w-[780px] flex-wrap gap-y-5 border-t border-rule pt-[22px] lg:mt-[52px] lg:flex-nowrap">
+          {
+            stats.map((s) => (
+              <div class="flex min-w-0 grow basis-[33%] flex-col gap-2 pr-3 lg:basis-0 lg:pr-5">
+                <dt class="font-mono text-xs leading-4 font-medium tracking-[0.01em] text-muted">{s.label}</dt>
+                <dd class="-order-1 text-[30px] leading-none font-semibold tracking-[-0.04em] text-ink [font-feature-settings:'lnum','tnum'] lg:text-[42px]">
+                  {s.value}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+
+    <!-- Decorative overlays on the portrait. Static for now: Paper has no hover/"source" state designed. -->
+    <div class="pointer-events-none absolute inset-x-5 top-0 h-[472px] md:inset-x-14 lg:inset-y-0 lg:right-14 lg:left-[52%] lg:h-auto" aria-hidden="true">
+      <div class="absolute top-[84px] right-0 flex h-10 items-center gap-2.5 rounded-[11px] border border-rule-strong bg-bg/60 pr-3.5 pl-1.5 font-mono text-[12.5px] leading-none font-medium backdrop-blur-[10px] lg:top-28">
+        <span class="grid h-7 place-items-center rounded-[7px] bg-coral px-2 text-coral-ink italic lg:not-italic">{'{ }'}</span>
+        <span class="text-ink">View source</span>
+      </div>
+
+      <div class="absolute right-0 bottom-[220px] hidden w-[330px] max-w-[80%] flex-col gap-[9px] rounded-[14px] border border-rule bg-surface/82 px-[18px] py-4 font-mono font-medium backdrop-blur-[14px] lg:flex">
+        <div class="flex items-center gap-2 text-xs leading-[1.35]">
+          <span class="size-[7px] shrink-0 rounded-full bg-coral"></span>
+          <span class="text-coral">main</span>
+          <span class="ml-auto truncate text-muted">boko/qpims-platform</span>
+        </div>
+        <p class="text-[13.5px] leading-[1.35] text-ink">feat(qpims): jobs board v2</p>
+        <p class="text-xs leading-[1.35] text-ink">+212 −1,048 · merged 3 days ago</p>
+      </div>
+
+      <p class="absolute bottom-16 left-[14%] hidden w-max font-mono text-xs leading-4 font-medium text-muted lg:block">
+        Move over the picture to read the source
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-fade {
+    background-image:
+      linear-gradient(in oklab 0deg, #0b0c0e 0%, #0b0c0e8c 22%, #0000 48%),
+      linear-gradient(in oklab 180deg, #0b0c0ed1 0%, #0000 22%);
+  }
+  @media (width >= 64rem) {
+    .hero-fade {
+      background-image:
+        linear-gradient(in oklab 90deg, #0b0c0e 0%, #0b0c0eb8 14%, #0000 42%),
+        linear-gradient(in oklab 0deg, #0b0c0e 0%, #0000 26%),
+        linear-gradient(in oklab 180deg, #0b0c0eb3 0%, #0000 16%);
+    }
+  }
+</style>

@@ -1,5 +1,81 @@
 ---
-// TODO: build from Paper
+// Site header from Paper. Sits absolutely over the top of the page (88px on desktop over the hero;
+// 60px solid bar with a bottom rule on mobile).
+const links = [
+  { n: '01', label: 'Work', href: '/work' },
+  { n: '02', label: 'Services', href: '/services' },
+  { n: '03', label: 'About', href: '/about' },
+  { n: '04', label: 'Lab', href: '/lab' },
+  { n: '05', label: 'Writing', href: '/writing' },
+];
+const path = Astro.url.pathname;
+const current = (href: string) => path === href || path.startsWith(`${href}/`);
+const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
 ---
 
-<div data-site="Header"></div>
+<a
+  href="#main"
+  class="fixed top-4 left-4 z-[100] flex min-h-11 -translate-y-[200%] items-center rounded-[12px] bg-coral px-4 text-sm leading-[150%] font-semibold text-coral-ink focus:translate-y-0"
+>
+  Skip to content
+</a>
+
+<header class="absolute inset-x-0 top-0 z-50 h-[60px] border-b border-rule bg-bg lg:h-[88px] lg:border-b-0 lg:bg-transparent">
+  <div class="page flex h-full items-center justify-between gap-3 lg:gap-6">
+    <a href="/" class="flex min-h-11 shrink-0 items-baseline gap-1.5 py-[11px]" aria-label="Boko Isaac, home">
+      <span class="text-[20px] leading-none font-semibold tracking-[-0.03em] text-ink">Boko Isaac</span>
+      <span class="h-[17px] w-[9px] shrink-0 translate-y-0.5 bg-coral" aria-hidden="true"></span>
+    </a>
+
+    <nav aria-label="Main" class="hidden min-w-0 lg:block">
+      <ul class="flex gap-[34px]">
+        {
+          links.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                aria-current={current(l.href) ? 'page' : undefined}
+                class="group inline-flex min-h-11 items-center gap-2 py-2 font-mono text-[13px] leading-[150%] font-medium tracking-[0.01em]"
+              >
+                <span class="text-muted transition-colors group-hover:text-coral group-aria-[current=page]:text-coral">{l.n}</span>
+                <span class="text-ink">{l.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex shrink-0 items-center gap-2.5 lg:gap-[22px]">
+      <p class="hidden items-center gap-[9px] xl:flex">
+        <span class="size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+        <span class="font-mono text-[12.5px] leading-[130%] font-medium tracking-[0.01em] text-ink">Open to new work</span>
+      </p>
+
+      {/* TODO: wire up site search (⌘K palette). Non-functional placeholder for now. */}
+      <button
+        type="button"
+        aria-label="Search"
+        aria-keyshortcuts="Meta+K"
+        class:list={[glass, 'flex w-11 shrink-0 items-center justify-center xl:w-auto xl:justify-start xl:gap-2.5 xl:pr-2 xl:pl-3.5']}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0 xl:size-[15px]">
+          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"></circle>
+          <path d="M20 20l-4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+        </svg>
+        <span class="hidden text-[13px] leading-none text-muted xl:inline">Search</span>
+        <kbd class="hidden h-[26px] items-center rounded-[7px] bg-ink/8 px-[7px] font-mono text-xs leading-none font-medium text-ink shadow-[inset_0_0_0_1px_var(--color-rule)] xl:flex">⌘K</kbd>
+      </button>
+
+      <a href="/contact" class:list={[glass, 'flex items-center px-[18px] text-[13px] leading-none font-semibold tracking-[-0.005em] whitespace-nowrap text-ink backdrop-blur-[8px] transition-colors hover:border-ink/40']}>
+        Get in touch
+      </a>
+
+      {/* TODO: the mobile menu's open state isn't designed in Paper yet, so this button doesn't open anything. */}
+      <button type="button" aria-label="Menu" aria-expanded="false" class:list={[glass, 'relative w-11 shrink-0 lg:hidden']}>
+        <span class="absolute inset-x-3 top-4 h-[1.5px] rounded-[2px] bg-ink" aria-hidden="true"></span>
+        <span class="absolute inset-x-3 top-[25px] h-[1.5px] rounded-[2px] bg-ink" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>

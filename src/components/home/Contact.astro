@@ -1,5 +1,162 @@
 ---
-// TODO: build from Paper
+// "Tell me what you are building." Three quick picks that hand off to the contact page.
+// Per the Paper copy, nothing is sent from this section: the form GETs /contact with the picks in the
+// query string (need, budget, name match the Notion Leads properties) so the contact form can prefill them.
+// TODO: when /contact and /api/contact exist, read these params (or the sessionStorage "brief") on the contact form.
+import Eyebrow from '../ui/Eyebrow.astro';
+import Button from '../ui/Button.astro';
+
+// Same option names as the Notion Leads "Need" and "Budget" properties.
+const needs = ['Full-stack build', 'Mobile app', 'APIs & integrations', 'Team embed', 'Something else'];
+const budgets = ['Under $1k', '$1–3k', '$3–10k', '$10k+', 'Not sure yet'];
+const email = 'hello@bokoisaac.com';
+
+const legend = 'flex items-baseline gap-[14px]';
+const num = 'font-mono text-[12.5px] leading-[150%] font-medium tracking-[0.01em] text-coral tabular-nums';
+const question = 'text-[16px] leading-[130%] font-medium md:text-[17px]';
+const group = 'grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[14px] border-t border-rule pt-[18px] md:gap-4 md:pt-[22px]';
+const chip =
+  'flex h-11 cursor-pointer items-center rounded-[10px] px-[14px] text-center text-[12.5px] leading-none font-medium tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-colors select-none hover:shadow-[inset_0_0_0_1px_#f1f2ec66] peer-checked:bg-coral peer-checked:font-semibold peer-checked:text-coral-ink peer-checked:shadow-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-coral md:h-10';
+const line = 'min-h-[1.7em] pl-[2.2ch] text-ink md:text-muted';
 ---
 
-<section data-section="Contact"></section>
+<section data-section="Contact" id="contact" aria-labelledby="contact-title" class="bg-field">
+  <div class="page py-[68px] md:py-[151.2px]">
+    <div class="grid max-w-[1040px] justify-items-start gap-4 md:gap-[22px]">
+      <Eyebrow class="max-md:text-[12px]">Start a project</Eyebrow>
+      <h2 id="contact-title" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+        Tell me what you are <span class="text-coral">building.</span>
+      </h2>
+      <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+        Three quick picks so the first reply is useful. You finish the message on the contact page.
+      </p>
+    </div>
+
+    <form
+      action="/contact"
+      method="get"
+      data-brief
+      class="mt-10 grid grid-cols-[minmax(0,1fr)] items-start gap-9 md:mt-16 md:grid-cols-[minmax(0,1fr)_minmax(0,520px)] md:gap-[72px]"
+    >
+      <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[30px] md:gap-10">
+        <fieldset class={group}>
+          <legend class:list={[legend, 'float-left w-full']}>
+            <span class={num}>01</span><span class={question}>What do you need?</span>
+          </legend>
+          <div class="flex flex-wrap gap-2">
+            {
+              needs.map((n) => (
+                <label class="relative">
+                  <input type="checkbox" name="need" value={n} class="peer sr-only" />
+                  <span class={chip}>{n}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class={group}>
+          <legend class:list={[legend, 'float-left w-full']}>
+            <span class={num}>02</span><span class={question}>Rough budget</span>
+          </legend>
+          <div class="flex flex-wrap gap-2">
+            {
+              budgets.map((b) => (
+                <label class="relative">
+                  <input type="radio" name="budget" value={b} class="peer sr-only" />
+                  <span class={chip}>{b}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <div class={group}>
+          <label for="brief-name" class={legend}>
+            <span class={num}>03</span><span class={question}>Your name or company</span>
+          </label>
+          <input
+            id="brief-name"
+            name="name"
+            type="text"
+            autocomplete="organization"
+            placeholder="Ada at Acme"
+            class="h-[54px] w-full max-w-[520px] rounded-[14px] bg-surface px-[18px] text-[16px] leading-[120%] text-ink shadow-[inset_0_0_0_1px_var(--color-rule-strong)] outline-none placeholder:text-muted focus-visible:shadow-[inset_0_0_0_1px_var(--color-coral)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-coral"
+          />
+        </div>
+      </div>
+
+      <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+        <div class="flex items-center justify-between gap-3 px-3 pt-2 pb-[14px]">
+          <p class="font-mono text-[12px] leading-[140%] font-medium tracking-[0.01em] text-muted">brief.ts</p>
+          <p class="flex h-[26px] items-center rounded-[7px] px-[9px] font-mono text-[12px] leading-none font-medium tracking-[0.01em] text-muted shadow-[inset_0_0_0_1px_var(--color-rule-strong)]">
+            draft, not sent
+          </p>
+        </div>
+        <div
+          class="grid gap-1 rounded-[9px] bg-field px-[14px] pt-4 pb-[18px] font-mono text-[12.5px] leading-[170%] font-medium tracking-[0.01em] tabular-nums shadow-[inset_0_0_0_1px_var(--color-rule)] [overflow-wrap:anywhere] md:px-5 md:pt-5 md:pb-[22px] md:text-[13.5px]"
+        >
+          <p class="min-h-[1.7em] text-ink md:text-muted"><span class="text-muted italic md:not-italic">export const</span> brief = &#123;</p>
+          <p class={line} data-brief-line="need">kind: null, // not picked yet</p>
+          <p class={line} data-brief-line="budget">budget: null, // not picked yet</p>
+          <p class={line} data-brief-line="name">name: null, // not picked yet</p>
+          <p class="min-h-[1.7em] text-ink">&#125;</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-[22px] gap-y-[14px] px-2 pt-[18px] pb-1 md:px-3 md:pt-5 md:pb-1.5">
+          <Button type="submit" class="w-full justify-between md:w-auto md:justify-start">Continue to contact</Button>
+          <p class="text-[14.5px] leading-[140%] text-muted md:text-ink">
+            or write to <a href={`mailto:${email}`} class="text-ink underline decoration-coral decoration-1 underline-offset-[5px] hover:text-coral">{email}</a>
+          </p>
+        </div>
+        <p class="max-w-[540px] px-2 pt-2 pb-[10px] text-[13.5px] leading-[155%] text-pretty text-muted md:px-3 md:pt-[10px] md:pb-3">
+          Nothing is sent from this page. Your picks are kept in this browser tab and wait for you on the contact form.
+        </p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Mirrors the picks into the brief.ts preview and keeps them in sessionStorage for the contact form.
+  const KEY = 'brief';
+  for (const form of document.querySelectorAll<HTMLFormElement>('form[data-brief]')) {
+    const lines = Object.fromEntries(
+      [...form.querySelectorAll<HTMLElement>('[data-brief-line]')].map((el) => [el.dataset.briefLine!, el]),
+    );
+    const label = { need: 'kind', budget: 'budget', name: 'name' } as const;
+
+    const render = () => {
+      const data = new FormData(form);
+      const brief = {
+        need: data.getAll('need').map(String),
+        budget: (data.get('budget') as string | null) ?? null,
+        name: String(data.get('name') ?? '').trim() || null,
+      };
+      for (const key of Object.keys(label) as (keyof typeof label)[]) {
+        const value = brief[key];
+        const empty = value === null || (Array.isArray(value) && value.length === 0);
+        lines[key].textContent = empty
+          ? `${label[key]}: null, // not picked yet`
+          : `${label[key]}: ${Array.isArray(value) ? `[${value.map((v) => JSON.stringify(v)).join(', ')}]` : JSON.stringify(value)},`;
+      }
+      try {
+        sessionStorage.setItem(KEY, JSON.stringify(brief));
+      } catch {}
+    };
+
+    // Restore picks from earlier in this tab.
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(KEY) ?? 'null');
+      if (saved) {
+        for (const input of form.querySelectorAll<HTMLInputElement>('input[name="need"]')) input.checked = saved.need?.includes(input.value);
+        for (const input of form.querySelectorAll<HTMLInputElement>('input[name="budget"]')) input.checked = saved.budget === input.value;
+        const name = form.querySelector<HTMLInputElement>('input[name="name"]');
+        if (name && saved.name) name.value = saved.name;
+      }
+    } catch {}
+
+    form.addEventListener('input', render);
+    form.addEventListener('change', render);
+    render();
+  }
+</script>

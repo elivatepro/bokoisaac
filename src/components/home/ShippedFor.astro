@@ -1,5 +1,71 @@
 ---
-// TODO: build from Paper
+const clients = ['Quality Installs Co.', 'Elivate', 'Startix Media', 'EduSkillUp', 'QPIMS', 'Elivate Wallet', 'Roudio', 'Book Read-Along'];
+// Paper's track holds the list four times (two identical halves), so it can loop seamlessly.
+const run = [...clients, ...clients];
+const facts = [
+  { key: 'status', value: 'Open to new work', dot: true },
+  { key: 'timezone', value: 'Remote · Worldwide' },
+  { key: 'reply', value: 'Replies within one working day' },
+];
 ---
 
-<section data-section="ShippedFor"></section>
+<section aria-labelledby="shipped-for" class="relative z-10 bg-bg">
+  <div class="page py-[34px] md:py-11">
+    <div class="grid grid-cols-1 items-center gap-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-10">
+      <h2 id="shipped-for" class="eyebrow max-w-full text-xs/[1.5] text-ink md:text-[13px]"><span class="text-coral">//</span> Shipped for</h2>
+
+      <div class="marquee -mx-5 min-w-0 overflow-clip md:mx-0">
+        <div class="marquee-track flex w-max">
+          {
+            [0, 1].map((copy) => (
+              <ul class="flex shrink-0 items-center" aria-hidden={copy === 1 ? 'true' : undefined}>
+                {run.map((name, i) => (
+                  <li class="flex items-center" aria-hidden={i >= clients.length ? 'true' : undefined}>
+                    <span class="w-max text-[22px] leading-[1.2] font-semibold tracking-[-0.045em] text-muted md:text-[27px]">{name}</span>
+                    <span class="mx-[18px] w-max font-mono text-[13px] leading-[1.2] font-medium text-coral italic opacity-85 md:mx-[26px] md:text-[15px] md:not-italic" aria-hidden="true">
+                      /
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <ul class="mt-6 flex flex-col flex-wrap gap-2.5 border-t border-rule pt-[18px] font-mono text-[12.5px] leading-[1.5] font-medium tracking-[0.01em] [font-feature-settings:'tnum'] md:mt-[30px] md:flex-row md:gap-x-10 md:pt-[22px]">
+      {
+        facts.map((f) => (
+          <li class="flex min-w-0 items-baseline gap-2.5 md:items-center">
+            {f.dot && <span class="size-2 shrink-0 -translate-y-px rounded-full bg-coral md:translate-y-0" aria-hidden="true" />}
+            <span class="text-muted">{f.key}:</span>
+            <span class="wrap-anywhere text-ink">{f.value}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .marquee {
+    mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+  }
+  .marquee-track {
+    animation: marquee 70s linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+</style>

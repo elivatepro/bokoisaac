@@ -1,5 +1,81 @@
 ---
-// TODO: build from Paper
+import { Image } from 'astro:assets';
+import { live } from '../../lib/content';
+import desk from '../../assets/home/about-desk.webp';
+
+// "Now" rows come from the Notion Now database (Show = true in production; every row in dev).
+const now = (await live('now')).map((e) => e.data);
+const latest = now.reduce<Date | null>((max, r) => (r.updated && (!max || r.updated > max) ? r.updated : max), null);
+const updated = latest?.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 
-<section data-section="About"></section>
+<section aria-labelledby="about-title" class="relative z-10 bg-bg">
+  <div class="page py-[68px] lg:py-[151.2px]">
+    <div class="grid grid-cols-1 items-start gap-9 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end lg:gap-[117.6px]">
+      <div class="grid min-w-0 justify-items-start gap-5 lg:gap-[30px]">
+        <h2 id="about-title" class="eyebrow max-w-full text-xs/[1.5] text-ink lg:text-[13px]"><span class="text-coral">//</span> About</h2>
+        <p class="max-w-[638.4px] text-[30.4px] leading-[1.14] font-semibold tracking-[-0.045em] text-balance text-ink lg:max-w-[1134px] lg:text-[54px] lg:leading-[1.1]">
+          I build full-stack software that holds up in the real world. Six years across field services, fintech and education taught me that reliability is a feature, the data model is the product, and the best code is the code the next person can <span class="text-coral lg:text-ink">read.</span>
+        </p>
+      </div>
+
+      <figure class="grid w-[min(64%,260px)] min-w-0 gap-3 lg:w-auto">
+        <div class="relative aspect-[4/5] overflow-clip rounded-[14px] bg-field">
+          <Image
+            src={desk}
+            alt="A leather notebook and pen on a dark wooden desk, lit by a warm lamp beside a small plant"
+            widths={[320, 520, 720]}
+            sizes="(min-width: 1024px) 320px, 260px"
+            class="absolute inset-0 size-full object-cover object-[50%_30%] saturate-[.92] contrast-[1.04]"
+          />
+          <span class="absolute inset-0 rounded-[14px] shadow-[inset_0_0_0_1px_var(--color-rule)]" aria-hidden="true"></span>
+        </div>
+        <figcaption class="flex items-center gap-[9px] font-mono text-xs leading-[1.4] font-medium tracking-[0.01em] text-muted">
+          <span class="h-px w-3.5 shrink-0 bg-coral" aria-hidden="true"></span>
+          Boko Isaac · Remote
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="mt-11 lg:mt-24">
+      {
+        now.length > 0 && (
+          <>
+            <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 pb-4 font-mono text-[12.5px] leading-[1.5] font-medium tracking-[0.01em] [font-feature-settings:'tnum']">
+              <h3 class="flex items-center gap-2.5 text-ink">
+                <span class="size-2 shrink-0 rounded-full bg-coral" aria-hidden="true" />
+                Now
+              </h3>
+              {updated && <p class="text-muted">Updated {updated}</p>}
+            </div>
+            <dl class="grid grid-cols-1 gap-x-8 border-t border-rule lg:grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
+              {now.map((r) => (
+                <div class="flex min-w-0 items-baseline gap-4 border-b border-rule py-[15px] lg:flex-col lg:items-stretch lg:gap-2 lg:pt-5 lg:pb-[22px]">
+                  <dt class="shrink-0 basis-24 font-mono text-xs leading-[1.4] font-medium tracking-[0.01em] text-muted lg:basis-auto">{r.section}</dt>
+                  <dd class="min-w-0 grow basis-0 text-[15.5px] leading-[1.45] wrap-anywhere text-pretty text-ink lg:basis-auto lg:text-base">
+                    {r.link ? (
+                      <a href={r.link} class="underline decoration-rule-strong underline-offset-4 hover:decoration-coral">
+                        {r.item}
+                      </a>
+                    ) : (
+                      r.item
+                    )}
+                    {r.detail && <span class="text-muted"> {r.detail}</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )
+      }
+
+      <a href="/about" class="group mt-[26px] inline-flex min-h-11 items-center gap-[9px] font-mono text-[13px] leading-none font-medium tracking-[0.01em]">
+        <span class="text-muted">02</span>
+        <span class="py-1.5 text-ink">More about me</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0 text-coral transition-transform group-hover:translate-x-0.5">
+          <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

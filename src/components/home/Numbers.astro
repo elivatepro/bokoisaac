@@ -1,5 +1,140 @@
 ---
-// TODO: build from Paper
+// "Numbers, not adjectives." Lighthouse medians on a coral band, then the Core Web Vitals panel.
+// Static copy from Paper (Home, desktop + mobile).
+const scores = [
+  { label: 'Performance', score: 98 },
+  { label: 'Accessibility', score: 100 },
+  { label: 'Best practices', score: 100 },
+  { label: 'SEO', score: 100 },
+];
+
+const vitals = [
+  { code: 'LCP', name: 'Largest Contentful Paint', value: '0.8 s', fill: 32, budget: 'budget 2.5 s' },
+  { code: 'INP', name: 'Interaction to Next Paint', value: '48 ms', fill: 24, budget: 'budget 200 ms' },
+  { code: 'CLS', name: 'Cumulative Layout Shift', value: '0.01', fill: 10, budget: 'budget 0.1' },
+];
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const mono = 'font-mono font-medium';
 ---
 
-<section data-section="Numbers"></section>
+<section id="numbers" data-section="Numbers" aria-labelledby="numbers-title" class="bg-coral text-coral-ink">
+  <div class="page py-[68px] md:py-[151.2px]">
+    <div class="grid items-start gap-x-14 gap-y-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+      <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+        <p class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>// The numbers</p>
+        <h2 id="numbers-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+          Numbers, not adjectives.
+        </h2>
+        <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty md:max-w-[578px] md:text-[17px]">
+          Every release is checked on a mid-range phone and a throttled connection before it goes out. These are the medians, not
+          the best run of the day.
+        </p>
+      </div>
+      <div class="grid min-w-0 justify-items-start gap-1.5">
+        <p class="flex items-center gap-2.5">
+          <span class="size-2 shrink-0 rounded-full bg-coral-ink" aria-hidden="true"></span>
+          <span class:list={[mono, 'text-[12.5px] leading-[150%] tracking-[0.01em] tabular-nums']}>median of the last 12 launches</span>
+        </p>
+        <a
+          href="/work"
+          class:list={[mono, 'group flex min-h-11 items-center gap-[9px] rounded-sm text-[13px] leading-none tracking-[0.01em] focus-visible:outline-coral-ink']}
+        >
+          <span>01</span>
+          <span class="py-1.5 underline-offset-4 group-hover:underline">See the launches behind them</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 transition-transform group-hover:translate-x-0.5">
+            <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <h3 class="sr-only">Lighthouse scores</h3>
+    <ul class="mt-11 grid grid-cols-2 md:mt-16 md:grid-cols-4 md:border-t md:border-field/36">
+      {
+        scores.map((s, i) => (
+          <li
+            class:list={[
+              'grid min-w-0 content-start gap-[18px] border-t border-field/36 pt-[18px] pb-[26px] md:gap-[26px] md:border-t-0 md:pt-[22px] md:pb-[34px]',
+              i % 2 ? 'border-l pl-4' : 'pr-4',
+              i === 0 ? 'md:pr-7' : 'md:border-l md:px-7',
+            ]}
+          >
+            <p class="flex min-w-0 items-baseline gap-2 md:gap-3">
+              <span class:list={[mono, 'text-[12.5px] leading-[150%] tracking-[0.01em] tabular-nums']}>{pad(i + 1)}</span>
+              <span class="text-[15px] leading-[120%] font-semibold tracking-[-0.01em] md:text-[17px]">{s.label}</span>
+            </p>
+            <div class="@container relative aspect-square w-full max-w-[236px] min-w-0">
+              <svg viewBox="0 0 200 200" class="block size-full" aria-hidden="true">
+                <circle cx="100" cy="100" r="96" pathLength="100" fill="none" stroke="rgb(74 28 12 / 40%)" stroke-width="5" stroke-dasharray="0.3 2.2" />
+                {s.score < 100 && <circle cx="100" cy="100" r="82" fill="none" stroke="rgb(74 28 12 / 18%)" stroke-width="11" />}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="82"
+                  pathLength="100"
+                  transform="rotate(-90 100 100)"
+                  fill="none"
+                  stroke="#4A1C0C"
+                  stroke-width="11"
+                  stroke-dasharray={s.score < 100 ? `${s.score} 100` : undefined}
+                />
+              </svg>
+              <p class="absolute inset-0 grid content-center justify-items-center gap-0.5 text-center">
+                <span class="text-[34cqw] leading-[90%] font-semibold tracking-[-0.045em] tabular-nums">{s.score}</span>
+                <span class:list={[mono, 'text-[12.5px] leading-[150%] tracking-[0.01em] tabular-nums']}>of 100</span>
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-5 rounded-[14px] bg-field px-[18px] pt-5 pb-[22px] text-ink shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-7 md:px-8 md:pt-[26px] md:pb-8">
+      <div class="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1.5 border-b border-rule pb-[18px] md:mb-6">
+        <h3 class:list={[mono, 'text-[12.5px] leading-[150%] tracking-[0.01em]']}>Core Web Vitals</h3>
+        <p class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>field data, 75th percentile</p>
+      </div>
+      <ul class="grid md:grid-cols-3">
+        {
+          vitals.map((v, i) => (
+            <li
+              class:list={[
+                'grid min-w-0 content-start gap-3.5 py-[22px] md:py-0',
+                i > 0 && 'border-t border-rule md:border-t-0 md:border-l',
+                i === 0 && 'md:pr-8',
+                i === 1 && 'md:px-8',
+                i === 2 && 'pb-0 md:pl-8',
+              ]}
+            >
+              <p class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+                <abbr
+                  title={v.name}
+                  class:list={[mono, 'flex h-[26px] items-center rounded-[7px] px-[9px] text-[12px] leading-none tracking-[0.01em] text-coral no-underline shadow-[inset_0_0_0_1px_rgb(255_127_80/45%)]']}
+                >
+                  {v.code}
+                </abbr>
+                <span class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>{v.name}</span>
+              </p>
+              <p class="mt-1.5 mb-0.5 text-[40px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[54px]">{v.value}</p>
+              <div class="relative h-3 rounded-[3px] bg-ink/10" aria-hidden="true">
+                <div class="absolute inset-y-0 left-0 rounded-[3px] bg-coral" style={`width: ${v.fill}%`} />
+                <div class="absolute -inset-y-[5px] right-0 w-0.5 rounded-[1px] bg-coral" />
+              </div>
+              <div class="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                <span class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>0</span>
+                <span class="flex items-center gap-1.5">
+                  <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" class="shrink-0">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="var(--color-coral)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span class:list={[mono, 'text-[12.5px] leading-[150%] tracking-[0.01em] tabular-nums']}>within budget</span>
+                </span>
+                <span class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>{v.budget}</span>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

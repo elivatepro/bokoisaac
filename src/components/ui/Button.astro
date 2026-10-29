@@ -1,5 +1,6 @@
 ---
-// Buttons from Paper: label + 38px square icon tile. Primary = coral; secondary = outlined dark.
+// Buttons from Paper: label + 38px square icon tile. Primary = coral; secondary = outlined dark glass.
+// The arrow tile holds two arrows (one parked off to the left, as in Paper); on hover they slide right together.
 interface Props {
   href?: string;
   variant?: 'primary' | 'secondary';
@@ -11,16 +12,16 @@ interface Props {
 const { href, variant = 'primary', icon = 'arrow', type = 'button', class: className = '', ...rest } = Astro.props;
 const Tag = href ? 'a' : 'button';
 const primary = variant === 'primary';
+const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
 
 <Tag
   href={href}
   type={href ? undefined : type}
   class:list={[
-    'group inline-flex h-[54px] items-center gap-3.5 rounded-[14px] pr-2 text-sm font-semibold tracking-[-0.005em] transition-colors',
-    icon === 'none' ? 'pr-[22px]' : '',
-    'pl-[22px]',
-    primary ? 'bg-coral text-coral-ink hover:bg-[#ff8f66]' : 'border border-rule-strong bg-bg/55 text-ink hover:border-ink/40',
+    'group inline-flex h-[54px] shrink-0 items-center gap-3.5 rounded-[14px] pl-[22px] text-sm leading-none font-semibold tracking-[-0.005em] transition-colors',
+    icon === 'none' ? 'pr-[22px]' : 'pr-2',
+    primary ? 'bg-coral text-coral-ink hover:bg-[#ff8f66]' : 'border border-rule-strong bg-bg/55 text-ink backdrop-blur-[8px] hover:border-ink/40',
     className,
   ]}
   {...rest}
@@ -28,14 +29,24 @@ const primary = variant === 'primary';
   <span class="whitespace-nowrap"><slot /></span>
   {
     icon !== 'none' && (
-      <span class:list={['grid size-[38px] shrink-0 place-items-center overflow-hidden rounded-[9px]', primary ? 'bg-field text-coral' : 'bg-ink/[0.08] text-ink']}>
+      <span
+        class:list={[
+          'grid size-[38px] shrink-0 place-items-center overflow-clip rounded-[9px]',
+          primary ? 'bg-coral-ink text-coral' : 'bg-ink/9 text-ink',
+        ]}
+      >
         {icon === 'arrow' ? (
-          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-0.5">
-            <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+          <>
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="col-start-1 row-start-1 transition-transform duration-300 ease-out group-hover:translate-x-[34px] motion-reduce:transition-none">
+              <path d={arrow} fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="col-start-1 row-start-1 -translate-x-[34px] transition-transform duration-300 ease-out group-hover:translate-x-0 motion-reduce:transition-none">
+              <path d={arrow} fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </>
         ) : (
           <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
-            <path d="M12 4v11m0 0l-5-5m5 5l5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M12 4v13M6 12l6 6 6-6M5 21h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         )}
       </span>

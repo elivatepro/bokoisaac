@@ -1,5 +1,213 @@
 ---
-// TODO: build from Paper
+// "What I build when nobody asks." A horizontal rail of Lab items from the Notion Lab database.
+// Hidden when the database has no live rows.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { live } from '../../lib/content';
+
+// Covers come from Paper for now, matched by slug. Notion file URLs expire, so a proper
+// "download Notion covers at build time" step still has to replace this map.
+const covers = import.meta.glob<{ default: ImageMetadata }>('../../assets/home/lab/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const coverFor = (slug: string) => Object.entries(covers).find(([path]) => path.split('/').pop()?.replace(/\.\w+$/, '') === slug)?.[1].default;
+
+// Stars and downloads are not Notion fields yet. These are the numbers drawn in Paper (placeholders).
+const STATS: Record<string, { stars?: number; downloads?: number }> = {
+  'offline-queue': { stars: 420, downloads: 7800 },
+  'prompt-diff': { stars: 310, downloads: 5200 },
+  'money-safe': { stars: 180, downloads: 3100 },
+  'supa-seed': { stars: 150, downloads: 1900 },
+  'job-sheet': { stars: 120, downloads: 600 },
+  'route-sketch': { stars: 60 },
+};
+
+const items = (await live('lab')).map((e) => e.data);
+const num = (n: number) => n.toLocaleString('en-US');
+const mono = 'font-mono font-medium';
+const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
 
-<section data-section="Lab"></section>
+{
+  items.length > 0 && (
+    <section id="lab" data-section="Lab" aria-labelledby="lab-title" class="overflow-clip bg-field" data-lab>
+      <div class="page flex items-end justify-between gap-10 pt-[68px] md:pt-[151.2px]">
+        <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+          <p class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>
+            <span class="text-coral">//</span> Open source and experiments
+          </p>
+          <h2 id="lab-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+            What I build when <span class="text-coral">nobody</span> asks.
+          </h2>
+          <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+            Small libraries, command line tools and sketches. Most started as a fix for one project and stayed useful.
+          </p>
+        </div>
+        <div class="hidden shrink-0 gap-2 md:flex">
+          <button type="button" data-lab-prev aria-label="Previous projects" aria-controls="lab-rail" class="lab-nav">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <button type="button" data-lab-next aria-label="Next projects" aria-controls="lab-rail" class="lab-nav">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d={arrow} fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <ul
+        id="lab-rail"
+        data-lab-rail
+        aria-label="Lab projects"
+        class="lab-rail mt-7 flex snap-x snap-mandatory gap-3.5 overflow-x-auto overscroll-x-contain px-5 py-3 md:mt-11 md:gap-5"
+      >
+        {items.map((item) => {
+          const cover = coverFor(item.slug);
+          const stats = STATS[item.slug] ?? {};
+          return (
+            <li class="w-[min(320px,100%-36px)] shrink-0 snap-start md:w-[min(400px,100%-44px)]">
+              <a
+                href={`/lab/${item.slug}`}
+                class="group flex h-full flex-col rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
+              >
+                <div class="relative aspect-[16/10] overflow-clip rounded-[9px] bg-field">
+                  {cover && (
+                    <Image
+                      src={cover}
+                      alt=""
+                      widths={[400, 800]}
+                      sizes="(min-width: 768px) 384px, 304px"
+                      class="absolute inset-0 size-full object-cover brightness-[62%] contrast-[108%] grayscale-[55%] transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  )}
+                  <div class="absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]" />
+                  <div class="absolute inset-0 bg-field/26" />
+                  {item.type && (
+                    <span
+                      class:list={[mono, 'absolute top-2.5 left-2.5 inline-flex h-[26px] items-center rounded-[7px] bg-coral px-[9px] text-[12px] leading-none tracking-[0.01em] text-coral-ink']}
+                    >
+                      {item.type}
+                    </span>
+                  )}
+                </div>
+                <div class="flex grow basis-0 flex-col gap-2.5 px-3.5 pt-5 pb-3">
+                  <h3 class="text-[23px] leading-[105%] font-semibold tracking-[-0.045em] text-balance md:text-[26px]">{item.name}</h3>
+                  <p class="mb-2 text-[15px] leading-[150%] text-pretty text-muted">{item.summary}</p>
+                  <div class:list={[mono, 'mt-auto flex flex-wrap items-center gap-x-[18px] gap-y-2 border-t border-rule pt-3.5 text-[12.5px] leading-[150%] tracking-[0.01em] tabular-nums']}>
+                    {stats.stars != null && (
+                      <span class="flex items-center gap-[7px]">
+                        <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" class="shrink-0">
+                          <path d="M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z" fill="var(--color-coral)" />
+                        </svg>
+                        {num(stats.stars)}
+                        <span class="text-muted italic md:not-italic">stars</span>
+                      </span>
+                    )}
+                    {stats.downloads != null && (
+                      <span class="flex items-center gap-[7px]">
+                        <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" class="shrink-0">
+                          <path d="M12 4v12M6.5 11l5.5 5.5 5.5-5.5M5 20.5h14" fill="none" stroke="var(--color-coral)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        {num(stats.downloads)}
+                        <span class="text-muted italic md:not-italic">downloads</span>
+                      </span>
+                    )}
+                    <span class="ml-auto flex items-center gap-1.5 text-muted transition-colors group-hover:text-ink" aria-hidden="true">
+                      Open
+                      <svg viewBox="0 0 24 24" width="13" height="13" class="shrink-0 transition-transform group-hover:translate-x-0.5">
+                        <path d={arrow} fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div class="page flex items-center justify-between gap-5 pb-[68px] md:gap-8 md:pb-[151.2px]">
+        <div class="relative h-0.5 max-w-[320px] min-w-0 grow basis-0 overflow-clip rounded-[2px] bg-rule-strong" aria-hidden="true">
+          <div data-lab-progress class="absolute inset-y-0 left-0 w-1/5 rounded-[2px] bg-coral" />
+        </div>
+        <a href="/lab" class:list={[mono, 'group flex min-h-11 items-center gap-[9px] rounded-sm text-[13px] leading-none tracking-[0.01em]']}>
+          <span class="text-muted">02</span>
+          <span class="py-1.5 underline-offset-4 group-hover:underline">Everything in the lab</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 text-coral transition-transform group-hover:translate-x-0.5">
+            <path d={arrow} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .lab-rail {
+    scrollbar-width: none;
+    scroll-padding-inline: 20px;
+  }
+  .lab-rail::-webkit-scrollbar {
+    display: none;
+  }
+  @media (width >= 48rem) {
+    .lab-rail {
+      padding-inline: max(56px, 50% - 704px);
+      scroll-padding-inline: max(56px, 50% - 704px);
+    }
+  }
+  .lab-nav {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    flex-shrink: 0;
+    border: 1px solid var(--color-rule-strong);
+    border-radius: 14px;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition:
+      opacity 200ms ease,
+      border-color 200ms ease;
+  }
+  .lab-nav:hover:not(:disabled) {
+    border-color: rgb(241 242 236 / 40%);
+  }
+  .lab-nav:disabled {
+    opacity: 0.38;
+    cursor: default;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .lab-rail {
+      scroll-behavior: smooth;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-lab]').forEach((section) => {
+    const rail = section.querySelector<HTMLElement>('[data-lab-rail]');
+    const prev = section.querySelector<HTMLButtonElement>('[data-lab-prev]');
+    const next = section.querySelector<HTMLButtonElement>('[data-lab-next]');
+    const bar = section.querySelector<HTMLElement>('[data-lab-progress]');
+    if (!rail) return;
+
+    const step = () => {
+      const card = rail.querySelector('li');
+      const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
+      return card ? card.getBoundingClientRect().width + gap : rail.clientWidth;
+    };
+    const update = () => {
+      const max = rail.scrollWidth - rail.clientWidth;
+      if (bar) bar.style.width = `${Math.min(100, ((rail.scrollLeft + rail.clientWidth) / rail.scrollWidth) * 100)}%`;
+      if (prev) prev.disabled = rail.scrollLeft <= 1;
+      if (next) next.disabled = rail.scrollLeft >= max - 1;
+    };
+
+    prev?.addEventListener('click', () => rail.scrollBy({ left: -step() }));
+    next?.addEventListener('click', () => rail.scrollBy({ left: step() }));
+    rail.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+</script>

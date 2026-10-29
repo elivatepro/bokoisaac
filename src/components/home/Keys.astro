@@ -1,5 +1,225 @@
 ---
-// TODO: build from Paper
+// "The keys I press every day." A keyboard of tools; pointing at, focusing or clicking a key presses it
+// and shows its card. Static copy from Paper (Home, desktop + mobile).
+type Key = { name: string; years: number; used: string; note: string };
+
+const groups: { name: string; keys: Key[] }[] = [
+  {
+    name: 'Languages',
+    keys: [
+      { name: 'TypeScript', years: 6, used: 'Daily', note: 'Strict mode, no any. Types are the first draft of the docs.' },
+      { name: 'JavaScript', years: 6, used: 'Daily', note: 'The platform underneath everything else, and still where the bugs live.' },
+      { name: 'Python', years: 4, used: 'Daily', note: 'Scripts, data jobs and the occasional enrichment pipeline.' },
+      { name: 'SQL', years: 6, used: 'Weekly', note: 'If the query is slow, the product is slow. I read the plan first.' },
+    ],
+  },
+  {
+    name: 'Frameworks',
+    keys: [
+      { name: 'React', years: 6, used: 'Daily', note: 'Components that stay small, state that stays where it belongs.' },
+      { name: 'Next.js', years: 4, used: 'Daily', note: 'The default for products that need a server and a deadline.' },
+      { name: 'Node.js', years: 6, used: 'Weekly', note: 'APIs, workers and the glue between services.' },
+      { name: 'GraphQL', years: 3, used: 'Comfortable', note: 'A typed contract between the client and the server.' },
+    ],
+  },
+  {
+    name: 'Data',
+    keys: [
+      { name: 'PostgreSQL', years: 5, used: 'Daily', note: 'The source of truth. Constraints in the schema, not in hope.' },
+      { name: 'Supabase', years: 3, used: 'Weekly', note: 'Auth, storage and Postgres without the boilerplate.' },
+      { name: 'Redis', years: 3, used: 'Weekly', note: 'Caching and queues for the parts that must feel instant.' },
+      { name: 'Prisma', years: 3, used: 'Weekly', note: 'Typed queries and migrations the whole team can read.' },
+    ],
+  },
+  {
+    name: 'Shipping',
+    keys: [
+      { name: 'Docker', years: 4, used: 'Daily', note: 'Same environment on my laptop, in CI and in production.' },
+      { name: 'GitHub', years: 6, used: 'Daily', note: 'Small pull requests, reviewed before they merge.' },
+      { name: 'Vercel', years: 4, used: 'Weekly', note: 'Preview deploys on every branch, so feedback comes early.' },
+      { name: 'AWS', years: 3, used: 'Weekly', note: 'Storage, queues and the services that keep things running.' },
+    ],
+  },
+];
+
+const all = groups.flatMap((g) => g.keys.map((k) => ({ ...k, group: g.name })));
+const total = all.length;
+const maxYears = Math.max(...all.map((k) => k.years));
+const pad = (n: number) => String(n).padStart(2, '0');
+// Keyboard-row stagger from Paper (desktop only).
+const stagger = ['', 'lg:pl-4', 'lg:pl-8', 'lg:pl-12'];
+const mono = 'font-mono font-medium';
+let index = 0;
 ---
 
-<section data-section="Keys"></section>
+<section id="stack" data-section="Keys" aria-labelledby="keys-title" class="bg-bg">
+  <div class="page py-[68px] md:py-[151.2px]">
+    <div class="grid items-start gap-x-14 gap-y-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+      <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+        <p class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}><span class="text-coral">//</span> The stack</p>
+        <h2 id="keys-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+          The keys I <span class="text-coral">press</span> every day.
+        </h2>
+        <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+          The tools I would pick again tomorrow. Point at a key, or tab across the board, to see how long it has been there and what
+          it is for.
+        </p>
+      </div>
+      <div class="grid min-w-0 justify-items-start gap-1">
+        <p class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>{total} tools · {groups.length} groups</p>
+        <a href="/stack" class:list={[mono, 'group flex min-h-11 items-center gap-[9px] rounded-sm text-[13px] leading-none tracking-[0.01em]']}>
+          <span class="text-muted">02</span>
+          <span class="py-1.5 underline-offset-4 group-hover:underline">The full stack</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 text-coral transition-transform group-hover:translate-x-0.5">
+            <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-10 grid gap-3.5 md:mt-16 lg:grid-cols-[minmax(0,1fr)_384px] lg:gap-5" data-keys>
+      <div class="grid min-w-0 content-start rounded-[14px] bg-field px-4 py-1.5 shadow-[inset_0_0_0_1px_var(--color-rule)] lg:px-7 lg:py-3">
+        {
+          groups.map((g, gi) => (
+            <div
+              role="group"
+              aria-labelledby={`keys-group-${gi}`}
+              class:list={[
+                'grid min-w-0 items-center gap-3 py-[18px] lg:grid-cols-[132px_minmax(0,1fr)] lg:gap-5 lg:py-5',
+                gi > 0 && 'border-t border-rule',
+              ]}
+            >
+              <p id={`keys-group-${gi}`} class:list={[mono, 'flex min-w-0 items-baseline gap-2.5 text-[12px] leading-[140%] tracking-[0.01em]']}>
+                {g.name}
+                <span class="text-muted italic lg:not-italic">{pad(g.keys.length)}</span>
+              </p>
+              <div class:list={['flex min-w-0 flex-wrap gap-2 lg:gap-2.5', stagger[gi]]}>
+                {g.keys.map((k) => {
+                  const i = index++;
+                  return (
+                    <button
+                      type="button"
+                      data-key={i}
+                      aria-pressed={i === 0 ? 'true' : 'false'}
+                      aria-controls="keys-card"
+                      class="key flex h-[62px] min-w-[62px] cursor-pointer flex-col items-start justify-between rounded-xl pt-2 pr-[13px] pb-[13px] pl-[11px] text-left lg:h-[82px] lg:min-w-[86px] lg:pt-[11px] lg:pr-5 lg:pb-[17px] lg:pl-[15px]"
+                    >
+                      <span class:list={[mono, 'key-years text-[12px] leading-none tracking-[0.01em]']}>
+                        {k.years}y<span class="sr-only"> experience</span>
+                      </span>
+                      <span class="text-[14px] leading-none font-semibold tracking-[-0.01em] whitespace-nowrap lg:text-[16px]">{k.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div
+        id="keys-card"
+        aria-live="polite"
+        class="-order-1 grid min-w-0 rounded-[14px] bg-surface px-[18px] pt-5 pb-[22px] shadow-[inset_0_0_0_1px_var(--color-rule)] lg:order-none lg:px-7 lg:pt-[26px] lg:pb-7"
+      >
+        <div class="grid min-w-0">
+          {
+            all.map((k, i) => (
+              <article
+                data-card={i}
+                aria-hidden={i === 0 ? undefined : 'true'}
+                class:list={['col-start-1 row-start-1 flex min-w-0 flex-col gap-3.5 lg:gap-[18px]', i !== 0 && 'invisible opacity-0']}
+              >
+                <div class="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-rule pb-[18px]">
+                  <p class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>
+                    key {pad(i + 1)} of {total}
+                  </p>
+                  <p
+                    class:list={[mono, 'flex h-[26px] items-center rounded-[7px] px-[9px] text-[12px] leading-none tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)]']}
+                  >
+                    {k.group}
+                  </p>
+                </div>
+                <h3 class="mt-1 text-[32px] leading-none font-semibold tracking-[-0.045em] wrap-anywhere lg:text-[44px]">{k.name}</h3>
+                <div class="grid min-w-0 gap-3">
+                  <p class="flex min-w-0 items-baseline gap-2.5">
+                    <span class="text-[46px] leading-[90%] font-semibold tracking-[-0.045em] text-coral tabular-nums lg:text-[84px]">{k.years}</span>
+                    <span class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>years on the board</span>
+                  </p>
+                  <div class="h-1 rounded-[2px] bg-ink/10" aria-hidden="true">
+                    <div class="h-full rounded-[2px] bg-coral" style={`width: ${(k.years / maxYears) * 100}%`} />
+                  </div>
+                </div>
+                <dl class:list={[mono, 'flex min-w-0 justify-between gap-3 border-y border-rule py-3 text-[12.5px] leading-[150%] tracking-[0.01em]']}>
+                  <dt class="text-muted">Used</dt>
+                  <dd>{k.used}</dd>
+                </dl>
+                <p class="pt-1 text-[15px] leading-[155%] text-pretty lg:mt-auto lg:text-[18px]">{k.note}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .key {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow:
+      inset 0 0 0 1px var(--color-rule-strong),
+      inset 0 -5px 0 rgb(241 242 236 / 9%);
+    transition:
+      translate 120ms ease,
+      background-color 120ms ease,
+      box-shadow 120ms ease;
+  }
+  .key .key-years {
+    color: var(--color-muted);
+  }
+  .key[aria-pressed='true'] {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    translate: 0 2px;
+    box-shadow:
+      inset 0 0 0 1px var(--color-coral),
+      inset 0 -2px 0 rgb(6 7 8 / 30%);
+  }
+  .key[aria-pressed='true'] .key-years {
+    color: var(--color-coral-ink);
+  }
+  .key:focus-visible {
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .key {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-keys]').forEach((board) => {
+    const keys = [...board.querySelectorAll<HTMLButtonElement>('[data-key]')];
+    const cards = [...board.querySelectorAll<HTMLElement>('[data-card]')];
+    const press = (i: number) => {
+      keys.forEach((k, j) => k.setAttribute('aria-pressed', String(i === j)));
+      cards.forEach((c, j) => {
+        const on = i === j;
+        c.classList.toggle('invisible', !on);
+        c.classList.toggle('opacity-0', !on);
+        if (on) c.removeAttribute('aria-hidden');
+        else c.setAttribute('aria-hidden', 'true');
+      });
+    };
+    keys.forEach((k, i) => {
+      k.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') press(i);
+      });
+      k.addEventListener('focus', () => press(i));
+      k.addEventListener('click', () => press(i));
+    });
+  });
+</script>
