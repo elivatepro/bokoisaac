@@ -51,4 +51,5 @@ jobs:
       # Piped as JSON on stdin: the values never touch a file or the log.
       - name: Sync Worker secrets
         if: steps.notion.outcome == 'skipped' || steps.notion.outputs.changed == 'true'
-        run: node -e 'process.stdout.write(JSON.stringify({ NOTION_TOKEN: process.env.NOTION_TOKEN, BUTTONDOWN_API_KEY: process.env.BUTTONDOWN_API_KEY }))' | npx wrangler secret bulk
+        run: |
+          node -e 'process.stdout.write(JSON.stringify({ NOTION_TOKEN: process.env.NOTION_TOKEN, BUTTONDOWN_API_KEY: process.env.BUTTONDOWN_API_KEY }))' | npx wrangler secret bulk
