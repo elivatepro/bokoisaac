@@ -1,0 +1,41 @@
+---
+// Terms of use. Copy from Paper ("Boko Isaac - Legal" → "Terms").
+import LegalPage, { type Section } from '../components/legal/LegalPage.astro';
+
+const sections: Section[] = [
+  {
+    title: 'This website',
+    blocks: [
+      'The case studies, articles and pictures here are mine unless marked otherwise. You are welcome to quote a short passage with a link back. Please ask before you reuse more than that.',
+    ],
+  },
+  {
+    title: 'Code samples',
+    blocks: ['Code shown in articles and in the Lab is free to use in your own projects under the licence named on its page. It comes without a warranty.'],
+  },
+  {
+    title: 'Project work',
+    blocks: [
+      'Paid work is agreed in writing. Scope, price in USD, dates and ownership are set out in the proposal you sign, and that proposal comes first if it differs from this page.',
+    ],
+  },
+  {
+    title: 'Numbers in case studies',
+    blocks: ['Results are reported as measured at the time, for the product and users described. They are not a promise for another product.'],
+  },
+  {
+    title: 'Changes',
+    blocks: ['These terms may change. The date at the top shows the latest version. Questions go to hello@bokoisaac.com.'],
+  },
+];
+---
+
+<LegalPage
+  title="Terms of"
+  accent="use."
+  description="The terms for using bokoisaac.com and for project work with Boko Isaac."
+  intro="These are the terms for using this website and for the work it describes. I work on my own, as an independent developer, with clients anywhere."
+  {sections}
+  current="terms"
+  updated={{ iso: '2026-10-29', label: 'October 2026' }}
+/>

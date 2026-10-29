@@ -1,0 +1,80 @@
+---
+// Privacy policy. Copy from Paper ("Boko Isaac - Legal" → "Privacy"), corrected where the design described
+// things the site does not do: there is no Cloudflare Web Analytics or spam check, comments do not send email,
+// and the browser keeps two session-storage notes (the intro flag and the project brief). Update this page
+// whenever a new service starts handling visitor data.
+import LegalPage, { type Section } from '../components/legal/LegalPage.astro';
+
+const sections: Section[] = [
+  {
+    title: 'What I collect',
+    blocks: [
+      {
+        list: [
+          'Your name, email and message when you send the contact form',
+          'The picks you make on the project brief (what you need, budget and name), so the contact form can show them',
+          'Your name and comment when you comment on a post, plus your email if you add it',
+          'Your email if you join the newsletter',
+          'Basic request logs from Cloudflare, such as your IP address, browser and the page you asked for',
+        ],
+      },
+    ],
+  },
+  {
+    title: 'What I use it for',
+    blocks: [
+      'To reply to you and to plan the work you asked about. I do not sell personal data, and I only share it with someone who is working on your project with me.',
+    ],
+  },
+  {
+    title: 'Comments',
+    blocks: [
+      'Your name and comment are shown on the post once I have read and approved them. Your email is optional. It is never shown, and I only use it if I need to reply to you.',
+    ],
+  },
+  {
+    title: 'Cookies',
+    blocks: [
+      'This site sets no cookies and has no analytics or advertising trackers. It keeps two small notes in your browser’s session storage: one so the intro animation only plays once per visit, and one that carries your project brief picks to the contact form. Both are cleared when you close the tab. If you open the booking calendar, Cal.com may set its own cookies.',
+    ],
+  },
+  {
+    title: 'Who handles your data',
+    blocks: [
+      'A few services help run this site. Each one only gets what it needs:',
+      {
+        list: [
+          'Cloudflare hosts the site and keeps short-lived request logs to run and protect it',
+          'Notion stores contact messages and blog comments',
+          'Resend sends me an email when a contact message arrives',
+          'Cal.com handles the booking if you book a call',
+          'Buttondown stores your email and sends the newsletter if you subscribe',
+        ],
+      },
+      'Each of them has its own privacy policy. Links to GitHub, LinkedIn and Bluesky go to sites this page does not cover.',
+    ],
+  },
+  {
+    title: 'How long I keep it',
+    blocks: [
+      'Messages are kept for as long as the conversation needs, and for the length of a project if one follows. You can ask me to delete them at any time.',
+    ],
+  },
+  {
+    title: 'Your choices',
+    blocks: [
+      'You can ask for a copy of your data, ask me to correct it or ask me to delete it. Write to hello@bokoisaac.com and I will answer within a week. Every newsletter has a one-click unsubscribe link.',
+    ],
+  },
+];
+---
+
+<LegalPage
+  title="Privacy"
+  accent="policy."
+  description="What bokoisaac.com collects, why, who handles it and how to have it removed."
+  intro="This page explains what this website collects and why. The site is run by me, Boko Isaac, an independent developer working on my own. Very little is collected, so the page is short."
+  {sections}
+  current="privacy"
+  updated={{ iso: '2026-10-29', label: 'October 2026' }}
+/>
