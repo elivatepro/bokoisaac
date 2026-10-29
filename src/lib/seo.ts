@@ -9,9 +9,11 @@ export const SITE = {
     'Boko Isaac is a full-stack software engineer who builds web and mobile products, APIs and AI integrations end to end, in TypeScript, Node.js and PostgreSQL. Remote, working worldwide, in English and French.',
   knowsAbout: ['TypeScript', 'Node.js', 'PostgreSQL', 'React', 'Next.js', 'React Native', 'Supabase', 'APIs', 'AI integrations', 'Field-service software', 'Fintech'],
   languages: ['English', 'French'],
-  // TODO: real profile URLs (GitHub, LinkedIn, Bluesky) are not known yet; add them here and in Footer.astro.
-  sameAs: [] as string[],
+  /** Profile links. Empty ones are hidden in the footer and left out of the structured data.
+   *  TODO: real profile URLs are not known yet. */
+  social: { GitHub: '', LinkedIn: '', Bluesky: '' } as Record<string, string>,
 };
+const sameAs = Object.values(SITE.social).filter(Boolean);
 
 export const person = {
   '@type': 'Person',
@@ -25,7 +27,7 @@ export const person = {
   knowsAbout: SITE.knowsAbout,
   knowsLanguage: SITE.languages,
   workLocation: { '@type': 'Place', name: 'Remote, worldwide' },
-  ...(SITE.sameAs.length ? { sameAs: SITE.sameAs } : {}),
+  ...(sameAs.length ? { sameAs } : {}),
 };
 
 export const website = {

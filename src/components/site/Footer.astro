@@ -3,8 +3,10 @@
 const email = 'hello@bokoisaac.com';
 const year = new Date().getFullYear();
 
-// TODO: real profile URLs for GitHub, LinkedIn and Bluesky are not known yet.
-const columns: { title: string; links: { label: string; href: string; external?: boolean }[] }[] = [
+import { SITE } from '../../lib/seo';
+
+// "Elsewhere" lists only the profiles that have a URL in lib/seo.ts; the column is hidden while there are none.
+const allColumns: { title: string; links: { label: string; href: string; external?: boolean }[] }[] = [
   {
     title: 'Site',
     links: [
@@ -38,13 +40,14 @@ const columns: { title: string; links: { label: string; href: string; external?:
   {
     title: 'Elsewhere',
     links: [
-      { label: 'GitHub', href: '#', external: true },
-      { label: 'LinkedIn', href: '#', external: true },
-      { label: 'Bluesky', href: '#', external: true },
+      ...Object.entries(SITE.social)
+        .filter(([, href]) => href)
+        .map(([label, href]) => ({ label, href, external: true })),
     ],
   },
 ];
 
+const columns = allColumns.filter((c) => c.links.length);
 const mono = 'font-mono font-medium tracking-[0.01em]';
 ---
 
