@@ -1,4 +1,5 @@
-// Topic chips on /writing: show only posts whose first tag matches, and keep the "// N posts" count in step.
+// Filter chips on /writing (topic) and /work (kind): show only rows whose data-topic matches, and keep the
+// count in step (zero-padded when the count element has data-pad, e.g. "08 projects").
 import { onPageLoad } from '../motion/core';
 
 onPageLoad(() => {
@@ -20,7 +21,7 @@ onPageLoad(() => {
           row.hidden = !match;
           if (match) shown++;
         }
-        if (count) count.textContent = String(shown);
+        if (count) count.textContent = String(shown).padStart(Number(count.dataset.pad ?? 0), '0');
       },
       { signal: ac.signal },
     );

@@ -1,0 +1,81 @@
+---
+// "2.9 s → 0.8 s": the old number struck through in coral, an arrow, the new number in coral.
+// Sizes come from the parent via `size`: card (21/26px), study (37.6/68px). As it scrolls in, the strike draws,
+// the arrow fades in and the new number rises (#18, scripts/sections/metric.ts); reduced motion shows it settled.
+import '@fontsource/jetbrains-mono/600.css';
+
+interface Props {
+  before: string;
+  after: string;
+  size?: 'card' | 'study';
+}
+const { before, after, size = 'card' } = Astro.props;
+const study = size === 'study';
+---
+
+<p
+  data-metric
+  class:list={[
+    'flex min-w-0 flex-wrap items-baseline font-mono leading-[110%] tabular-nums',
+    study
+      ? 'gap-x-[16.9px] gap-y-[3px] text-[37.6px] leading-[102%] tracking-[-0.035em] md:gap-x-[30.6px] md:gap-y-[5.4px] md:text-[68px]'
+      : 'gap-x-[10.5px] gap-y-[2.1px] text-[21px] tracking-[-0.02em] md:gap-x-[13px] md:gap-y-[2.6px] md:text-[26px]',
+  ]}
+>
+  <span class="sr-only">from</span>
+  <s class:list={['metric-was relative font-medium text-muted no-underline', study && 'is-study']}>{before}</s>
+  <span class="metric-arrow text-[0.7em] font-medium text-muted" aria-hidden="true">→</span>
+  <span class="sr-only">to</span>
+  <span class="metric-now font-semibold text-coral">{after}</span>
+</p>
+
+<style>
+  /* Paper draws the strike as a coral bar slightly wider than the number: 2px on cards, 3px on the study. */
+  .metric-was::after {
+    content: '';
+    position: absolute;
+    left: -0.12em;
+    right: -0.12em;
+    top: 50%;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-coral);
+    translate: 0 -50%;
+  }
+  .metric-was.is-study::after {
+    height: 3px;
+  }
+
+  /* #18 before -> after. The hidden start state only applies once JS arms it. */
+  [data-metric].is-armed .metric-was::after {
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s;
+  }
+  [data-metric].is-armed .metric-arrow {
+    opacity: 0;
+    transition: opacity 0.3s ease 0.5s;
+  }
+  [data-metric].is-armed .metric-now {
+    display: inline-block;
+    opacity: 0;
+    translate: 0 0.3em;
+    transition:
+      opacity 0.35s ease 0.62s,
+      translate 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 0.62s;
+  }
+  [data-metric].is-armed.is-on .metric-was::after {
+    transform: scaleX(1);
+  }
+  [data-metric].is-armed.is-on .metric-arrow {
+    opacity: 1;
+  }
+  [data-metric].is-armed.is-on .metric-now {
+    opacity: 1;
+    translate: 0 0;
+  }
+</style>
+
+<script>
+  import '../../scripts/sections/metric';
+</script>

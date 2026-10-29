@@ -1,0 +1,96 @@
+---
+// A project card on /work, from Paper ("Work" / "Work — Mobile"). The whole card opens the case: the title link
+// is stretched over it. Hover is the house card lift (#27) plus a slow image zoom.
+import { Image } from 'astro:assets';
+import Metric from './Metric.astro';
+import type { Project } from '../../lib/projects';
+
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+const mono12 = 'font-mono text-[12px] leading-[140%] font-medium tracking-[0.01em]';
+---
+
+<article data-cursor="Open case" class="work-card group relative flex h-full flex-col rounded-[14px] bg-surface p-2">
+  <div class="relative aspect-[16/10] w-full overflow-clip rounded-[9px] bg-field">
+    <Image
+      src={p.image}
+      alt={p.alt}
+      widths={[400, 700, 1000, 1400]}
+      sizes="(min-width: 1520px) 692px, (min-width: 768px) 46vw, 100vw"
+      class="work-img absolute inset-0 size-full object-cover saturate-[0.92] contrast-[1.04]"
+    />
+    <span class="absolute top-3 left-3 flex h-[26px] items-center rounded-[7px] bg-coral px-[9px] font-mono text-[12px] leading-none font-medium tracking-[0.01em] text-coral-ink">
+      {p.tag}
+    </span>
+    <span class="pointer-events-none absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]" aria-hidden="true"></span>
+  </div>
+  <div class="flex min-w-0 flex-1 basis-0 flex-col gap-3 px-3 pt-[18px] pb-3 md:px-4 md:pt-[22px] md:pb-[14px]">
+    <p class:list={[mono12, 'flex flex-wrap justify-between gap-x-4 gap-y-1 text-muted']}>
+      <span>{p.client} · {p.year}</span>
+      <span>{p.role}</span>
+    </p>
+    <h2 class="text-[32px] leading-[102%] font-semibold tracking-[-0.045em] md:text-[40px]">
+      <a href={`/work/${p.slug}`} class="after:absolute after:inset-0 after:rounded-[14px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-3 focus-visible:after:outline-coral">
+        {p.name}
+      </a>
+    </h2>
+    <p class="mb-2 max-w-[527px] text-[15.5px] leading-[155%] text-pretty text-muted md:max-w-[544px] md:text-[16px]">{p.summary}</p>
+    <div class="mt-auto grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-x-5 gap-y-3 border-t border-rule pt-[18px]">
+      <div class="grid min-w-0 gap-1.5">
+        <Metric before={p.before} after={p.after} />
+        <p class:list={[mono12, 'text-muted']}>{p.metric}</p>
+      </div>
+      <p class="flex min-h-[26px] items-center gap-[7px]" aria-hidden="true">
+        <span class="font-mono text-[12.5px] leading-[150%] font-medium tracking-[0.01em] text-muted underline-offset-4 group-hover:text-ink group-hover:underline">Open case</span>
+        <svg viewBox="0 0 24 24" width="13" height="13" class="work-arrow shrink-0">
+          <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </p>
+    </div>
+    <ul class="flex flex-wrap gap-1.5" aria-label="Stack">
+      {
+        p.stack.map((s) => (
+          <li class="flex h-[26px] items-center rounded-[7px] px-[9px] font-mono text-[12px] leading-none font-medium tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)]">{s}</li>
+        ))
+      }
+    </ul>
+  </div>
+</article>
+
+<style>
+  .work-card {
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+    transition:
+      translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s ease;
+  }
+  .work-img {
+    transition: scale 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .work-arrow {
+    transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .work-card:hover,
+  .work-card:focus-within {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  .work-card:hover .work-img {
+    scale: 1.03;
+  }
+  .work-card:hover .work-arrow,
+  .work-card:focus-within .work-arrow {
+    translate: 3px 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .work-card:hover,
+    .work-card:focus-within {
+      translate: none;
+    }
+    .work-card:hover .work-img {
+      scale: none;
+    }
+  }
+</style>

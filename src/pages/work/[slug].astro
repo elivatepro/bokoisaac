@@ -1,0 +1,198 @@
+---
+// A case study, from Paper ("Work Detail" / "Work Detail — Mobile"). Every project gets the head, the metric
+// card, the cover, "Built with" and "Next case". The problem / approach / result write-up only appears for
+// projects with a `study` in lib/projects.ts, so nothing is shown that hasn't been written yet.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import Metric from '../../components/work/Metric.astro';
+import Contact from '../../components/home/Contact.astro';
+import { projects, type Project } from '../../lib/projects';
+
+export function getStaticPaths() {
+  return projects.map((project, i) => ({ params: { slug: project.slug }, props: { project, next: projects[(i + 1) % projects.length] } }));
+}
+
+interface Props {
+  project: Project;
+  next: Project;
+}
+const { project: p, next } = Astro.props;
+const study = p.study;
+
+const words = p.name.split(' ');
+const last = words.pop();
+const sections: { title: string; kind: 'problem' | 'approach' | 'result' }[] = study
+  ? [
+      { title: 'The problem', kind: 'problem' },
+      { title: 'The approach', kind: 'approach' },
+      { title: 'The result', kind: 'result' },
+    ]
+  : [];
+const facts = [
+  { label: 'Client', value: p.client },
+  { label: 'Year', value: p.year },
+  { label: 'Role', value: p.role },
+  { label: 'Kind', value: p.tag },
+];
+
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const crumb = 'flex min-h-11 items-center text-[12.5px] leading-4';
+const row = 'grid min-w-0 grid-cols-[minmax(0,1fr)] items-start gap-[18px] border-t border-rule py-8 md:grid-cols-[minmax(0,340px)_minmax(0,720px)] md:gap-x-[134.4px] md:gap-y-6 md:py-[52px]';
+const h2 = 'text-[26px] leading-[108%] font-semibold tracking-[-0.045em] md:text-[34px]';
+const body = 'text-[16px] leading-[165%] text-pretty text-ink/86 md:text-[17px]';
+const card = 'grid min-w-0 grid-cols-[minmax(0,1fr)] rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)]';
+const ring = 'pointer-events-none absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]';
+---
+
+<Base title={p.name} description={p.summary}>
+  <article aria-labelledby="case-title">
+    <div class="page pt-[112px] pb-14 md:pt-[208px] md:pb-[112px]">
+      <header class="grid max-w-[940px] min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
+        <nav aria-label="Breadcrumb" class:list={[mono, 'min-w-0']}>
+          <ol class="flex flex-wrap items-center gap-x-2">
+            <li class="flex items-center"><a href="/" class:list={[crumb, 'min-w-3 text-muted hover:text-ink']} aria-label="Home">~</a></li>
+            <li class="flex items-center gap-2">
+              <span class="text-rule-strong" aria-hidden="true">/</span><a href="/work" class:list={[crumb, 'text-muted hover:text-ink']}>Work</a>
+            </li>
+            <li class="flex min-w-0 items-center gap-2">
+              <span class="text-rule-strong" aria-hidden="true">/</span><span aria-current="page" class="text-[12.5px] leading-4">{p.name}</span>
+            </li>
+          </ol>
+        </nav>
+        <Eyebrow data-reveal="eyebrow">Case study</Eyebrow>
+        <h1 id="case-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+          {words.length > 0 && <>{words.join(' ')} </>}<span class="text-coral">{last}</span>
+        </h1>
+        <p data-reveal data-reveal-delay="200" class="max-w-[558px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[684px] md:text-[19px]">{p.summary}</p>
+      </header>
+
+      <div data-reveal data-reveal-delay="260" class="mt-9 grid grid-cols-[minmax(0,1fr)] rounded-[14px] bg-surface shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-[72px] md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div class="grid min-w-0 content-center gap-3 px-[18px] pt-5 pb-[22px] md:gap-4 md:p-11">
+          <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{p.metric}</p>
+          <Metric before={p.before} after={p.after} size="study" />
+        </div>
+        <dl class="grid min-w-0 grid-cols-2 border-t border-rule md:border-t-0 md:border-l">
+          {
+            facts.map((f, i) => (
+              <div class:list={['grid min-w-0 content-start gap-2 px-[18px] py-4 md:content-center md:px-7 md:py-5', i < 2 && 'border-b border-rule', i % 2 === 0 && 'border-r border-rule']}>
+                <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{f.label}</dt>
+                <dd class="text-[15px] leading-[135%] font-medium wrap-anywhere md:text-[16px]">{f.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div data-reveal data-reveal-delay="300" class:list={[card, 'mt-3 md:mt-5']}>
+        <div class="relative aspect-[4/3] overflow-clip rounded-[9px] bg-field md:aspect-video">
+          <Image src={p.image} alt={p.alt} widths={[480, 900, 1400, 2000]} sizes="(min-width: 1520px) 1392px, 100vw" loading="eager" class="absolute inset-0 size-full object-cover saturate-[0.92] contrast-[1.04]" />
+          <span class={ring} aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div class="mt-12 grid grid-cols-[minmax(0,1fr)] md:mt-[112px]">
+        {
+          study &&
+            sections.map((s, i) => (
+              <>
+                <section data-reveal class={row} aria-labelledby={`case-${s.kind}`}>
+                  <div class="grid min-w-0 content-start gap-2 md:gap-3">
+                    <p class:list={[mono, 'text-[12.5px] leading-[150%] text-coral']}>{String(i + 1).padStart(2, '0')}</p>
+                    <h2 id={`case-${s.kind}`} class={h2}>
+                      {s.title}
+                    </h2>
+                  </div>
+                  <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 md:gap-[18px]">
+                    {s.kind === 'approach' ? (
+                      <ul class="grid min-w-0 gap-2">
+                        {study.approach.map((item) => (
+                          <li class="flex min-w-0 items-start gap-[13px] md:gap-[14px]">
+                            <span class="flex w-[6px] shrink-0 pt-[10px] md:pt-[11px]" aria-hidden="true">
+                              <span class="size-[6px] rounded-full bg-coral" />
+                            </span>
+                            <span class:list={[body, 'min-w-0 flex-1']}>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      study[s.kind].map((para) => <p class={body}>{para}</p>)
+                    )}
+                    {s.kind === 'result' && study.pullQuote && (
+                      <blockquote class="border-l-2 border-coral py-[2px] pl-[18px] text-[17.92px] leading-[145%] text-pretty md:text-[19.04px]">{study.pullQuote}</blockquote>
+                    )}
+                  </div>
+                </section>
+                {s.kind === 'approach' && study.gallery && (
+                  <div class="mb-9 grid grid-cols-[minmax(0,1fr)] gap-3 md:mt-5 md:mb-[68px] md:grid-cols-2 md:gap-5">
+                    {study.gallery.map((g) => (
+                      <figure data-reveal class={card}>
+                        <div class="relative aspect-[4/3] overflow-clip rounded-[9px] bg-field">
+                          <Image src={g.image} alt={g.alt} widths={[400, 700, 1400]} sizes="(min-width: 1520px) 694px, (min-width: 768px) 46vw, 100vw" class="absolute inset-0 size-full object-cover saturate-[0.92] contrast-[1.04]" />
+                          <span class={ring} aria-hidden="true" />
+                        </div>
+                        <figcaption class:list={[mono, 'px-2 pt-3 pb-1.5 text-[12px] leading-[140%] text-muted']}>{g.caption}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                )}
+              </>
+            ))
+        }
+        <section data-reveal class:list={[row, 'border-b']} aria-labelledby="case-stack">
+          <h2 id="case-stack" class={h2}>Built with</h2>
+          <ul class="flex min-w-0 flex-wrap gap-2 self-center">
+            {p.stack.map((s) => <li class:list={[mono, 'flex h-8 items-center rounded-[7px] px-3 text-[12.5px] leading-none shadow-[inset_0_0_0_1px_var(--color-rule-strong)]']}>{s}</li>)}
+          </ul>
+        </section>
+      </div>
+
+      <a
+        href={`/work/${next.slug}`}
+        data-cursor="Open case"
+        class="case-next mt-12 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-8 gap-y-[10px] rounded-[14px] bg-surface p-5 md:mt-[112px] md:p-11"
+      >
+        <span class="col-span-full flex min-w-0 items-center gap-[9px]">
+          <span class="size-[7px] shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+          <span class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Next case</span>
+          <span class:list={[mono, 'ml-auto text-[12px] leading-[140%] text-muted']}>{next.tag} · {next.client}</span>
+        </span>
+        <span class="col-start-1 min-w-0 text-[34.4px] leading-none font-semibold tracking-[-0.045em] text-balance wrap-anywhere md:text-[68px]">{next.name}</span>
+        <span class="col-start-1 max-w-[660px] text-[15px] leading-[155%] text-pretty text-muted md:max-w-[704px] md:text-[16px]">{next.summary}</span>
+        <span class="case-next-tile col-start-2 row-span-2 row-start-2 grid size-11 place-items-center rounded-[12px] bg-coral text-coral-ink md:size-14 md:rounded-[14px]" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+      </a>
+    </div>
+  </article>
+
+  <Contact />
+</Base>
+
+<style>
+  /* #27 card lift on the next-case card. */
+  .case-next {
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+    transition:
+      translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s ease;
+  }
+  .case-next-tile svg {
+    transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .case-next:hover,
+  .case-next:focus-visible {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  .case-next:hover .case-next-tile svg,
+  .case-next:focus-visible .case-next-tile svg {
+    translate: 3px 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .case-next:hover,
+    .case-next:focus-visible {
+      translate: none;
+    }
+  }
+</style>

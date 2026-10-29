@@ -1,0 +1,45 @@
+---
+// Top of an index page (Work, Writing, Services…), from Paper: "// Label", big title, lead, optional stat row.
+// The template's faint grid sits behind it, fading from the top right (84% / 8%).
+// Title: pass `title` and `accent` (the coral tail), e.g. title="Eight products, each one" accent="shipped.".
+import Eyebrow from '../ui/Eyebrow.astro';
+import GridBg from '../ui/GridBg.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  accent: string;
+  lead: string;
+  stats?: { label: string; value: string | number }[];
+  id?: string;
+  /** Lead paragraph max width in px (Paper: 684 on most pages, 760 on Writing). */
+  leadMax?: number;
+}
+const { eyebrow, title, accent, lead, stats = [], id = 'page-title', leadMax = 684 } = Astro.props;
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+---
+
+<section aria-labelledby={id} class="relative isolate">
+  <GridBg x="84%" y="8%" />
+  <div class="page relative pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]">
+    <div class="grid max-w-[940px] grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
+      <Eyebrow data-reveal="eyebrow">{eyebrow}</Eyebrow>
+      <h1 {id} data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+        {title} <span class="text-coral">{accent}</span>
+      </h1>
+      <p data-reveal data-reveal-delay="200" style={`max-width:${leadMax}px`} class="text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">{lead}</p>
+      {
+        stats.length > 0 && (
+          <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
+            {stats.map((s) => (
+              <div class="min-w-0 flex-1 basis-0 pr-3 md:min-w-[120px] md:pr-5">
+                <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{s.label}</dt>
+                <dd class="mt-2 text-[28px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]">{s.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+    </div>
+  </div>
+</section>

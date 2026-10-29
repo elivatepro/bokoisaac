@@ -2,8 +2,7 @@
 // Writing index from Paper ("Boko Isaac - Writing" → "Writing" / "Writing — Mobile"; empty state "Writing — Empty").
 // Posts come from Notion Blog (only Status = Published in production). The chips filter by each post's first tag.
 import Base from '../../layouts/Base.astro';
-import Eyebrow from '../../components/ui/Eyebrow.astro';
-import GridBg from '../../components/ui/GridBg.astro';
+import PageHero from '../../components/site/PageHero.astro';
 import Newsletter from '../../components/writing/Newsletter.astro';
 import Contact from '../../components/home/Contact.astro';
 import { day, postHref, posts as allPosts, readTime } from '../../lib/posts';
@@ -19,40 +18,20 @@ const months = dates.length > 1 ? Math.max(1, (Math.max(...dates) - Math.min(...
 const perMonth = Math.max(1, Math.round(posts.length / months));
 
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
-const chip = 'flex h-10 items-center gap-2 rounded-[10px] px-[14px] text-[12.5px] leading-none font-medium tracking-[0.01em]';
-const stat = 'min-w-0 flex-1 basis-0 pr-3 md:pr-5';
+const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text-[12.5px] leading-none font-medium tracking-[0.01em]';
 const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
 
 <Base title="Writing" description="Notes from shipping real software. Written after the project, with the numbers and the code.">
-  <section aria-labelledby="writing-title" class="relative isolate">
-    <GridBg x="84%" y="8%" />
-    <div class="page relative pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]">
-      <div class="grid max-w-[940px] grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
-        <Eyebrow data-reveal="eyebrow">Writing</Eyebrow>
-        <h1 id="writing-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
-          Notes from shipping <span class="text-coral">real software.</span>
-        </h1>
-        <p data-reveal data-reveal-delay="200" class="max-w-[760px] text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">
-          Written after the project, with the numbers and the code. About one a month.
-        </p>
-        {
-          posts.length > 0 && (
-            <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
-              <div class={stat}>
-                <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>articles</dt>
-                <dd class="mt-2 text-[28px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]">{posts.length}</dd>
-              </div>
-              <div class={stat}>
-                <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>a month, roughly</dt>
-                <dd class="mt-2 text-[28px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]">{perMonth}</dd>
-              </div>
-            </dl>
-          )
-        }
-      </div>
-    </div>
-  </section>
+  <PageHero
+    id="writing-title"
+    eyebrow="Writing"
+    title="Notes from shipping"
+    accent="real software."
+    lead="Written after the project, with the numbers and the code. About one a month."
+    leadMax={760}
+    stats={posts.length ? [{ label: 'articles', value: posts.length }, { label: 'a month, roughly', value: perMonth }] : []}
+  />
 
   <section aria-label="Posts">
     <div class="page pb-16 md:pb-[112px]">
@@ -61,11 +40,11 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
           <>
             <div data-reveal data-reveal-delay="300" class="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 pb-6">
               <div class="flex min-w-0 flex-wrap gap-2" role="group" aria-label="Filter by topic">
-                <button type="button" data-filter="" aria-pressed="true" class:list={[chip, 'wf-chip']}>
+                <button type="button" data-filter="" aria-pressed="true" class={chip}>
                   All <span class="wf-count">{posts.length}</span>
                 </button>
                 {topics.map((t) => (
-                  <button type="button" data-filter={t.name} aria-pressed="false" class:list={[chip, 'wf-chip']}>
+                  <button type="button" data-filter={t.name} aria-pressed="false" class={chip}>
                     {t.name} <span class="wf-count">{t.count}</span>
                   </button>
                 ))}
@@ -133,29 +112,6 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
 </Base>
 
 <style>
-  .wf-chip {
-    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
-    transition:
-      background-color 0.25s,
-      color 0.25s,
-      box-shadow 0.25s;
-  }
-  .wf-chip:hover {
-    box-shadow: inset 0 0 0 1px #f1f2ec66;
-  }
-  .wf-chip .wf-count {
-    color: var(--color-muted);
-  }
-  .wf-chip[aria-pressed='true'] {
-    background: var(--color-coral);
-    color: var(--color-coral-ink);
-    box-shadow: none;
-  }
-  .wf-chip[aria-pressed='true'] .wf-count {
-    color: inherit;
-    opacity: 0.7;
-  }
-
   /* #29 row slide plus the arrow tile filling coral. */
   .wf-row {
     transition:

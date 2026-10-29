@@ -1,0 +1,63 @@
+---
+// Work index from Paper ("Boko Isaac - Work" → "Work" / "Work — Mobile"). Chips filter by project kind.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/site/PageHero.astro';
+import ProjectCard from '../../components/work/ProjectCard.astro';
+import Contact from '../../components/home/Contact.astro';
+import { projects } from '../../lib/projects';
+
+const kinds = [...new Set(projects.map((p) => p.tag))].map((k) => ({ name: k, count: projects.filter((p) => p.tag === k).length }));
+const pad = (n: number) => String(n).padStart(2, '0');
+const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text-[12.5px] leading-none font-medium tracking-[0.01em]';
+---
+
+<Base title="Work" description="Eight products, each one shipped: field-service platforms, invoicing, wallets and learning tools.">
+  <PageHero
+    id="work-title"
+    eyebrow="Work"
+    title="Eight products, each one"
+    accent="shipped."
+    lead="Field-service platforms, invoicing, wallets and learning tools, each built to hold up under real users. Filter by kind, or open any of them for the full write-up."
+    stats={[
+      { label: 'case studies', value: projects.length },
+      { label: 'years shipping', value: '6+' },
+      { label: 'languages, EN & FR', value: 2 },
+    ]}
+  />
+
+  <section aria-label="Projects">
+    <div class="page pb-14 md:pb-[112px]">
+      <div data-reveal data-reveal-delay="300" class="flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-[18px] md:gap-x-8 md:gap-y-[14px] md:pt-[22px]">
+        <div class="flex min-w-0 flex-wrap gap-2" role="group" aria-label="Filter by kind">
+          <button type="button" data-filter="" aria-pressed="true" class={chip}>All <span class="wf-count">{projects.length}</span></button>
+          {
+            kinds.map((k) => (
+              <button type="button" data-filter={k.name} aria-pressed="false" class={chip}>
+                {k.name} <span class="wf-count">{k.count}</span>
+              </button>
+            ))
+          }
+        </div>
+        <p class="ml-auto font-mono text-[12.5px] leading-[150%] font-medium tracking-[0.01em] text-muted tabular-nums" aria-live="polite">
+          <span data-filter-count data-pad="2">{pad(projects.length)}</span> projects
+        </p>
+      </div>
+
+      <ul data-reveal-stagger="80" data-reveal-delay="340" class="mt-6 grid grid-cols-[minmax(0,1fr)] gap-4 md:mt-8 md:grid-cols-2 md:gap-6">
+        {
+          projects.map((p) => (
+            <li data-topic={p.tag} class="min-w-0">
+              <ProjectCard project={p} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Contact />
+</Base>
+
+<script>
+  import '../../scripts/writing/filter';
+</script>
