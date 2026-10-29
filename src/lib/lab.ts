@@ -7,8 +7,8 @@ import jobSheet from '../assets/home/lab/job-sheet.jpg';
 import routeSketch from '../assets/home/lab/route-sketch.jpg';
 
 // Lab items for /lab and /lab/[slug], from Paper ("Boko Isaac - Lab"). The Notion Lab rows are still drafts with
-// no type, stack, repo or body, so this copy is the source for now. Stars and downloads are the numbers drawn in
-// Paper (placeholders until they come from GitHub / npm). Repo links stay hidden until `repo` is set.
+// no type, stack, repo or body, so this copy is the source for now. Stars and downloads are left out until they
+// come from GitHub / npm (Paper's numbers were placeholders); cards and pages hide them when unset. Repo links stay hidden until `repo` is set.
 export interface ReadmeBlock {
   kind: 'p' | 'list' | 'code' | 'quote';
   text?: string;
@@ -39,8 +39,6 @@ export const lab: LabItem[] = [
     kind: 'Library',
     summary: 'Holds API calls while a phone has no signal, then sends them in order once it does.',
     install: 'npm install offline-queue',
-    stars: 420,
-    downloads: 7800,
     license: 'MIT',
     image: offlineQueue,
     alt: 'A city street seen from above at night, lit by street lamps',
@@ -90,8 +88,6 @@ export const lab: LabItem[] = [
     kind: 'Experiment',
     summary: 'Runs two versions of a prompt on the same inputs and shows where the answers changed.',
     install: 'npx prompt-diff a.md b.md',
-    stars: 310,
-    downloads: 5200,
     license: 'MIT',
     image: promptDiff,
     alt: 'Large weathered letterpress blocks stacked in the dark',
@@ -102,8 +98,6 @@ export const lab: LabItem[] = [
     kind: 'Library',
     summary: 'Integer-only money math for TypeScript, so a wallet never shows $0.30000000000000004.',
     install: 'npm install money-safe',
-    stars: 180,
-    downloads: 3100,
     license: 'MIT',
     image: moneySafe,
     alt: 'A dark abstract close-up of curved metal catching a strip of light',
@@ -114,8 +108,6 @@ export const lab: LabItem[] = [
     kind: 'Tool',
     summary: 'Fills a Supabase database with realistic test data, read straight from your own schema.',
     install: 'npx supa-seed --rows 500',
-    stars: 150,
-    downloads: 1900,
     license: 'MIT',
     image: supaSeed,
     alt: 'Hard window shadows falling across a concrete wall in a grid',
@@ -126,8 +118,6 @@ export const lab: LabItem[] = [
     kind: 'Tool',
     summary: 'Turns a finished install job into a signed PDF the customer gets before the van leaves.',
     install: 'npx job-sheet ./job.json',
-    stars: 120,
-    downloads: 600,
     license: 'MIT',
     image: jobSheet,
     alt: 'A metal grate resting on a dark surface, lit from the side',
@@ -138,7 +128,6 @@ export const lab: LabItem[] = [
     kind: 'Experiment',
     summary: 'Plans a day of install jobs on a map and reorders the stops when one runs late.',
     install: 'npx degit bokoisaac/route-sketch',
-    stars: 60,
     license: 'MIT',
     image: routeSketch,
     alt: 'Water droplets beaded on a dark surface',

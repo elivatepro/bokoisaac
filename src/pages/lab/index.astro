@@ -22,8 +22,8 @@ const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text
     lead="Small fixes that started on client projects, and a few experiments I keep to learn what comes next. All TypeScript, all MIT licensed."
     stats={[
       { label: 'projects', value: lab.length },
-      { label: 'stars', value: num(stars) },
-      { label: 'downloads', value: num(downloads) },
+      ...(stars ? [{ label: 'stars', value: num(stars) }] : []),
+      ...(downloads ? [{ label: 'downloads', value: num(downloads) }] : []),
     ]}
   />
 
