@@ -1,0 +1,28 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const site = 'Boko Isaac';
+const { title, description = 'Boko Isaac builds full-stack products, mobile apps and AI integrations.' } = Astro.props;
+const fullTitle = title ? `${title} — ${site}` : `${site} — Software engineer`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta name="theme-color" content="#0B0C0E" />
+  </head>
+  <body class="min-h-dvh bg-bg text-ink">
+    <slot />
+  </body>
+</html>

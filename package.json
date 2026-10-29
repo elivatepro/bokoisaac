@@ -1,0 +1,23 @@
+{
+  "name": "bokoisaac",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "sh scripts/with-keys.sh astro dev",
+    "build": "sh scripts/with-keys.sh astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@fontsource-variable/lexend": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@notionhq/client": "^5.28.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.4",
+    "tailwindcss": "^4.3.3"
+  }
+}
