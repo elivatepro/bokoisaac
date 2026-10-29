@@ -1,0 +1,65 @@
+---
+// Lab index from Paper ("Boko Isaac - Lab" → "Lab" / "Lab — Mobile"). Chips filter by kind (Library, Experiment, Tool).
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/site/PageHero.astro';
+import LabCard from '../../components/lab/LabCard.astro';
+import Contact from '../../components/home/Contact.astro';
+import { lab, num } from '../../lib/lab';
+
+const kinds = [...new Set(lab.map((l) => l.kind))].map((k) => ({ name: k, count: lab.filter((l) => l.kind === k).length }));
+const stars = lab.reduce((s, l) => s + (l.stars ?? 0), 0);
+const downloads = lab.reduce((s, l) => s + (l.downloads ?? 0), 0);
+const pad = (n: number) => String(n).padStart(2, '0');
+const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text-[12.5px] leading-none font-medium tracking-[0.01em]';
+---
+
+<Base title="Lab" description="Tools I built, then gave away: small TypeScript libraries, command line tools and experiments, all MIT licensed.">
+  <PageHero
+    id="lab-title"
+    eyebrow="Lab"
+    title="Tools I built, then"
+    accent="gave away."
+    lead="Small fixes that started on client projects, and a few experiments I keep to learn what comes next. All TypeScript, all MIT licensed."
+    stats={[
+      { label: 'projects', value: lab.length },
+      { label: 'stars', value: num(stars) },
+      { label: 'downloads', value: num(downloads) },
+    ]}
+  />
+
+  <section aria-label="Lab projects">
+    <div class="page pb-16 md:pb-[112px]">
+      <div data-reveal data-reveal-delay="300" class="flex flex-wrap items-center justify-between gap-x-8 gap-y-[14px] border-t border-rule pt-[22px]">
+        <div class="flex min-w-0 flex-wrap gap-2" role="group" aria-label="Filter by kind">
+          <button type="button" data-filter="" aria-pressed="true" class={chip}>All <span class="wf-count">{lab.length}</span></button>
+          {
+            kinds.map((k) => (
+              <button type="button" data-filter={k.name} aria-pressed="false" class={chip}>
+                {k.name} <span class="wf-count">{k.count}</span>
+              </button>
+            ))
+          }
+        </div>
+        <p class="ml-auto font-mono text-[12.5px] leading-[150%] font-medium tracking-[0.01em] text-muted tabular-nums" aria-live="polite">
+          <span data-filter-count data-pad="2">{pad(lab.length)}</span> projects
+        </p>
+      </div>
+
+      <ul data-reveal-stagger="70" data-reveal-delay="340" class="mt-6 grid grid-cols-[minmax(0,1fr)] gap-4 md:mt-8 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
+        {
+          lab.map((item) => (
+            <li data-topic={item.kind} class="min-w-0">
+              <LabCard item={item} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Contact />
+</Base>
+
+<script>
+  import '../../scripts/writing/filter';
+</script>

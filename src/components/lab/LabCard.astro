@@ -1,0 +1,106 @@
+---
+// A Lab card on /lab, from Paper ("Lab" / "Lab — Mobile"). The whole card opens the item (title link stretched over
+// it); the install line stays selectable. Hover is the house card lift (#27) plus a slow image zoom.
+import { Image } from 'astro:assets';
+import { num, type LabItem } from '../../lib/lab';
+
+interface Props {
+  item: LabItem;
+}
+const { item } = Astro.props;
+const mono = 'font-mono text-[12.5px] leading-[150%] font-medium tracking-[0.01em] tabular-nums';
+const arrow = 'M5 12h14M13 6l6 6-6 6';
+---
+
+<article data-cursor="Open" class="lab-card group relative flex h-full flex-col rounded-[14px] bg-surface p-2">
+  <div class="relative aspect-[16/10] w-full overflow-clip rounded-[9px] bg-field">
+    <Image
+      src={item.image}
+      alt={item.alt}
+      widths={[400, 700, 1000]}
+      sizes="(min-width: 1520px) 456px, (min-width: 768px) 31vw, 100vw"
+      class="lab-img absolute inset-0 size-full object-cover brightness-[62%] contrast-[108%] grayscale-[55%]"
+    />
+    <span class="pointer-events-none absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]" aria-hidden="true"></span>
+    <span class="pointer-events-none absolute inset-0 bg-field/26" aria-hidden="true"></span>
+    <span class="absolute top-2.5 left-2.5 flex h-[26px] items-center rounded-[7px] bg-coral px-[9px] font-mono text-[12px] leading-none font-medium tracking-[0.01em] text-coral-ink">
+      {item.kind}
+    </span>
+  </div>
+  <div class="flex min-w-0 flex-1 basis-0 flex-col gap-2.5 px-3.5 pt-5 pb-3">
+    <h2 class="text-[26px] leading-[105%] font-semibold tracking-[-0.045em] wrap-anywhere md:text-[30px]">
+      <a href={`/lab/${item.slug}`} class="after:absolute after:inset-0 after:rounded-[14px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-3 focus-visible:after:outline-coral">
+        {item.name}
+      </a>
+    </h2>
+    <p class="text-[15px] leading-[150%] text-pretty text-muted">{item.summary}</p>
+    <p class="relative z-1 mt-1.5 mb-2 flex min-h-[38px] min-w-0 items-center gap-2.5 rounded-[9px] bg-field px-3 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+      <span class:list={[mono, 'shrink-0 text-coral']} aria-hidden="true">$</span>
+      <code class:list={[mono, 'min-w-0 py-2 leading-[145%] wrap-anywhere select-all']}>{item.install}</code>
+    </p>
+    <div class:list={[mono, 'mt-auto flex min-w-0 flex-wrap items-center gap-x-[18px] gap-y-2 border-t border-rule pt-3.5']}>
+      {
+        item.stars != null && (
+          <span class="flex items-center gap-[7px]">
+            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" class="shrink-0">
+              <path d="M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z" fill="var(--color-coral)" />
+            </svg>
+            {num(item.stars)} <span class="text-muted">stars</span>
+          </span>
+        )
+      }
+      {
+        item.downloads != null && (
+          <span class="flex items-center gap-[7px]">
+            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" class="shrink-0">
+              <path d="M12 4v12M6.5 11l5.5 5.5 5.5-5.5M5 20.5h14" fill="none" stroke="var(--color-coral)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            {num(item.downloads)} <span class="text-muted">downloads</span>
+          </span>
+        )
+      }
+      <span class="ml-auto flex items-center gap-1.5 text-muted transition-colors group-hover:text-ink" aria-hidden="true">
+        Open
+        <svg viewBox="0 0 24 24" width="13" height="13" class="lab-arrow shrink-0">
+          <path d={arrow} fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .lab-card {
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+    transition:
+      translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s ease;
+  }
+  .lab-img {
+    transition: scale 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .lab-arrow {
+    transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .lab-card:hover,
+  .lab-card:focus-within {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  .lab-card:hover .lab-img {
+    scale: 1.03;
+  }
+  .lab-card:hover .lab-arrow,
+  .lab-card:focus-within .lab-arrow {
+    translate: 3px 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lab-card:hover,
+    .lab-card:focus-within {
+      translate: none;
+    }
+    .lab-card:hover .lab-img {
+      scale: none;
+    }
+  }
+</style>
