@@ -1,0 +1,465 @@
+---
+// Contact, from Paper ("Boko Isaac - Contact": "Contact" / "Contact — Mobile" plus the "Form Sending / Error / Sent"
+// state artboards). Three parts: the message form (posts to /api/contact → Notion Leads + an email to Boko), the
+// intro-call picker (opens the matching Cal.com booking page), and quick answers.
+// The form prefills from the home page's "Start a project" picks (query string or sessionStorage "brief").
+import Base from '../layouts/Base.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+import Button from '../components/ui/Button.astro';
+import GridBg from '../components/ui/GridBg.astro';
+
+export const prerender = true;
+
+// Same option names as the Notion Leads "Need" and "Budget" properties.
+const needs = ['Full-stack build', 'Mobile app', 'AI integration', 'APIs & integrations', 'Team embed', 'Something else'];
+const budgets = ['Under $1k', '$1–3k', '$3–10k', '$10k+', 'Not sure yet'];
+const email = 'hello@bokoisaac.com';
+const cal = 'https://cal.com/bokox/intro';
+
+const facts = [
+  { label: 'Email', value: email, href: `mailto:${email}` },
+  { label: 'Languages', value: 'English, French' },
+  { label: 'Works', value: 'Remote, worldwide' },
+];
+const call = [
+  { label: 'Length', value: '20 minutes, free' },
+  { label: 'Where', value: 'Google Meet, link by email' },
+  { label: 'Good for', value: 'Scoping, fit, rough price' },
+];
+const answers = [
+  {
+    q: 'When can you start?',
+    a: 'I lead QPIMS at Quality Installs Co., so I take one outside project at a time. If I am booked, I tell you the first date I am free.',
+  },
+  {
+    q: 'Can we work across time zones?',
+    a: 'Yes. I work remotely with clients worldwide. We agree on a few overlap hours, and I write things down so nothing waits on a meeting.',
+  },
+  {
+    q: 'How do you price a project?',
+    a: 'Prices are in USD with a "from" price per service, for example a full-stack build from $3,000. You get a fixed range before any work starts.',
+  },
+  {
+    q: 'Which stack do you use?',
+    a: 'Mostly TypeScript, Node.js, React, React Native and Supabase with Postgres. I can work in your existing stack too.',
+  },
+];
+const next = [
+  'I reply with questions, a rough price and my first free date.',
+  'If it’s a fit, we have a short call to agree the scope.',
+  'You get a written plan and a fixed quote before any work starts.',
+];
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const chip =
+  'flex h-10 cursor-pointer items-center rounded-[10px] px-[14px] text-center text-[12.5px] leading-none font-medium tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-[background-color,color,box-shadow] duration-250 select-none hover:shadow-[inset_0_0_0_1px_#f1f2ec66] peer-checked:bg-coral peer-checked:font-semibold peer-checked:text-coral-ink peer-checked:shadow-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-coral';
+const label = 'text-[14.5px] leading-[130%] font-medium';
+const field =
+  'w-full min-w-0 rounded-[10px] bg-field px-4 text-[16px] leading-[145%] text-ink shadow-[inset_0_0_0_1px_var(--color-rule-strong)] outline-none placeholder:text-muted focus-visible:shadow-[inset_0_0_0_1.5px_var(--color-coral)] aria-invalid:shadow-[inset_0_0_0_1.5px_var(--color-error)] aria-invalid:focus-visible:shadow-[inset_0_0_0_1.5px_var(--color-error)]';
+const errIcon = 'M12 7.5v5.5';
+---
+
+<Base title="Contact" description="Tell Boko Isaac what you are building. A few lines are enough: you get questions, a rough price and the first free date, usually within one working day.">
+  <section aria-labelledby="contact-title" class="relative isolate">
+    <GridBg x="12%" y="12%" />
+    <div class="page relative grid grid-cols-[minmax(0,1fr)] items-start gap-12 pt-[112px] pb-16 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-[100.8px] md:pt-[208px] md:pb-[112px]">
+      <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-[22px]">
+        <Eyebrow data-reveal="eyebrow">Contact</Eyebrow>
+        <h1 id="contact-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[72px]">
+          Tell me what you are <span class="text-coral">building.</span>
+        </h1>
+        <p data-reveal data-reveal-delay="200" class="max-w-[684px] text-[15.5px] leading-[160%] text-muted md:text-[19px]">
+          A few lines are enough. I read every message myself and reply with questions, a rough price and my first free date.
+        </p>
+        <dl data-reveal data-reveal-delay="260" class="mt-2 grid w-full max-w-[560px] grid-cols-[minmax(0,1fr)] border-t border-rule md:mt-[18px]">
+          {
+            facts.map((f) => (
+              <div class="grid min-h-14 min-w-0 grid-cols-[84px_minmax(0,1fr)] items-baseline gap-[14px] border-b border-rule py-4 md:min-h-16 md:grid-cols-[96px_minmax(0,1fr)] md:py-[18px]">
+                <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{f.label}</dt>
+                <dd class="min-w-0 text-[20px] leading-[115%] font-semibold tracking-[-0.04em] wrap-anywhere md:text-[27px] md:tracking-[-0.045em]">
+                  {f.href ? (
+                    <a href={f.href} class="decoration-coral decoration-1 underline-offset-[5px] hover:underline">
+                      {f.value}
+                    </a>
+                  ) : (
+                    f.value
+                  )}
+                </dd>
+              </div>
+            ))
+          }
+          <div class="flex min-w-0 items-center gap-[10px] pt-[18px]">
+            <span class="pulse-dot size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+            <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>Replies within one working day</span>
+          </div>
+        </dl>
+      </div>
+
+      <div id="message" data-reveal data-reveal-delay="300" data-contact-card class="grid min-w-0 scroll-mt-[110px] grid-cols-[minmax(0,1fr)] gap-[22px] rounded-[14px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-rule)] md:gap-[26px] md:p-10">
+        <div class="flex min-h-[26px] min-w-0 items-center justify-between gap-3">
+          <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>message.md</p>
+          <p data-contact-status class:list={[mono, 'flex h-[26px] items-center gap-[7px] rounded-[7px] px-[9px] text-[12px] leading-none text-muted shadow-[inset_0_0_0_1px_var(--color-rule-strong)]']}>
+            <span data-contact-status-dot class="hidden size-[6px] shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+            <span data-contact-status-text>draft</span>
+          </p>
+        </div>
+
+        <form action="/api/contact" method="post" novalidate data-contact-form class="contents">
+          <p class:list={[mono, '-mt-3 min-h-[37.5px] min-w-0 border-b border-rule pb-[18px] text-[12.5px] leading-[150%] text-balance text-muted wrap-anywhere']}>
+            // Nothing is sent until you press the button.
+          </p>
+
+          <div data-contact-error hidden role="alert" class="flex items-start gap-3 rounded-[12px] bg-error/8 px-[18px] py-4 shadow-[inset_0_0_0_1px_#f0525f66]">
+            <svg viewBox="0 0 24 24" width="18" height="18" class="mt-px shrink-0" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="var(--color-error)" stroke-width="2" />
+              <path d={errIcon} fill="none" stroke="var(--color-error)" stroke-width="2" stroke-linecap="round" />
+              <circle cx="12" cy="16.5" r="1.2" fill="var(--color-error)" />
+            </svg>
+            <div class="flex min-w-0 flex-1 flex-col gap-1">
+              <p class="text-[15px] leading-[130%] font-medium">Couldn’t send your message.</p>
+              <p class="text-[14px] leading-[150%] text-muted">
+                <span data-contact-error-text>Your text is kept. Try again in a moment,</span><br class="max-md:hidden" />{' '}or write to <a href={`mailto:${email}`} class="text-ink underline decoration-coral decoration-1 underline-offset-4">{email}</a> directly.
+              </p>
+            </div>
+          </div>
+
+          <fieldset data-contact-dim class="flex min-w-0 flex-col transition-opacity">
+            <legend class="float-left mb-3 flex items-baseline gap-[10px]">
+              <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>01</span>
+              <span class={label}>What do you need?</span>
+            </legend>
+            <div class="clear-left flex flex-wrap gap-2">
+              {
+                needs.map((n) => (
+                  <label class="relative">
+                    <input type="checkbox" name="need" value={n} class="peer sr-only" />
+                    <span class={chip}>{n}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <fieldset data-contact-dim class="flex min-w-0 flex-col transition-opacity">
+            <legend class="float-left mb-3 flex items-baseline gap-[10px]">
+              <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>02</span>
+              <span class={label}>Rough budget</span>
+            </legend>
+            <div class="clear-left flex flex-wrap gap-2">
+              {
+                budgets.map((b) => (
+                  <label class="relative">
+                    <input type="radio" name="budget" value={b} class="peer sr-only" />
+                    <span class={chip}>{b}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <div data-contact-dim class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[18px] transition-opacity md:grid-cols-2">
+            <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-[9px]">
+              <label for="ct-name" class:list={[label, 'flex items-baseline gap-1']}>Your name <span class="text-coral" aria-hidden="true">*</span></label>
+              <input id="ct-name" name="name" required maxlength="120" autocomplete="name" placeholder="Ada Lindqvist" aria-describedby="ct-name-msg" class:list={[field, 'h-[52px]']} />
+              <p id="ct-name-msg" data-msg class="hidden items-center gap-[7px] text-[13.5px] leading-[140%] text-error"></p>
+            </div>
+            <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-[9px]">
+              <label for="ct-email" class:list={[label, 'flex items-baseline gap-1']}>Email <span class="text-coral" aria-hidden="true">*</span></label>
+              <input id="ct-email" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" placeholder="you@company.com" aria-describedby="ct-email-msg" class:list={[field, 'h-[52px]']} />
+              <p id="ct-email-msg" data-msg class="hidden items-center gap-[7px] text-[13.5px] leading-[140%] text-error"></p>
+            </div>
+          </div>
+
+          <div data-contact-dim class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[9px] transition-opacity">
+            <label for="ct-message" class:list={[label, 'flex items-baseline gap-1']}>Your message <span class="text-coral" aria-hidden="true">*</span></label>
+            <textarea
+              id="ct-message"
+              name="message"
+              required
+              maxlength="2000"
+              rows="5"
+              placeholder="What it is, who uses it, where it stands today, and when it should ship."
+              aria-describedby="ct-message-msg"
+              class:list={[field, 'h-[132px] min-h-[132px] resize-y py-[14px] leading-[23.2px] md:h-[144px]']}></textarea>
+            <p id="ct-message-msg" data-msg class="hidden items-center gap-[7px] text-[13.5px] leading-[140%] text-error"></p>
+          </div>
+
+          <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+
+          <div class="flex min-w-0 flex-wrap items-center gap-x-[22px] gap-y-[14px] pt-1">
+            <Button type="submit" data-busy-label="Sending…">Send the message</Button>
+            <p data-contact-note class="min-w-0 flex-[1_1_220px] text-[13.5px] leading-[150%] text-muted">I use this to reply to you and for nothing else.</p>
+          </div>
+        </form>
+
+        <div data-contact-sent hidden role="status" class="-mt-1 flex flex-col gap-7 border-t border-rule pt-7 md:-mt-2">
+          <div class="flex flex-col gap-[18px]">
+            <span class="flex size-14 shrink-0 items-center justify-center rounded-[14px] bg-coral" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="var(--color-coral-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </span>
+            <p class="text-[34px] leading-none font-semibold tracking-[-0.04em] md:text-[44px] md:tracking-[-0.045em]">
+              <span data-contact-thanks>Thanks.</span> <span class="text-coral">It’s in.</span>
+            </p>
+            <p class="max-w-[560px] text-[16px] leading-[160%] text-muted md:text-[17px]">
+              I read every message myself and reply within one working day. Look out for an email from {email}.
+            </p>
+          </div>
+          <div class="flex flex-col gap-[10px]">
+            <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>What happens next</p>
+            <ol class="flex flex-col border-t border-rule">
+              {
+                next.map((n, i) => (
+                  <li class="flex gap-[14px] border-b border-rule py-[14px]">
+                    <span class:list={[mono, 'w-5 shrink-0 text-[12.5px] leading-[150%] text-coral']}>{pad(i + 1)}</span>
+                    <span class="min-w-0 flex-1 text-[15.5px] leading-[140%]">{n}</span>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+          <div class="flex flex-wrap items-center gap-[14px] max-md:flex-col max-md:items-start max-md:gap-[18px]">
+            <a href="#book" class="btn inline-flex h-[54px] shrink-0 items-center gap-3.5 rounded-[14px] pr-2 pl-[22px] text-sm leading-none font-semibold tracking-[-0.005em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)] hover:shadow-[inset_0_0_0_1px_#f1f2ec66]">
+              <span class="whitespace-nowrap">Book the call now</span>
+              <span class="grid size-[38px] place-items-center rounded-[9px] bg-ink/8" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="15" height="15">
+                  <rect x="4" y="5" width="16" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="2" />
+                  <path d="M4 10h16M9 3v4M15 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </span>
+            </a>
+            <a href="/work" class="text-[14.5px] leading-[140%] underline decoration-coral decoration-1 underline-offset-[5px] hover:text-coral">See recent work</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="book" aria-labelledby="book-title" class="scroll-mt-[90px]">
+    <div class="page grid grid-cols-[minmax(0,1fr)] items-start gap-8 pb-4 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-[100.8px] md:pb-10">
+      <div class="flex min-w-0 flex-col gap-[18px] border-t border-rule pt-10 md:gap-[22px]">
+        <Eyebrow data-reveal="eyebrow">Or book a call</Eyebrow>
+        <h2 id="book-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[56px] md:leading-none">
+          Rather talk it <span class="text-coral">through?</span>
+        </h2>
+        <p data-reveal data-reveal-delay="200" class="max-w-[520px] text-[17px] leading-[160%] text-muted md:text-[19px]">
+          Pick a time for a free intro call. Bring the idea, and I’ll bring questions and an honest view of what it takes.
+        </p>
+        <dl data-reveal data-reveal-delay="260" class="flex w-full max-w-[560px] flex-col border-t border-rule">
+          {
+            call.map((c) => (
+              <div class="flex items-baseline gap-[14px] border-b border-rule py-4">
+                <dt class:list={[mono, 'w-20 shrink-0 text-[12px] leading-[140%] text-muted md:w-24']}>{c.label}</dt>
+                <dd class="text-[17px] leading-[130%] font-medium md:text-[19px]">{c.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div data-reveal data-reveal-delay="300" data-cal={cal} class="flex min-w-0 flex-col gap-[22px] rounded-[14px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-rule)] md:gap-[26px] md:px-10 md:py-8">
+        <div class="flex items-center justify-between gap-3 border-b border-rule pb-[18px]">
+          <div class="flex min-w-0 flex-col gap-[6px]">
+            <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>cal.com/bokox/intro</p>
+            <h3 class="text-[22px] leading-[120%] font-semibold tracking-[-0.03em]">Intro call with Boko</h3>
+          </div>
+          <p class:list={[mono, 'flex h-[26px] shrink-0 items-center rounded-[7px] px-[9px] text-[12px] leading-none text-muted shadow-[inset_0_0_0_1px_var(--color-rule-strong)]']}>20 min</p>
+        </div>
+
+        <div class="flex flex-col items-start gap-6 md:flex-row md:gap-8">
+          <div class="flex w-[316px] max-w-full shrink-0 flex-col gap-[14px]">
+            <div class="flex items-center justify-between">
+              <p data-cal-month class="text-[15px] leading-[130%] font-medium" aria-live="polite">&nbsp;</p>
+              <div class="flex gap-[6px]">
+                <button type="button" data-cal-prev aria-label="Previous month" class="cal-nav grid size-8 place-items-center rounded-[8px]">
+                  <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+                <button type="button" data-cal-next aria-label="Next month" class="cal-nav grid size-8 place-items-center rounded-[8px]">
+                  <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex gap-[6px]" aria-hidden="true">
+              {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d) => <span class:list={[mono, 'w-10 shrink-0 text-center text-[12px] leading-[140%] text-muted']}>{d}</span>)}
+            </div>
+            <div data-cal-days class="grid grid-cols-[repeat(7,40px)] gap-[6px]" role="grid" aria-label="Pick a day"></div>
+          </div>
+
+          <div class="flex w-full min-w-0 flex-1 flex-col gap-[10px]">
+            <div class="flex h-8 shrink-0 items-center justify-between gap-3">
+              <p data-cal-date class="text-[15px] leading-[130%] font-medium">&nbsp;</p>
+              <p data-cal-tz class:list={[mono, 'text-[12px] leading-[140%] text-muted']}></p>
+            </div>
+            <div class="h-[14px] shrink-0 max-md:hidden" aria-hidden="true"></div>
+            <ul data-cal-slots class="flex flex-col gap-[10px]" aria-label="Pick a time"></ul>
+            <noscript>
+              <a href={cal} class="text-[14.5px] underline decoration-coral underline-offset-[5px]">Open the booking page</a>
+            </noscript>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-start justify-between gap-[6px] border-t border-rule pt-[18px] md:flex-row md:items-center md:gap-3">
+          <p class="text-[13.5px] leading-[150%] text-muted">Times shown in your time zone.</p>
+          <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Powered by Cal.com</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="answers-title">
+    <div class="page pt-12 pb-16 md:py-[151.2px]">
+      <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-[72px]">
+        <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-12">
+          <div class="grid max-w-[920px] min-w-0 justify-items-start gap-[22px]">
+            <Eyebrow data-reveal="eyebrow">Before you write</Eyebrow>
+            <h2 id="answers-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+              Quick <span class="text-coral">answers.</span>
+            </h2>
+          </div>
+          <div data-reveal data-reveal-delay="260" class="grid w-full max-w-[400px] justify-items-start gap-3 rounded-[14px] bg-surface p-6 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+            <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em]">Something else?</h3>
+            <p class="mb-2 text-[15px] leading-[150%] text-muted">Replies within one working day</p>
+            <Button href={`mailto:${email}`} variant="secondary">Ask by email</Button>
+          </div>
+        </div>
+
+        <div class="min-w-0 border-b border-rule" data-reveal-stagger="50" data-reveal-delay="240">
+          {
+            answers.map((f, i) => (
+              <details class="faq group border-t border-rule" open={i === 0}>
+                <summary class="grid w-full cursor-pointer list-none grid-cols-[24px_minmax(0,1fr)_36px] items-center gap-[10px] py-[18px] md:grid-cols-[34px_minmax(0,1fr)_40px] md:gap-4 md:px-1 md:py-[22px] [&::-webkit-details-marker]:hidden">
+                  <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted group-open:text-coral']}>{pad(i + 1)}</span>
+                  <span class="text-[19px] leading-[114%] font-semibold tracking-[-0.045em] text-balance md:text-[26px] md:text-wrap">{f.q}</span>
+                  <span class="relative size-9 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-colors group-open:bg-coral group-open:shadow-none md:size-10" aria-hidden="true">
+                    <span class="absolute inset-x-[11px] top-[calc(50%-1px)] h-[2px] rounded-[2px] bg-ink transition-colors group-open:bg-coral-ink md:inset-x-[13px]" />
+                    <span class="absolute inset-x-[11px] top-[calc(50%-1px)] h-[2px] rotate-90 rounded-[2px] bg-ink transition-[rotate,background-color] duration-300 group-open:rotate-0 group-open:bg-coral-ink md:inset-x-[13px]" />
+                  </span>
+                </summary>
+                <div class="max-w-[682px] pr-2 pb-[22px] pl-[34px] md:max-w-[704px] md:pr-[60px] md:pb-[26px] md:pl-[54px]">
+                  <p class="text-[15.5px] leading-[160%] text-pretty text-muted md:text-[16px]">{f.a}</p>
+                </div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Smooth open/close where supported (Chrome 131+); elsewhere <details> just toggles. Same as home/Faq.astro. */
+  @supports (interpolate-size: allow-keywords) {
+    .faq {
+      interpolate-size: allow-keywords;
+    }
+    .faq::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 0.3s ease,
+        content-visibility 0.3s allow-discrete;
+    }
+    .faq[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  /* Calendar (cells and slots are built by scripts/contact/booking.ts). */
+  .cal-nav {
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition: box-shadow 0.2s;
+  }
+  .cal-nav:hover:not(:disabled) {
+    box-shadow: inset 0 0 0 1px #f1f2ec66;
+  }
+  .cal-nav:disabled {
+    color: var(--color-muted);
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+    cursor: default;
+  }
+  [data-cal-days] :global(.cal-day) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 100%;
+    color: #5c616a;
+  }
+  [data-cal-days] :global(button.cal-day) {
+    color: var(--color-ink);
+    font-weight: 500;
+    box-shadow: inset 0 0 0 1px #ff7f5073;
+    transition:
+      background-color 0.2s,
+      box-shadow 0.2s;
+  }
+  [data-cal-days] :global(button.cal-day:hover) {
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  [data-cal-days] :global(button.cal-day[aria-selected='true']) {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    font-weight: 600;
+    box-shadow: none;
+  }
+  [data-cal-slots] :global(.cal-slot) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 100%;
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition: box-shadow 0.2s;
+  }
+  [data-cal-slots] :global(button.cal-slot:hover) {
+    box-shadow: inset 0 0 0 1px #f1f2ec66;
+  }
+  [data-cal-slots] :global(.cal-slot.is-on) {
+    justify-content: space-between;
+    padding: 0 5px 0 16px;
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    font-weight: 600;
+    box-shadow: none;
+  }
+  [data-cal-slots] :global(.cal-confirm) {
+    display: flex;
+    align-items: center;
+    height: 34px;
+    padding-inline: 12px;
+    border-radius: 7px;
+    background: var(--color-field);
+    color: var(--color-coral);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  [data-cal-slots] :global(.cal-confirm:hover) {
+    background: #000;
+  }
+
+  /* Sending state (Paper "Contact — Form Sending"): everything but the button dims to half; the button stays
+     full coral here, unlike the comment form's dimmed one. */
+  [data-contact-card].is-sending [data-contact-dim] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  [data-contact-card] :global(.btn[aria-busy]) {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  import '../scripts/contact/form';
+  import '../scripts/contact/booking';
+</script>
