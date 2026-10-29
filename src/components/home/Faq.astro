@@ -1,30 +1,56 @@
 ---
 // "Asked before the first call." FAQ accordion (native <details>) plus the "Something else?" card.
 // Rows come from Notion FAQs; the section is hidden when there are none.
+// Also used on /process (own heading, first four rows) and /faq (no heading: the page hero carries it).
 import Eyebrow from '../ui/Eyebrow.astro';
 import Button from '../ui/Button.astro';
 import { live } from '../../lib/content';
 
-const faqs = await live('faqs');
+interface Props {
+  title?: string;
+  accent?: string;
+  /** Lead under the heading; pass '' to drop it (Process). */
+  lead?: string;
+  /** Show only the first n rows. */
+  limit?: number;
+  /** false: no heading block, the left column only holds the card (/faq). */
+  heading?: boolean;
+  /** Section padding (Paper: 68/151.2px; /faq has 48/64px on mobile). */
+  pad?: string;
+}
+const {
+  title = 'Asked before the first',
+  accent = 'call.',
+  lead = 'The things most teams want to know before we talk. If yours is not here, ask it directly.',
+  limit,
+  heading = true,
+  pad: padding = 'py-[68px] md:py-[151.2px]',
+} = Astro.props;
+
+const faqs = (await live('faqs')).slice(0, limit);
 const pad = (n: number) => String(n).padStart(2, '0');
 const email = 'hello@bokoisaac.com';
 ---
 
 {
   faqs.length > 0 && (
-    <section data-section="Faq" id="faq" aria-labelledby="faq-title" class="bg-bg">
-      <div class="page py-[68px] md:py-[151.2px]">
-        <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-[72px]">
-          <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-12">
-            <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
-              <Eyebrow class="max-md:text-[12px]" data-reveal="eyebrow">Questions</Eyebrow>
-              <h2 id="faq-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
-                Asked before the first <span class="text-coral">call.</span>
-              </h2>
-              <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
-                The things most teams want to know before we talk. If yours is not here, ask it directly.
-              </p>
-            </div>
+    <section data-section="Faq" id="faq" aria-labelledby={heading ? 'faq-title' : undefined} aria-label={heading ? undefined : 'Questions'} class="bg-bg">
+      <div class:list={['page', padding]}>
+        <div class:list={['grid grid-cols-[minmax(0,1fr)] items-start md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-[72px]', 'gap-8']}>
+          <div class:list={['min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-12', heading ? 'grid' : 'hidden md:grid']}>
+            {heading && (
+              <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+                <Eyebrow class="max-md:text-[12px]" data-reveal="eyebrow">Questions</Eyebrow>
+                <h2 id="faq-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+                  {title} <span class="text-coral">{accent}</span>
+                </h2>
+                {lead && (
+                  <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+                    {lead}
+                  </p>
+                )}
+              </div>
+            )}
             <div data-reveal data-reveal-delay="260" class="hidden w-full max-w-[400px] md:block">
               <div class="grid justify-items-start gap-3 rounded-[14px] bg-surface p-6 shadow-[inset_0_0_0_1px_var(--color-rule)]">
                 <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</h3>
@@ -67,7 +93,9 @@ const email = 'hello@bokoisaac.com';
             <div data-reveal data-reveal-delay="260" class="mt-9 grid justify-items-start gap-3 rounded-[14px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-rule)] md:hidden">
               <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</h3>
               <p class="mb-2 text-[15px] leading-[150%] text-muted">Replies within one working day</p>
-              <Button href={`mailto:${email}`} variant="secondary" class="w-full justify-between">Ask by email</Button>
+              <Button href={`mailto:${email}`} variant="secondary" class:list={[heading && 'w-full justify-between']}>
+                Ask by email
+              </Button>
             </div>
           </div>
         </div>
