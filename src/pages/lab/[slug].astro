@@ -1,0 +1,421 @@
+---
+// A Lab item, from Paper ("Lab Detail" / "Lab Detail — Mobile"). Head with install box and picture, the README card
+// with its contents + facts sidebar, then "More from the lab". Items without a written README show their summary
+// in the card; "View the repo" and the Repository row only appear once the item has a repo link.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import Button from '../../components/ui/Button.astro';
+import Contact from '../../components/home/Contact.astro';
+import { lab, num, type LabItem } from '../../lib/lab';
+
+export function getStaticPaths() {
+  return lab.map((item, i) => ({
+    params: { slug: item.slug },
+    // The next three items after this one, wrapping round.
+    props: { item, more: [1, 2, 3].map((d) => lab[(i + d) % lab.length]).filter((m) => m.slug !== item.slug) },
+  }));
+}
+
+interface Props {
+  item: LabItem;
+  more: LabItem[];
+}
+const { item, more } = Astro.props;
+const readme = item.readme;
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const stats = [
+  item.stars != null && { label: 'stars', value: num(item.stars) },
+  item.downloads != null && { label: 'downloads', value: num(item.downloads) },
+  { label: 'license', value: item.license },
+].filter(Boolean) as { label: string; value: string }[];
+const facts = [
+  { label: 'Kind', value: item.kind },
+  { label: 'License', value: item.license },
+];
+
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const crumb = 'flex min-h-11 items-center text-[12.5px] leading-4';
+const arrow = 'M5 12h14M13 6l6 6-6 6';
+const copyIcon = 'M5 12.5l4.5 4.5L19 7.5';
+---
+
+<Base title={item.name} description={item.summary}>
+  <article aria-labelledby="lab-title">
+    <div class="page pt-[112px] pb-16 md:pt-[208px] md:pb-[112px]">
+      <header class="grid grid-cols-[minmax(0,1fr)] items-end gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:gap-24">
+        <div class="grid max-w-[940px] min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
+          <nav aria-label="Breadcrumb" class:list={[mono, 'min-w-0']}>
+            <ol class="flex flex-wrap items-center gap-x-2">
+              <li class="flex items-center"><a href="/" class:list={[crumb, 'min-w-3 text-muted hover:text-ink']} aria-label="Home">~</a></li>
+              <li class="flex items-center gap-2">
+                <span class="text-rule-strong" aria-hidden="true">/</span><a href="/lab" class:list={[crumb, 'text-muted hover:text-ink']}>Lab</a>
+              </li>
+              <li class="flex min-w-0 items-center gap-2">
+                <span class="text-rule-strong" aria-hidden="true">/</span><span aria-current="page" class="text-[12.5px] leading-4">{item.name}</span>
+              </li>
+            </ol>
+          </nav>
+          <Eyebrow data-reveal="eyebrow">{item.kind}</Eyebrow>
+          <h1 id="lab-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] wrap-anywhere md:text-[78px]">{item.name}</h1>
+          <p data-reveal data-reveal-delay="200" class="max-w-[684px] text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">{item.summary}</p>
+          {
+            item.repo && (
+              <div data-reveal data-reveal-delay="240" class="mt-2 flex flex-wrap gap-3">
+                <Button href={item.repo} target="_blank" rel="noopener" data-cursor="GitHub">
+                  View the repo
+                </Button>
+              </div>
+            )
+          }
+          <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
+            {
+              stats.map((s) => (
+                <div class="min-w-0 flex-1 basis-0 pr-3 md:min-w-[120px] md:pr-5">
+                  <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{s.label}</dt>
+                  <dd class="mt-2 text-[28px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]">{s.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+
+        <div data-reveal data-reveal-delay="300" class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[14px]">
+          <figure class="lab-code">
+            <figcaption>
+              <span>Install</span>
+              <button type="button" data-copy aria-label="Copy the install command"><span data-copy-label>Copy</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d={copyIcon} fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+            </figcaption>
+            <pre data-lenis-prevent><code>{item.install}</code></pre>
+          </figure>
+          <div class="min-w-0 rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+            <div class="relative aspect-[16/10] overflow-clip rounded-[9px] bg-field">
+              <Image src={item.image} alt={item.alt} widths={[420, 840]} sizes="(min-width: 768px) 404px, 100vw" loading="eager" class="absolute inset-0 size-full object-cover saturate-[0.92] contrast-[1.04]" />
+              <span class="pointer-events-none absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="mt-12 grid grid-cols-[minmax(0,1fr)] items-start gap-10 md:mt-24 md:grid-cols-[minmax(0,1fr)_minmax(0,300px)] md:gap-16">
+        <section data-reveal aria-label="README" class="grid min-w-0 grid-cols-[minmax(0,1fr)] rounded-[14px] bg-surface shadow-[inset_0_0_0_1px_var(--color-rule)]">
+          <div class="flex min-h-[52px] items-center justify-between gap-3 border-b border-rule px-5 md:px-7">
+            <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>README.md</p>
+            <p class:list={[mono, 'flex h-[26px] items-center rounded-[7px] px-[9px] text-[12px] leading-none text-muted shadow-[inset_0_0_0_1px_var(--color-rule-strong)]']}>{item.license}</p>
+          </div>
+          <div class="lab-readme max-w-[824px] min-w-0 px-5 pt-7 pb-8 md:px-[52px] md:pt-[52px] md:pb-[60px]">
+            <p>{readme ? readme.intro : item.summary}</p>
+            {
+              readme?.sections.map((s) => (
+                <>
+                  <h2 id={slug(s.title)}>{s.title}</h2>
+                  {s.blocks.map((b) =>
+                    b.kind === 'p' ? (
+                      <p>{b.text}</p>
+                    ) : b.kind === 'quote' ? (
+                      <blockquote>
+                        <p>{b.text}</p>
+                      </blockquote>
+                    ) : b.kind === 'list' ? (
+                      <ul>
+                        {b.items!.map((li) => (
+                          <li>{li}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <figure class="lab-code">
+                        <figcaption>
+                          <span>{b.lang}</span>
+                          <button type="button" data-copy aria-label="Copy code">
+                            <span data-copy-label>Copy</span>
+                            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                              <path d={copyIcon} fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </button>
+                        </figcaption>
+                        <pre data-lenis-prevent><code>{b.code}</code></pre>
+                      </figure>
+                    ),
+                  )}
+                </>
+              ))
+            }
+          </div>
+        </section>
+
+        <aside class="grid min-w-0 gap-8 md:sticky md:top-[110px]">
+          {
+            readme && readme.sections.length > 1 && (
+              <nav aria-labelledby="readme-toc" class="hidden gap-[10px] md:grid">
+                <h2 id="readme-toc" class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>In this readme</h2>
+                <ol class="grid border-t border-rule">
+                  {readme.sections.map((s, i) => (
+                    <li class="border-b border-rule">
+                      <a href={`#${slug(s.title)}`} class="toc-link flex min-h-11 items-center gap-3 py-1.5">
+                        <span class="shrink-0 font-mono text-[12px] leading-[130%] text-muted tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                        <span class="text-[14.5px] leading-[130%]">{s.title}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            )
+          }
+          <dl class="grid border-t border-rule">
+            {
+              facts.map((f) => (
+                <div class="flex min-h-12 items-center justify-between gap-2 border-b border-rule py-1.5 md:gap-4">
+                  <dt class:list={[mono, 'shrink-0 text-[12px] leading-[140%] text-muted']}>{f.label}</dt>
+                  <dd class="text-right text-[14.5px] leading-[130%] font-medium wrap-anywhere">{f.value}</dd>
+                </div>
+              ))
+            }
+            {
+              item.repo && (
+                <div class="flex min-h-12 items-center justify-between gap-2 border-b border-rule py-1.5 md:gap-4">
+                  <dt class:list={[mono, 'shrink-0 text-[12px] leading-[140%] text-muted']}>Repository</dt>
+                  <dd class="text-right">
+                    <a href={item.repo} target="_blank" rel="noopener" class="inline-flex min-h-9 items-center gap-[7px] text-[14.5px] leading-[130%] font-medium hover:text-coral">
+                      {new URL(item.repo).hostname.replace(/^www\./, '')}
+                      <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" class="shrink-0">
+                        <path d={arrow} fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </a>
+                  </dd>
+                </div>
+              )
+            }
+          </dl>
+        </aside>
+      </div>
+
+      <section aria-labelledby="more-title" class="mt-[72px] md:mt-32">
+        <div class="mb-7 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 md:gap-x-10 md:gap-y-4">
+          <h2 id="more-title" class="text-[32px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[48px]">More from the lab.</h2>
+          <a href="/lab" class:list={[mono, 'link-draw flex min-h-11 items-center gap-[9px] text-[13px] leading-none']}>
+            <span class="link-draw-n text-muted">{String(lab.length).padStart(2, '0')}</span>
+            <span class="link-draw-l py-1.5">Everything in the lab</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0">
+              <path d={arrow} fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
+        <ul data-reveal-stagger="60" class="border-t border-rule">
+          {
+            more.map((m) => (
+              <li class="border-b border-rule">
+                <a
+                  href={`/lab/${m.slug}`}
+                  data-cursor="Open"
+                  class="lab-row group grid min-h-[76px] grid-cols-[minmax(0,1fr)_36px] items-start gap-x-4 gap-y-1.5 py-[22px] md:grid-cols-[minmax(120px,2fr)_minmax(0,4fr)_minmax(0,5fr)_40px] md:items-baseline md:gap-x-7 md:gap-y-2"
+                >
+                  <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>
+                    {m.kind}
+                    {m.stars != null && <> · {num(m.stars)} stars</>}
+                  </span>
+                  <span class="text-[26px] leading-[112%] font-semibold tracking-[-0.045em] max-md:col-start-1">{m.name}</span>
+                  <span class="text-[15.5px] leading-[155%] text-pretty text-muted max-md:col-start-1">{m.summary}</span>
+                  <span class="lab-tile grid size-9 place-items-center self-center justify-self-end rounded-[9px] max-md:col-start-2 max-md:row-span-3 max-md:row-start-1" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="15" height="15">
+                      <path d={arrow} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  <Contact />
+</Base>
+
+<style>
+  /* README body: 15.5/17px at 165%, ink at 86%, blocks 18px apart; headings get 16/26px more above. */
+  .lab-readme {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    font-size: 15.5px;
+    line-height: 165%;
+    color: color-mix(in srgb, var(--color-ink) 86%, transparent);
+    text-wrap: pretty;
+  }
+  .lab-readme h2 {
+    margin-top: 16px;
+    color: var(--color-ink);
+    font-size: 26px;
+    line-height: 108%;
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    scroll-margin-top: 110px;
+  }
+  .lab-readme ul {
+    display: grid;
+    gap: 8px;
+    padding-left: 18px;
+  }
+  .lab-readme li {
+    position: relative;
+  }
+  .lab-readme li::before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-coral);
+  }
+  .lab-readme blockquote {
+    border-left: 2px solid var(--color-coral);
+    padding: 2px 0 2px 18px;
+    color: var(--color-ink);
+    font-size: 17px;
+    line-height: 145%;
+  }
+
+  /* Code box (install + README): dark field card with a label + Copy bar. */
+  .lab-code {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: clip;
+    border-radius: 12px;
+    background: var(--color-field);
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+  }
+  .lab-code figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 40px;
+    padding: 0 6px 0 16px;
+    border-bottom: 1px solid #f1f2ec1a;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 140%;
+    color: var(--color-muted);
+  }
+  .lab-code [data-copy] {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    padding-inline: 10px;
+    border-radius: 7px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 100%;
+    color: var(--color-muted);
+    transition:
+      color 0.2s,
+      background-color 0.2s;
+  }
+  .lab-code [data-copy]:hover {
+    color: var(--color-ink);
+    background: color-mix(in srgb, var(--color-ink) 6%, transparent);
+  }
+  .lab-code [data-copy] svg {
+    display: none;
+    color: var(--color-coral);
+  }
+  .lab-code [data-copy][data-copied] {
+    color: var(--color-ink);
+  }
+  .lab-code [data-copy][data-copied] svg {
+    display: block;
+  }
+  .lab-code pre {
+    overflow-x: auto;
+    padding: 16px 18px 18px;
+    overscroll-behavior-x: contain;
+  }
+  .lab-readme .lab-code pre {
+    padding-inline: 14px;
+  }
+  .lab-code code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 165%;
+    color: var(--color-ink);
+    tab-size: 2;
+  }
+  .lab-readme .lab-code code {
+    font-size: 11.5px;
+  }
+
+  @media (width >= 48rem) {
+    .lab-readme {
+      font-size: 17px;
+    }
+    .lab-readme h2 {
+      margin-top: 26px;
+      font-size: 34px;
+    }
+    .lab-readme ul {
+      padding-left: 20.4px;
+    }
+    .lab-readme li::before {
+      top: 11px;
+    }
+    .lab-readme blockquote {
+      font-size: 19.04px;
+    }
+    .lab-readme .lab-code pre {
+      padding-inline: 18px;
+    }
+    .lab-readme .lab-code code {
+      font-size: 13px;
+    }
+  }
+
+  .toc-link:hover span:last-child {
+    color: var(--color-coral);
+  }
+
+  /* #29 row slide plus the arrow tile filling coral. */
+  .lab-row {
+    transition:
+      padding-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 0.3s ease;
+  }
+  .lab-tile {
+    color: var(--color-coral);
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  @media (hover: hover) {
+    .lab-row:hover {
+      padding-left: 14px;
+      background-color: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    }
+  }
+  .lab-row:focus-visible {
+    padding-left: 14px;
+  }
+  .lab-row:hover .lab-tile,
+  .lab-row:focus-visible .lab-tile {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    box-shadow: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lab-row {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // The Copy buttons share the handler used by the Writing code blocks.
+  import '../../scripts/writing/forms';
+</script>
