@@ -1,11 +1,12 @@
 ---
 // Buttons from Paper: label + 38px square icon tile. Primary = coral; secondary = outlined dark glass.
 // Motion (#9, CSS in global.css): on hover/focus the arrow slides out right while a second one slides in from the
-// left; the download icon drops out the bottom and falls back in from the top. Primary fills ink on hover.
+// left; the download icon drops out the bottom and falls back in from the top; the calendar icon stays put.
+// Primary fills ink on hover.
 interface Props {
   href?: string;
   variant?: 'primary' | 'secondary';
-  icon?: 'arrow' | 'download' | 'none';
+  icon?: 'arrow' | 'download' | 'calendar' | 'none';
   type?: 'button' | 'submit';
   class?: string;
   [key: string]: unknown;
@@ -45,6 +46,11 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
               <path d={arrow} fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </>
+        ) : icon === 'calendar' ? (
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+            <rect x="4" y="5" width="16" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="2" />
+            <path d="M4 10h16M9 3v4M15 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
         ) : (
           <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="btn-drop">
             <path d="M12 4v13M6 12l6 6 6-6M5 21h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />

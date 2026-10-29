@@ -14,8 +14,11 @@ interface Props {
   id?: string;
   /** Lead paragraph max width in px (Paper: 684 on most pages, 760 on Writing). */
   leadMax?: number;
+  /** 'wrap' = Services on phones: stats two to a row (basis 40%), 26px values. Default keeps one row. */
+  statsLayout?: 'row' | 'wrap';
 }
-const { eyebrow, title, accent, lead, stats = [], id = 'page-title', leadMax = 684 } = Astro.props;
+const { eyebrow, title, accent, lead, stats = [], id = 'page-title', leadMax = 684, statsLayout = 'row' } = Astro.props;
+const wrap = statsLayout === 'wrap';
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
 ---
 
@@ -28,13 +31,21 @@ const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
         {title} <span class="text-coral">{accent}</span>
       </h1>
       <p data-reveal data-reveal-delay="200" style={`max-width:${leadMax}px`} class="text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">{lead}</p>
+      {/* Optional buttons under the lead (e.g. "How a project runs" on Services). */}
+      {
+        Astro.slots.has('actions') && (
+          <div data-reveal data-reveal-delay="230" class="mt-2 flex w-full min-w-0 flex-wrap gap-3 md:w-auto">
+            <slot name="actions" />
+          </div>
+        )
+      }
       {
         stats.length > 0 && (
           <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
             {stats.map((s) => (
-              <div class="min-w-0 flex-1 basis-0 pr-3 md:min-w-[120px] md:pr-5">
+              <div class:list={['min-w-0 flex-1 pr-3 md:min-w-[120px] md:basis-0 md:pr-5 md:pb-0', wrap ? 'basis-[40%] pb-4' : 'basis-0']}>
                 <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{s.label}</dt>
-                <dd class="mt-2 text-[28px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]">{s.value}</dd>
+                <dd class:list={['mt-2 leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]', wrap ? 'text-[26px]' : 'text-[28px]']}>{s.value}</dd>
               </div>
             ))}
           </dl>

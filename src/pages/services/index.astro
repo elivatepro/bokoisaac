@@ -1,0 +1,48 @@
+---
+// Services index from Paper ("Boko Isaac - Services" → "Services" / "Services — Mobile"): page hero with the
+// grid, eight service cards, the "Reviewed, then approved." reviews and "Start a project".
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/site/PageHero.astro';
+import Button from '../../components/ui/Button.astro';
+import ServiceCard from '../../components/services/ServiceCard.astro';
+import Reviews from '../../components/home/Reviews.astro';
+import Contact from '../../components/home/Contact.astro';
+import { services as allServices } from '../../lib/services';
+
+const services = await allServices();
+---
+
+<Base title="Services" description="Eight ways to work together, each with a defined scope, a timeline and a price to start from.">
+  <PageHero
+    id="services-title"
+    eyebrow="Services"
+    title="Eight ways to"
+    accent="work together."
+    lead="Each one has a defined scope, a timeline and a price to start from. Open one for the steps, or send a brief and I will tell you which fits."
+    statsLayout="wrap"
+    stats={[
+      { label: 'services', value: services.length },
+      { label: 'project at a time', value: 1 },
+      { label: 'to a first reply', value: '1 day' },
+    ]}
+  >
+    <Button slot="actions" href="/process" variant="secondary" icon="none" class="w-full justify-between md:w-auto">How a project runs</Button>
+  </PageHero>
+
+  <section aria-label="All services">
+    <div class="page pb-14 md:pb-[112px]">
+      <ul data-reveal-stagger="70" data-reveal-delay="300" class="grid grid-cols-[minmax(0,1fr)] gap-[14px] md:grid-cols-2 md:gap-5">
+        {
+          services.map((s, i) => (
+            <li class="grid min-w-0">
+              <ServiceCard service={s} index={i} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Reviews />
+  <Contact />
+</Base>
