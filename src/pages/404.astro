@@ -1,7 +1,8 @@
 ---
 // 404 from Paper ("Boko Isaac - System" → "404" / "404 — Mobile"). Prerendered to /404.html; the Cloudflare
 // worker serves it with a 404 status for any path that has no page (see wrangler.jsonc).
-// Cards: a column with the number row on top on desktop; a row with the number + arrow on the right on mobile.
+// Cards: number on top and the arrow tile beside the text on desktop; one row (number, text, tile) on mobile.
+// The arrow tile echoes the primary button's icon tile; → not ↗, since these are internal links.
 // Hover is the house card lift (docs/framer-animations.md #27).
 import Base from '../layouts/Base.astro';
 import Button from '../components/ui/Button.astro';
@@ -43,17 +44,19 @@ const mono = 'font-mono font-medium';
               <li class="flex min-w-0 md:flex-1">
                 <a
                   href={p.href}
-                  class="nf-card flex w-full min-w-0 items-center gap-4 rounded-[14px] bg-surface px-5 py-[18px] md:flex-col md:items-stretch md:gap-10 md:p-6"
+                  class="nf-card flex w-full min-w-0 items-center gap-[14px] rounded-[14px] bg-surface py-[18px] pr-4 pl-5 md:flex-col md:items-stretch md:gap-10 md:p-6"
                 >
-                  <span class="order-1 flex shrink-0 items-center justify-between gap-[10px] md:order-none" aria-hidden="true">
-                    <span class:list={[mono, 'text-[12.5px] leading-[150%] text-coral']}>{p.n}</span>
-                    <svg viewBox="0 0 24 24" width="16" height="16" class="nf-arrow shrink-0 text-muted">
-                      <path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-1 md:gap-[6px]">
-                    <span class="text-[18px] leading-[120%] font-semibold tracking-[-0.66px] md:text-[22px]">{p.label}</span>
-                    <span class="text-[14.5px] leading-[150%] text-muted">{p.note}</span>
+                  <span class:list={[mono, 'w-[22px] shrink-0 self-start pt-[2px] text-[12.5px] leading-[150%] text-coral md:w-auto md:pt-0']} aria-hidden="true">{p.n}</span>
+                  <span class="contents md:flex md:items-end md:justify-between md:gap-4">
+                    <span class="flex min-w-0 flex-1 flex-col gap-1 md:gap-[6px]">
+                      <span class="text-[18px] leading-[120%] font-semibold tracking-[-0.66px] md:text-[22px]">{p.label}</span>
+                      <span class="text-[14.5px] leading-[150%] text-muted">{p.note}</span>
+                    </span>
+                    <span class="nf-tile grid size-9 shrink-0 place-items-center rounded-[9px] bg-[#1c1f24] md:size-[38px]" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="15" height="15" class="nf-arrow">
+                        <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </span>
                   </span>
                 </a>
               </li>
@@ -66,27 +69,38 @@ const mono = 'font-mono font-medium';
 </Base>
 
 <style>
-  /* #27 card hover lift: rise 4px, coral ring, arrow nudges up-right. */
+  /* #27 card hover lift: rise 4px, coral ring; the arrow tile fills coral and the arrow nudges right. */
   .nf-card {
     box-shadow: inset 0 0 0 1px var(--color-rule);
     transition:
       translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
       box-shadow 0.3s ease;
   }
-  .nf-arrow {
+  .nf-tile {
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px #f1f2ec1f;
     transition:
-      translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-      color 0.3s;
+      background-color 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  .nf-arrow {
+    transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .nf-card:hover,
   .nf-card:focus-visible {
     translate: 0 -4px;
     box-shadow: inset 0 0 0 1px var(--color-coral);
   }
+  .nf-card:hover .nf-tile,
+  .nf-card:focus-visible .nf-tile {
+    background-color: var(--color-coral);
+    color: var(--color-coral-ink);
+    box-shadow: none;
+  }
   .nf-card:hover .nf-arrow,
   .nf-card:focus-visible .nf-arrow {
-    translate: 3px -3px;
-    color: var(--color-coral);
+    translate: 2px 0;
   }
   @media (prefers-reduced-motion: reduce) {
     .nf-card:hover,
