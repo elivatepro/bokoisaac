@@ -1,0 +1,97 @@
+---
+// 404 from Paper ("Boko Isaac - System" → "404" / "404 — Mobile"). Prerendered to /404.html; the Cloudflare
+// worker serves it with a 404 status for any path that has no page (see wrangler.jsonc).
+// Cards: a column with the number row on top on desktop; a row with the number + arrow on the right on mobile.
+// Hover is the house card lift (docs/framer-animations.md #27).
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+
+export const prerender = true;
+
+const popular = [
+  { n: '01', label: 'Work', note: 'Products I have built and shipped', href: '/work' },
+  { n: '02', label: 'Services', note: 'What I build, with prices', href: '/services' },
+  { n: '03', label: 'Writing', note: 'Notes from real projects', href: '/writing' },
+  { n: '04', label: 'Contact', note: 'Start a project or book a call', href: '/contact' },
+];
+const mono = 'font-mono font-medium';
+---
+
+<Base title="Page not found" description="This page went offline. Here are the pages people usually look for.">
+  <section aria-labelledby="nf-title">
+    <div class="page pt-[112px] pb-4 md:pt-[208px] md:pb-[60px]">
+      <div class="grid max-w-[1120px] grid-cols-[minmax(0,1fr)] justify-items-start gap-[22px]">
+        <Eyebrow data-reveal="eyebrow">404</Eyebrow>
+        <h1 id="nf-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+          This page went <span class="text-coral">offline.</span>
+        </h1>
+        <p data-reveal data-reveal-delay="200" class="max-w-[684px] text-[15.5px] leading-[160%] text-muted md:text-[19px]">
+          The link is old, or it never existed. Nothing is broken on your side. Here are the pages people usually look for.
+        </p>
+        <div data-reveal data-reveal-delay="260" class="mt-2 flex flex-wrap gap-3">
+          <Button href="/">Back to home</Button>
+          <Button href="/writing" variant="secondary" icon="none">Read the writing</Button>
+        </div>
+      </div>
+
+      <nav aria-labelledby="nf-popular" class="flex flex-col gap-[18px] pt-14 pb-12 md:pt-[112px] md:pb-16">
+        <h2 id="nf-popular" class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>Popular pages</h2>
+        <ul data-reveal-stagger="80" data-reveal-delay="300" class="flex flex-col gap-3 md:flex-row md:gap-4">
+          {
+            popular.map((p) => (
+              <li class="flex min-w-0 md:flex-1">
+                <a
+                  href={p.href}
+                  class="nf-card flex w-full min-w-0 items-center gap-4 rounded-[14px] bg-surface px-5 py-[18px] md:flex-col md:items-stretch md:gap-10 md:p-6"
+                >
+                  <span class="order-1 flex shrink-0 items-center justify-between gap-[10px] md:order-none" aria-hidden="true">
+                    <span class:list={[mono, 'text-[12.5px] leading-[150%] text-coral']}>{p.n}</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" class="nf-arrow shrink-0 text-muted">
+                      <path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-1 md:gap-[6px]">
+                    <span class="text-[18px] leading-[120%] font-semibold tracking-[-0.66px] md:text-[22px]">{p.label}</span>
+                    <span class="text-[14.5px] leading-[150%] text-muted">{p.note}</span>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* #27 card hover lift: rise 4px, coral ring, arrow nudges up-right. */
+  .nf-card {
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+    transition:
+      translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s ease;
+  }
+  .nf-arrow {
+    transition:
+      translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+      color 0.3s;
+  }
+  .nf-card:hover,
+  .nf-card:focus-visible {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  .nf-card:hover .nf-arrow,
+  .nf-card:focus-visible .nf-arrow {
+    translate: 3px -3px;
+    color: var(--color-coral);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nf-card:hover,
+    .nf-card:focus-visible {
+      translate: none;
+    }
+  }
+</style>
