@@ -1,0 +1,189 @@
+---
+// About, from Paper ("Boko Isaac - About" → "About" / "About — Mobile"): hero, the story in three parts with the
+// desk photo, six principles, the "Now" card, the code-review reviews (shared with Home) and "Start a project".
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+import Button from '../components/ui/Button.astro';
+import Reviews from '../components/home/Reviews.astro';
+import Contact from '../components/home/Contact.astro';
+import { live } from '../lib/content';
+import desk from '../assets/home/about-desk.webp';
+
+const story = [
+  {
+    when: '20XX to 20XX',
+    title: 'I started by shipping websites on a deadline.',
+    body: 'My first job was websites and landing pages for agency clients. Freelance work came next: the EduSkillUp learning platform, the Roudio media product and a book read-along app, each one built and shipped end to end.',
+  },
+  {
+    when: '20XX to 2025',
+    title: 'Then a wallet, from the API to the screens.',
+    body: 'At Elivate I built the Elivate Wallet across web and mobile: the API, the data model and the screens people tap. With money on the line, the details that nobody sees are the ones that matter most.',
+  },
+  {
+    when: '2025 to now',
+    title: 'Now I lead the platforms an install company runs on.',
+    body: 'At Quality Installs Co. I lead QPIMS, QPAS and QP Invoicing: jobs, crews, installs and invoices in one place that the field and the office both use every day. Alongside it, I take on one outside project at a time.',
+  },
+];
+
+const principles = [
+  { title: 'Model the data first', body: 'The schema is the product. Get the tables and constraints right, and most of the bugs never get written.' },
+  { title: 'Ship every week', body: 'A real deploy every week, however small. A demo that runs on my laptop is not progress.' },
+  { title: 'Types end to end', body: 'One set of types from the database to the screen. When the API changes, the build says so before a user does.' },
+  { title: 'Build for the field', body: 'Crews use this software on a slow phone with one bar of signal. If it works there, it works everywhere.' },
+  { title: 'Write it down', body: 'Decisions go in the repository, next to the code they explain. Chat threads are where reasons go to disappear.' },
+  { title: 'Say no early', body: 'If a deadline or a tool is wrong for the job, you hear it in week one, with the reason.' },
+];
+
+// "Updated <month year>" follows the newest row in the Notion Now database, like the Home About section.
+const now = (await live('now')).map((e) => e.data);
+const latest = now.reduce<Date | null>((max, r) => (r.updated && (!max || r.updated > max) ? r.updated : max), null);
+const updated = (latest ?? new Date()).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const h2 = 'text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]';
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base title="About" description="Boko Isaac is a full-stack engineer: six years of TypeScript and Node.js on field-service platforms, fintech wallets and learning tools.">
+  <PageHero
+    id="about-title"
+    eyebrow="About"
+    title="I build software that"
+    accent="holds up."
+    lead="Six years of full-stack work on field-service platforms, fintech wallets and learning tools, with teams around the world. Most of it is TypeScript and Node.js. All of it runs in production."
+    wrapStats
+    stats={[
+      { label: 'years shipping', value: '6+' },
+      { label: 'products shipped', value: 8 },
+      { label: 'languages, EN & FR', value: 2 },
+    ]}
+  >
+    <Button slot="actions" href="/contact" class="max-md:grow max-md:basis-full max-md:justify-between">Start a project</Button>
+    <Button slot="actions" href="/resume" variant="secondary" icon="none" class="max-md:grow max-md:basis-full">Read the resume</Button>
+  </PageHero>
+
+  <section aria-labelledby="story-title">
+    <div class="page py-14 md:py-[112px]">
+      <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-10 md:grid-cols-[minmax(0,1fr)_420px] md:gap-[117.6px]">
+        <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-7 md:gap-14">
+          <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+            <Eyebrow data-reveal="eyebrow" class="max-md:text-[12px]">The story</Eyebrow>
+            <h2 id="story-title" data-reveal="words" class={h2}>Six years, in <span class="text-coral">three</span> parts.</h2>
+          </div>
+          <ol data-reveal-stagger="80" data-reveal-delay="200" class="grid min-w-0 grid-cols-[minmax(0,1fr)] border-t border-rule">
+            {
+              story.map((s, i) => (
+                <li class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[10px] border-b border-rule pt-[22px] pb-[26px] md:grid-cols-[minmax(150px,1fr)_minmax(0,3.4fr)] md:gap-x-8 md:pt-[30px] md:pb-[34px]">
+                  <p class:list={[mono, 'flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1 text-[12.5px] leading-[150%] md:mt-1']}>
+                    <span class="text-muted">{pad(i + 1)}</span>
+                    <span>{s.when}</span>
+                  </p>
+                  <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
+                    <h3 class="max-w-[462px] text-[21px] leading-[112%] font-semibold tracking-[-0.045em] text-balance md:max-w-[616px] md:text-[28px]">{s.title}</h3>
+                    <p class="max-w-[620px] text-[15.5px] leading-[160%] text-muted md:max-w-[640px] md:text-[16px]">{s.body}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+
+        <figure data-reveal data-reveal-delay="240" class="grid w-[min(100%,340px)] min-w-0 grid-cols-[minmax(0,1fr)] rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)] md:w-full">
+          <div class="relative aspect-[4/5] overflow-clip rounded-[9px] bg-field">
+            <Image
+              src={desk}
+              alt="A leather notebook and pen on a dark wooden desk, lit by a warm lamp beside a small plant"
+              widths={[340, 420, 720]}
+              sizes="(min-width: 768px) 420px, 340px"
+              class="absolute inset-0 size-full object-cover object-[50%_30%] saturate-[0.92] contrast-[1.04]"
+            />
+            <span class="pointer-events-none absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]" aria-hidden="true"></span>
+          </div>
+          <figcaption class:list={[mono, 'px-2 pt-3 pb-1.5 text-[12px] leading-[140%] text-muted']}>Boko Isaac · Remote</figcaption>
+        </figure>
+      </div>
+
+      <div class="mt-16 grid grid-cols-[minmax(0,1fr)] gap-7 md:mt-32 md:gap-14">
+        <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] items-end gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:gap-x-16 md:gap-y-6">
+          <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+            <Eyebrow data-reveal="eyebrow" class="max-md:text-[12px]">Principles</Eyebrow>
+            <h2 data-reveal="words" class={h2}>Six rules I <span class="text-coral">work</span> by.</h2>
+          </div>
+          <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-muted md:max-w-[578px] md:text-[17px]">
+            None of them are original. All of them were learned by getting it wrong first.
+          </p>
+        </div>
+        <ol data-reveal-stagger="70" data-reveal-delay="260" class="grid min-w-0 grid-cols-[minmax(0,1fr)] md:grid-cols-3 md:gap-x-10">
+          {
+            principles.map((p, i) => (
+              <li class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 border-t border-rule pt-[18px] pb-6 md:gap-[10px] md:pt-[22px] md:pb-[34px]">
+                <p class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>{pad(i + 1)}</p>
+                <h3 class="mt-1 text-[20px] leading-[115%] font-semibold tracking-[-0.045em] md:text-[24px]">{p.title}</h3>
+                <p class="text-[15.5px] leading-[160%] text-muted">{p.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <a
+        href="/now"
+        data-reveal
+        data-cursor="Now"
+        class="about-now mt-12 grid grid-cols-[minmax(0,1fr)] items-end gap-4 rounded-[14px] bg-surface p-5 md:mt-24 md:grid-cols-[minmax(0,1fr)_auto] md:gap-x-10 md:p-10"
+      >
+        <span class:list={[mono, 'col-span-full flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-[6px] text-[12.5px] leading-[150%] md:gap-x-6']}>
+          <span class="flex items-center gap-[10px]">
+            <span class="pulse-dot size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+            <span>Now</span>
+          </span>
+          <span class="text-muted">Updated {updated}</span>
+        </span>
+        <span class="max-w-[644.8px] min-w-0 text-[24.8px] leading-[112%] font-semibold tracking-[-0.045em] text-balance md:max-w-[936px] md:text-[36px]">
+          Leading QPIMS at Quality Installs Co., and open to one new project alongside it.
+        </span>
+        <span class="flex min-w-0 items-center justify-between gap-4">
+          <span class:list={[mono, 'text-[12.5px] leading-[150%]']}>See what I am doing now</span>
+          <span class="about-now-tile grid size-11 shrink-0 place-items-center rounded-[12px] bg-coral text-coral-ink md:size-12" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <Reviews />
+  <Contact />
+</Base>
+
+<style>
+  /* #27 card lift on the Now card. */
+  .about-now {
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+    transition:
+      translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s ease;
+  }
+  .about-now-tile svg {
+    transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .about-now:hover,
+  .about-now:focus-visible {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  .about-now:hover .about-now-tile svg,
+  .about-now:focus-visible .about-now-tile svg {
+    translate: 3px 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .about-now:hover,
+    .about-now:focus-visible {
+      translate: none;
+    }
+  }
+</style>

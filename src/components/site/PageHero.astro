@@ -2,6 +2,8 @@
 // Top of an index page (Work, Writing, Services…), from Paper: "// Label", big title, lead, optional stat row.
 // The template's faint grid sits behind it, fading from the top right (84% / 8%).
 // Title: pass `title` and `accent` (the coral tail), e.g. title="Eight products, each one" accent="shipped.".
+// Optional buttons go in the `actions` slot (About). `wrapStats` lets the stats wrap two to a row on mobile
+// (About) instead of squeezing three into one line.
 import Eyebrow from '../ui/Eyebrow.astro';
 import GridBg from '../ui/GridBg.astro';
 
@@ -14,8 +16,10 @@ interface Props {
   id?: string;
   /** Lead paragraph max width in px (Paper: 684 on most pages, 760 on Writing). */
   leadMax?: number;
+  wrapStats?: boolean;
 }
-const { eyebrow, title, accent, lead, stats = [], id = 'page-title', leadMax = 684 } = Astro.props;
+const { eyebrow, title, accent, lead, stats = [], id = 'page-title', leadMax = 684, wrapStats = false } = Astro.props;
+const hasActions = Astro.slots.has('actions');
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
 ---
 
@@ -29,12 +33,19 @@ const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
       </h1>
       <p data-reveal data-reveal-delay="200" style={`max-width:${leadMax}px`} class="text-[15.5px] leading-[160%] text-pretty text-muted md:text-[19px]">{lead}</p>
       {
+        hasActions && (
+          <div data-reveal data-reveal-delay="240" class="mt-2 flex w-full min-w-0 flex-wrap gap-3 md:w-auto">
+            <slot name="actions" />
+          </div>
+        )
+      }
+      {
         stats.length > 0 && (
           <dl data-reveal data-reveal-delay="260" class="mt-[18px] flex w-full max-w-[780px] flex-wrap border-t border-rule pt-5">
             {stats.map((s) => (
-              <div class="min-w-0 flex-1 basis-0 pr-3 md:min-w-[120px] md:pr-5">
+              <div class:list={['min-w-0 flex-1 pr-3 md:min-w-[120px] md:basis-0 md:pr-5', wrapStats ? 'basis-[40%] pb-4 md:pb-0' : 'basis-0']}>
                 <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{s.label}</dt>
-                <dd class="mt-2 text-[28px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]">{s.value}</dd>
+                <dd class:list={['mt-2 leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[36px]', wrapStats ? 'text-[26px]' : 'text-[28px]']}>{s.value}</dd>
               </div>
             ))}
           </dl>
