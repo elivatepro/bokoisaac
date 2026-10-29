@@ -8,6 +8,7 @@ import Eyebrow from '../../components/ui/Eyebrow.astro';
 import Metric from '../../components/work/Metric.astro';
 import Contact from '../../components/home/Contact.astro';
 import { projects, type Project } from '../../lib/projects';
+import { SITE, breadcrumbs } from '../../lib/seo';
 
 export function getStaticPaths() {
   return projects.map((project, i) => ({ params: { slug: project.slug }, props: { project, next: projects[(i + 1) % projects.length] } }));
@@ -36,6 +37,23 @@ const facts = [
   { label: 'Kind', value: p.tag },
 ];
 
+const url = `${SITE.url}/work/${p.slug}`;
+const caseLd = {
+  '@type': 'CreativeWork',
+  '@id': `${url}#case`,
+  name: p.name,
+  headline: `${p.name}: ${p.summary}`,
+  description: p.summary,
+  url,
+  image: `${SITE.url}/og/work/${p.slug}.png`,
+  genre: 'Case study',
+  keywords: [p.tag, ...p.stack].join(', '),
+  ...(/^\d{4}$/.test(p.year) && { dateCreated: p.year }),
+  author: { '@id': `${SITE.url}/#person` },
+  ...(p.client !== 'Freelance' && { sourceOrganization: { '@type': 'Organization', name: p.client } }),
+  about: `${p.metric}: ${p.before} → ${p.after}`,
+};
+
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
 const crumb = 'flex min-h-11 items-center text-[12.5px] leading-4';
 const row = 'grid min-w-0 grid-cols-[minmax(0,1fr)] items-start gap-[18px] border-t border-rule py-8 md:grid-cols-[minmax(0,340px)_minmax(0,720px)] md:gap-x-[134.4px] md:gap-y-6 md:py-[52px]';
@@ -45,7 +63,12 @@ const card = 'grid min-w-0 grid-cols-[minmax(0,1fr)] rounded-[14px] bg-surface p
 const ring = 'pointer-events-none absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]';
 ---
 
-<Base title={p.name} description={p.summary}>
+<Base
+  title={p.name}
+  description={p.summary}
+  og={{ section: 'Work', meta: `${p.tag} · ${p.before} → ${p.after}` }}
+  jsonLd={[caseLd, breadcrumbs([['Work', '/work'], [p.name, `/work/${p.slug}`]])]}
+>
   <article aria-labelledby="case-title">
     <div class="page pt-[112px] pb-14 md:pt-[208px] md:pb-[112px]">
       <header class="grid max-w-[940px] min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">

@@ -11,6 +11,7 @@ import Newsletter from '../../components/writing/Newsletter.astro';
 import Contact from '../../components/home/Contact.astro';
 import { live } from '../../lib/content';
 import { coverFor, day, postHref, posts, type Post } from '../../lib/posts';
+import { SITE, breadcrumbs } from '../../lib/seo';
 
 export async function getStaticPaths() {
   const all = await posts();
@@ -45,6 +46,24 @@ const initials = (name: string) =>
     .map((w) => w[0]!.toUpperCase())
     .join('');
 
+const url = `${SITE.url}${postHref(slug)}`;
+const articleLd = {
+  '@type': 'BlogPosting',
+  '@id': `${url}#article`,
+  headline: title,
+  description: seoDescription || excerpt,
+  url,
+  mainEntityOfPage: url,
+  image: `${SITE.url}/og/writing/${slug}.png`,
+  ...(published && { datePublished: published.toISOString() }),
+  dateModified: post.data.updated.toISOString(),
+  ...(tags.length && { keywords: tags.join(', '), articleSection: tags[0] }),
+  ...(readingTime && { timeRequired: `PT${readingTime}M` }),
+  inLanguage: 'en',
+  author: { '@id': `${SITE.url}/#person` },
+  publisher: { '@id': `${SITE.url}/#person` },
+};
+
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
 const crumb = 'flex min-h-11 items-center text-[12.5px] leading-4';
 const statValue = 'mt-2 text-[19px] leading-none font-semibold tracking-[-0.03em] tabular-nums md:text-[36px] md:tracking-[-0.045em]';
@@ -55,7 +74,15 @@ const fieldMsg = 'hidden text-[13.5px] leading-[140%] text-error';
 const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
 
-<Base title={title} description={seoDescription || excerpt}>
+<Base
+  title={title}
+  description={seoDescription || excerpt}
+  type="article"
+  published={published}
+  modified={post.data.updated}
+  og={{ section: 'Writing', meta: readingTime ? `${readingTime} min` : undefined, date: published ? day(published) : undefined }}
+  jsonLd={[articleLd, breadcrumbs([['Writing', '/writing'], [title, postHref(slug)]])]}
+>
   <article aria-labelledby="post-title">
     <div class="page pt-[112px] pb-16 md:pt-[208px] md:pb-[112px]">
       <header class:list={['grid items-end gap-8 md:gap-24', cover ? 'md:grid-cols-[minmax(0,1fr)_minmax(0,420px)]' : 'grid-cols-[minmax(0,1fr)]']}>

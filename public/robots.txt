@@ -1,0 +1,6 @@
+# Everyone is welcome, including AI search and answer engines.
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://bokoisaac.com/sitemap-index.xml
