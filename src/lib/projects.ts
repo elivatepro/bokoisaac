@@ -11,7 +11,8 @@ import qpimsDashboard from '../assets/work/qpims-dashboard.webp';
 import qpimsSketches from '../assets/work/qpims-sketches.webp';
 
 // Projects for Home "Selected work", /work and /work/[slug]. Static copy from Paper; "20XX" years are
-// placeholders still to be confirmed. Only projects with `study` have a written case study so far.
+// placeholders still to be confirmed. The QPIMS study is from Paper; the other studies were drafted from each
+// project's facts (summary, stack, metric) and are waiting for Boko's review.
 export interface CaseStudy {
   problem: string[];
   approach: string[];
@@ -93,6 +94,20 @@ export const projects: Project[] = [
     tag: 'Mobile',
     image: walletImg,
     alt: 'A developer at a desk lamp-lit workstation, reading code on two monitors',
+    study: {
+      problem: [
+        'Elivate needed one wallet that worked the same on the web and on a phone. Every release meant a manual build, a manual check and a long wait, so small fixes sat in a queue for days and nobody wanted to ship on a Friday.',
+      ],
+      approach: [
+        'One TypeScript API in Node.js in front of PostgreSQL, so the web app and the mobile app read the same balances and the same rules.',
+        'Money stored as whole cents, never as decimals, so a balance adds up the same way on every screen and in every report.',
+        'A pipeline that tests, builds and deploys every merge on its own, with a one-click rollback if anything looks wrong.',
+      ],
+      result: [
+        'A merge now reaches production in 95 s instead of 14 minutes. Fixes go out the same afternoon they are written, and releases stopped being an event.',
+      ],
+      pullQuote: 'Shipping became the boring part, which is how it should be.',
+    },
   },
   {
     slug: 'qpas',
@@ -108,6 +123,20 @@ export const projects: Project[] = [
     tag: 'Platform',
     image: qpasImg,
     alt: 'A laptop and phone showing a dark analytics dashboard with an orange revenue chart',
+    study: {
+      problem: [
+        'QPAS sits next to QPIMS in the Quality Installs suite, and its transactions table is where the office spends most of the day. With thousands of rows, every filter or sort froze the screen for a moment, long enough for people to click twice.',
+      ],
+      approach: [
+        'Built on the same data model as QPIMS, so a job and its transactions are one record, not two systems kept in sync.',
+        'Heavy totals worked out ahead of time and cached in Redis, so the table never adds up thousands of rows while someone waits.',
+        'Only the rows on screen are drawn, and filters update the list without blocking the next click.',
+      ],
+      result: [
+        'Interaction to next paint on the transactions table dropped from 380 ms to 48 ms. Filtering now feels instant, and the double clicks stopped.',
+      ],
+      pullQuote: 'The table answers before you notice you were waiting.',
+    },
   },
   {
     slug: 'pdp-enrichment-engine',
@@ -123,6 +152,20 @@ export const projects: Project[] = [
     tag: 'API',
     image: pdpImg,
     alt: 'A monitor in a dark room showing orange line charts and a heatmap',
+    study: {
+      problem: [
+        'Product data arrived from suppliers in every shape: spreadsheets, feeds and half-filled forms. Product pages went live with missing sizes and mismatched names, and checking a large catalogue by hand was slow and easy to get wrong.',
+      ],
+      approach: [
+        'An API in Node.js that takes each messy source, cleans it, fills the gaps and returns one tidy record per product.',
+        'The cleaning jobs run in Python workers, queued through Redis, so a big import never slows down the API.',
+        'A review view that plots the whole catalogue, so the team can pan and zoom across a million data points and spot the gaps at a glance.',
+      ],
+      result: [
+        'The review view went from 12 fps to a smooth 60 fps at a million points, so checking a full catalogue is something people actually do, not something they skip.',
+      ],
+      pullQuote: 'Clean data in, complete product pages out.',
+    },
   },
   {
     slug: 'book-read-along',
@@ -138,6 +181,20 @@ export const projects: Project[] = [
     tag: 'Mobile',
     image: bookImg,
     alt: 'A desktop monitor showing a colourful app layout, with books and prints on shelves behind',
+    study: {
+      problem: [
+        'A reading app is only useful if every reader can use it. The first version looked good but failed people using screen readers, larger text or a keyboard, which ruled out many of the readers it was meant for.',
+      ],
+      approach: [
+        'Pages that follow the reader, highlighting each line as it is read, with controls that work by keyboard and by touch.',
+        'Every screen checked with a screen reader and at large text sizes, not just with an automated scan.',
+        'Clear labels, readable contrast and focus that always shows where you are on the page.',
+      ],
+      result: [
+        'The product\'s average Lighthouse accessibility score went from 71 to 100. More importantly, the app now works for the readers who need it most.',
+      ],
+      pullQuote: 'Accessible from the first page, not patched in at the end.',
+    },
   },
   {
     slug: 'qp-invoicing',
@@ -153,6 +210,20 @@ export const projects: Project[] = [
     tag: 'Platform',
     image: invoicingImg,
     alt: 'A developer sitting at a desk with two monitors in a bright office',
+    study: {
+      problem: [
+        'At Quality Installs, an install was finished long before it was billed. Turning a work order into an invoice meant retyping it, and customers often gave up partway through the application to pay.',
+      ],
+      approach: [
+        'Invoices built straight from the finished work order in QPIMS, so nothing is typed twice.',
+        'One GraphQL API over PostgreSQL that the office and the customer screens share.',
+        'A short, clear application with fewer steps, progress that is saved as you go, and plain error messages.',
+      ],
+      result: [
+        'Completed applications rose from 38% to 71%. Jobs now move from a finished install to a paid invoice without someone chasing them.',
+      ],
+      pullQuote: 'Finished work turns into paid work, without a phone call.',
+    },
   },
   {
     slug: 'eduskillup-lms',
@@ -168,6 +239,20 @@ export const projects: Project[] = [
     tag: 'Web',
     image: eduImg,
     alt: 'A developer typing at a laptop in front of two monitors full of code',
+    study: {
+      problem: [
+        'EduSkillUp had courses, lessons and learners spread across tools that did not talk to each other. Finding a lesson took several clicks, and search was slow enough that people stopped using it.',
+      ],
+      approach: [
+        'One React app for courses, lessons and learner progress, backed by a Node.js API.',
+        'Search built into PostgreSQL with proper indexes, so results come straight from the database.',
+        'The whole stack runs in Docker, so a new environment is up in minutes, the same way every time.',
+      ],
+      result: [
+        'The first search result now appears in 0.4 s, down from 1.9 s. Learners find the lesson they want instead of scrolling for it.',
+      ],
+      pullQuote: 'Search fast enough that people use it again.',
+    },
   },
   {
     slug: 'roudio',
@@ -183,5 +268,19 @@ export const projects: Project[] = [
     tag: 'Web',
     image: roudioImg,
     alt: 'A dark street map of a city seen from above',
+    study: {
+      problem: [
+        'Roudio needed to go from an idea to a live media product for a freelance client, quickly and on a small budget. The first build shipped far more JavaScript than it needed, and it felt slow on everyday phones.',
+      ],
+      approach: [
+        'Built end to end: the React front end, a Node.js API and hosting on AWS.',
+        'Every screen loads only the code it needs, and heavy libraries were swapped for smaller ones or removed.',
+        'Media served from AWS close to the listener, so the app shell loads first and the content follows.',
+      ],
+      result: [
+        'JavaScript shipped dropped from 640 kB to 92 kB. The app opens quickly on a normal phone on a normal connection, which is where most people use it.',
+      ],
+      pullQuote: 'Small enough to load fast, complete enough to ship.',
+    },
   },
 ];
