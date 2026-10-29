@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import GridBg from '../ui/GridBg.astro';
 import Button from '../ui/Button.astro';
 import portrait from '../../assets/home/hero-portrait.png';
 
@@ -20,6 +21,7 @@ let word = 0;
 ---
 
 <section aria-labelledby="hero-title" class="relative isolate overflow-clip bg-bg" data-hero>
+  <GridBg x="18%" y="70%" />
   <!-- Portrait: full-width 472px band on mobile, right 48% on desktop. -->
   <div class="absolute inset-x-0 top-0 h-[472px] overflow-clip bg-field lg:bottom-0 lg:left-[52%] lg:h-auto" data-portrait>
     <Image

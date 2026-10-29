@@ -7,6 +7,7 @@
 import Base from '../layouts/Base.astro';
 import Button from '../components/ui/Button.astro';
 import Eyebrow from '../components/ui/Eyebrow.astro';
+import GridBg from '../components/ui/GridBg.astro';
 
 export const prerender = true;
 
@@ -20,8 +21,9 @@ const mono = 'font-mono font-medium';
 ---
 
 <Base title="Page not found" description="This page went offline. Here are the pages people usually look for.">
-  <section aria-labelledby="nf-title">
-    <div class="page pt-[112px] pb-4 md:pt-[208px] md:pb-[60px]">
+  <section aria-labelledby="nf-title" class="relative isolate">
+    <GridBg x="70%" y="40%" />
+    <div class="page relative pt-[112px] pb-4 md:pt-[208px] md:pb-[60px]">
       <div class="grid max-w-[1120px] grid-cols-[minmax(0,1fr)] justify-items-start gap-[22px]">
         <Eyebrow data-reveal="eyebrow">404</Eyebrow>
         <h1 id="nf-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">

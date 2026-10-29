@@ -1,0 +1,13 @@
+---
+// The template's faint 72px grid behind a section (`.sh-grid` on the Soren Hale site). Lines are ink at 5%,
+// faded out by a radial mask centred on (x, y). Put it first inside a `relative isolate` section; content
+// that follows must be positioned (e.g. `relative`) to sit above it.
+// Template origins: home hero 18/70 · index-page heroes 84/8 · "Start a project" 78/30 · 404 70/40 · contact 12/12.
+interface Props {
+  x?: string;
+  y?: string;
+}
+const { x = '18%', y = '70%' } = Astro.props;
+---
+
+<div class="grid-bg" aria-hidden="true" style={`--gx:${x};--gy:${y}`}></div>

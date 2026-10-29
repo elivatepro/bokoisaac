@@ -3,6 +3,7 @@
 // Posts come from Notion Blog (only Status = Published in production). The chips filter by each post's first tag.
 import Base from '../../layouts/Base.astro';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
+import GridBg from '../../components/ui/GridBg.astro';
 import Newsletter from '../../components/writing/Newsletter.astro';
 import Contact from '../../components/home/Contact.astro';
 import { day, postHref, posts as allPosts, readTime } from '../../lib/posts';
@@ -24,8 +25,9 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
 
 <Base title="Writing" description="Notes from shipping real software. Written after the project, with the numbers and the code.">
-  <section aria-labelledby="writing-title">
-    <div class="page pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]">
+  <section aria-labelledby="writing-title" class="relative isolate">
+    <GridBg x="84%" y="8%" />
+    <div class="page relative pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]">
       <div class="grid max-w-[940px] grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
         <Eyebrow data-reveal="eyebrow">Writing</Eyebrow>
         <h1 id="writing-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
