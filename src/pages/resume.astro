@@ -1,0 +1,339 @@
+---
+// Resume, from Paper ("Boko Isaac - Resume" → "Resume" / "Resume — Mobile"). A detail-type page: no hero grid.
+// "Download CV" serves public/boko-isaac-cv.pdf, which is this page printed (scripts/cv-pdf.mjs regenerates it).
+// "Print" prints the page itself; the @media print rules below make it one page, black on white.
+// Education and Certificates are still placeholders in Paper ("To confirm"), so entries marked `confirmed: false`
+// are left out, and a section with nothing confirmed is hidden.
+import Base from '../layouts/Base.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+import Button from '../components/ui/Button.astro';
+import Contact from '../components/home/Contact.astro';
+
+const email = 'hello@bokoisaac.com';
+
+const facts = [
+  { label: 'Works', value: 'Remote, worldwide' },
+  { label: 'Email', value: email, href: `mailto:${email}` },
+  { label: 'Taking', value: 'One outside project at a time', href: '/contact' },
+];
+
+const experience = [
+  {
+    when: '2025 to Now',
+    role: 'Lead engineer',
+    where: 'Quality Installs Co. · Remote',
+    body: 'Leads QPIMS, QPAS and QP Invoicing: jobs, crews, installs and invoices for the field and the office.',
+    tags: ['TypeScript', 'React Native', 'Supabase'],
+  },
+  {
+    when: '20XX to 2025',
+    role: 'Full-stack engineer',
+    where: 'Elivate · Remote',
+    body: 'Built the Elivate Wallet across web and mobile, from the API and data model to the screens.',
+    tags: ['Node.js', 'React', 'React Native'],
+  },
+  {
+    when: '20XX',
+    role: 'Freelance full-stack developer',
+    where: 'Freelance · Remote',
+    body: 'EduSkillUp, a learning platform. Roudio, a media product. A book read-along app.',
+    tags: ['TypeScript', 'React', 'Node.js'],
+  },
+  {
+    when: '20XX',
+    role: 'Web developer',
+    where: 'Agency clients · Remote',
+    body: 'Websites and landing pages for agency clients. Where the habit of shipping every week started.',
+    tags: ['HTML', 'CSS', 'JavaScript'],
+  },
+];
+
+const skills = [
+  { group: 'Languages', items: ['TypeScript', 'JavaScript', 'SQL'] },
+  { group: 'Frameworks', items: ['React', 'React Native', 'Node.js'] },
+  { group: 'Data', items: ['Postgres', 'Supabase'] },
+  { group: 'APIs and AI', items: ['REST', 'GraphQL', 'AI integration'] },
+];
+
+const education = [
+  { title: 'Degree or course', meta: 'Institution · 20XX to 20XX', confirmed: false },
+  { title: 'Second entry', meta: 'Institution · 20XX', confirmed: false },
+].filter((e) => e.confirmed);
+
+const languages = [
+  { name: 'English', level: 'Fluent' },
+  { name: 'French', level: 'Fluent' },
+];
+
+const certificates = [
+  { title: 'Certificate name', meta: 'Issuer · 20XX', confirmed: false },
+  { title: 'Certificate name', meta: 'Issuer · 20XX', confirmed: false },
+].filter((c) => c.confirmed);
+
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const label = 'eyebrow border-b border-rule pb-[14px] text-ink leading-[140%]';
+const chip = 'flex min-h-[26px] items-center rounded-[7px] px-[9px] py-[3px] font-mono text-[12px] leading-[130%] font-medium tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)]';
+const rowLast = 'last:border-b-0 last:pb-0';
+---
+
+<Base title="Resume" description="Boko Isaac, full-stack engineer: experience, skills and languages. Remote, worldwide.">
+  <article aria-labelledby="resume-title" class="resume">
+    <div class="page pt-[112px] pb-16 md:pt-[208px] md:pb-[112px]">
+      <header class="grid grid-cols-[minmax(0,1fr)] items-start gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:items-end md:gap-x-24">
+        <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-5">
+          <Eyebrow data-reveal="eyebrow" class="max-md:text-[12px]">Resume</Eyebrow>
+          <h1 id="resume-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+            Boko <span class="text-coral">Isaac</span>
+          </h1>
+          <p data-reveal data-reveal-delay="200" class="resume-role text-[22px] leading-[110%] font-semibold tracking-[-0.036em] text-muted md:text-[30px] md:tracking-[-0.045em]">Full-stack engineer</p>
+        </div>
+
+        <div data-reveal data-reveal-delay="260" class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[22px]">
+          <dl class="grid min-w-0 grid-cols-[minmax(0,1fr)] border-t border-rule">
+            {
+              facts.map((f) => (
+                <div class="flex min-h-11 min-w-0 items-baseline justify-between gap-4 border-b border-rule py-[10px]">
+                  <dt class:list={[mono, 'shrink-0 text-[12px] leading-[140%] text-muted']}>{f.label}</dt>
+                  <dd class="min-w-0 text-right text-[15.5px] leading-[140%] wrap-anywhere">
+                    {f.href ? (
+                      <a href={f.href} class="underline decoration-rule-strong decoration-1 underline-offset-4 hover:text-coral hover:decoration-coral">
+                        {f.value}
+                      </a>
+                    ) : (
+                      f.value
+                    )}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+          <div class="resume-actions flex min-w-0 flex-wrap items-center gap-3">
+            <Button href="/boko-isaac-cv.pdf" variant="secondary" icon="download" download="Boko-Isaac-CV.pdf">Download CV</Button>
+            <button
+              type="button"
+              data-print
+              class="btn flex h-11 items-center rounded-[12px] border border-rule-strong bg-bg/55 px-[18px] text-[13px] leading-none font-semibold tracking-[-0.005em] backdrop-blur-[8px] hover:border-ink/40"
+            >
+              Print
+            </button>
+            <p class:list={[mono, 'basis-full text-[12px] leading-[140%] text-muted']}>Prints on one page, black on white.</p>
+          </div>
+        </div>
+      </header>
+
+      <div data-reveal data-reveal-delay="300" class="resume-sheet mt-10 grid grid-cols-[minmax(0,1fr)] items-start gap-11 rounded-[14px] bg-surface p-[22px] shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-16 md:grid-cols-[minmax(0,1fr)_minmax(0,360px)] md:gap-[84px] md:p-[60px]">
+        <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-11">
+          <p class="resume-summary max-w-[756px] text-[15.5px] leading-[150%] md:text-[21px]">
+            Six years shipping full-stack products, eight of them live. Mostly TypeScript and Node.js, React and React Native, Supabase and Postgres, and AI where it earns its place.
+          </p>
+          <section aria-labelledby="exp-title" class="grid min-w-0 grid-cols-[minmax(0,1fr)]">
+            <h2 id="exp-title" class={label}><span class="text-coral">//</span> Experience</h2>
+            <ol class="grid min-w-0 grid-cols-[minmax(0,1fr)]">
+              {
+                experience.map((e) => (
+                  <li class:list={['resume-job grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2 border-b border-rule pt-6 pb-[26px] md:grid-cols-[132px_minmax(0,1fr)] md:gap-x-6', rowLast]}>
+                    <p class:list={[mono, 'text-[12.5px] leading-[150%] text-muted md:mt-[3px]']}>{e.when}</p>
+                    <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2">
+                      <h3 class="text-[24px] leading-[115%] font-semibold tracking-[-0.045em]">{e.role}</h3>
+                      <p class="text-[15px] leading-[140%] font-medium">{e.where}</p>
+                      <p class="max-w-[620px] text-[15.5px] leading-[160%] text-muted">{e.body}</p>
+                      <ul class="mt-1 flex min-w-0 flex-wrap gap-1.5" aria-label="Stack">
+                        {e.tags.map((t) => (
+                          <li class={chip}>{t}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </li>
+                ))
+              }
+            </ol>
+          </section>
+        </div>
+
+        <aside class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-11">
+          <section aria-labelledby="skills-title" class="grid min-w-0 grid-cols-[minmax(0,1fr)]">
+            <h2 id="skills-title" class={label}><span class="text-coral">//</span> Skills</h2>
+            {
+              skills.map((s) => (
+                <div class:list={['grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2 border-b border-rule py-4', rowLast]}>
+                  <h3 class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>{s.group}</h3>
+                  <ul class="flex min-w-0 flex-wrap gap-1.5">
+                    {s.items.map((t) => (
+                      <li class={chip}>{t}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </section>
+
+          {
+            education.length > 0 && (
+              <section aria-labelledby="edu-title" class="grid min-w-0 grid-cols-[minmax(0,1fr)]">
+                <h2 id="edu-title" class={label}>
+                  <span class="text-coral">//</span> Education
+                </h2>
+                {education.map((e) => (
+                  <div class:list={['grid min-w-0 grid-cols-[minmax(0,1fr)] gap-1 border-b border-rule py-[14px]', rowLast]}>
+                    <p class="text-[15.5px] leading-[140%] font-medium">{e.title}</p>
+                    <p class:list={[mono, 'text-[12px] leading-[150%] text-muted']}>{e.meta}</p>
+                  </div>
+                ))}
+              </section>
+            )
+          }
+
+          <section aria-labelledby="lang-title" class="grid min-w-0 grid-cols-[minmax(0,1fr)]">
+            <h2 id="lang-title" class={label}><span class="text-coral">//</span> Languages</h2>
+            {
+              languages.map((l) => (
+                <p class:list={['grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-baseline gap-4 border-b border-rule py-[14px]', rowLast]}>
+                  <span class="text-[15.5px] leading-[140%] font-medium">{l.name}</span>
+                  <span class:list={[mono, 'text-[12px] leading-[150%] text-muted']}>{l.level}</span>
+                </p>
+              ))
+            }
+          </section>
+
+          {
+            certificates.length > 0 && (
+              <section aria-labelledby="cert-title" class="grid min-w-0 grid-cols-[minmax(0,1fr)]">
+                <h2 id="cert-title" class={label}>
+                  <span class="text-coral">//</span> Certificates
+                </h2>
+                {certificates.map((c) => (
+                  <div class:list={['grid min-w-0 grid-cols-[minmax(0,1fr)] gap-1 border-b border-rule py-[14px]', rowLast]}>
+                    <p class="text-[15.5px] leading-[140%] font-medium">{c.title}</p>
+                    <p class:list={[mono, 'text-[12px] leading-[150%] text-muted']}>{c.meta}</p>
+                  </div>
+                ))}
+              </section>
+            )
+          }
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  <div class="resume-no-print">
+    <Contact />
+  </div>
+</Base>
+
+<style is:global>
+  /* One page, black on white: only the resume itself prints. */
+  @media print {
+    @page {
+      size: A4;
+      margin: 12mm 14mm;
+    }
+    html,
+    body {
+      background: #fff !important;
+      color: #111 !important;
+    }
+    body > header,
+    body > footer,
+    #shl,
+    #cursor,
+    .resume-no-print,
+    .resume-actions,
+    [aria-label='Breadcrumb'] {
+      display: none !important;
+    }
+    .resume * {
+      color: #111 !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+      opacity: 1 !important;
+      translate: none !important;
+      transform: none !important;
+    }
+    .resume .text-coral,
+    .resume .text-coral * {
+      color: #111 !important;
+    }
+    .resume .text-muted {
+      color: #555 !important;
+    }
+    .resume .border-rule,
+    .resume [class*='border-'] {
+      border-color: #d4d4d4 !important;
+    }
+    .resume .page {
+      padding: 0 !important;
+      max-width: none !important;
+    }
+    .resume header {
+      grid-template-columns: minmax(0, 1fr) 260px !important;
+      gap: 24px !important;
+      align-items: end !important;
+    }
+    .resume h1 {
+      font-size: 40px !important;
+    }
+    .resume .resume-role {
+      font-size: 18px !important;
+    }
+    .resume dl dd,
+    .resume dl a {
+      font-size: 11.5px !important;
+      text-decoration: none !important;
+    }
+    .resume dl > div {
+      min-height: 0 !important;
+      padding-block: 4px !important;
+    }
+    .resume-sheet {
+      margin-top: 18px !important;
+      padding: 0 !important;
+      background: none !important;
+      grid-template-columns: minmax(0, 1fr) 200px !important;
+      gap: 28px !important;
+    }
+    .resume-sheet > div,
+    .resume-sheet > aside {
+      gap: 16px !important;
+    }
+    .resume-summary {
+      font-size: 13px !important;
+    }
+    .resume-job {
+      grid-template-columns: 82px minmax(0, 1fr) !important;
+      gap: 4px 14px !important;
+      padding-block: 10px !important;
+      break-inside: avoid;
+    }
+    .resume-job h3 {
+      font-size: 15px !important;
+    }
+    .resume p,
+    .resume li {
+      font-size: 11px !important;
+      line-height: 1.45 !important;
+    }
+    .resume aside > section > div,
+    .resume aside > section > p {
+      padding-block: 7px !important;
+    }
+    .resume li[class*='rounded'] {
+      min-height: 0 !important;
+      padding: 1px 6px !important;
+      font-size: 9.5px !important;
+      border: 1px solid #ccc;
+    }
+    .resume .eyebrow {
+      font-size: 10.5px !important;
+      padding-bottom: 6px !important;
+    }
+  }
+</style>
+
+<script>
+  import { onPageLoad } from '../scripts/motion/core';
+  onPageLoad(() => {
+    const ac = new AbortController();
+    document.querySelector('[data-print]')?.addEventListener('click', () => window.print(), { signal: ac.signal });
+    return () => ac.abort();
+  });
+</script>
