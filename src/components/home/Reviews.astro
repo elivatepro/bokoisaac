@@ -1,9 +1,21 @@
 ---
 // "Reviewed, then approved." Client quotes styled as a code review of reviews/clients.md.
 // Rows come from Notion Reviews; the section is hidden when there are none.
+// Also used on /reviews without its heading (the page hero carries it); there an empty panel
+// (Paper "Reviews — Empty") shows until a review is published.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { live } from '../../lib/content';
+
+interface Props {
+  /** false: no heading block (/reviews). */
+  heading?: boolean;
+  /** Section padding (Paper: 68/151.2px; /reviews has 8/64px on mobile). */
+  pad?: string;
+  /** Show the empty panel when nothing is published, instead of hiding the section. */
+  showEmpty?: boolean;
+}
+const { heading = true, pad = 'py-[68px] md:py-[151.2px]', showEmpty = false } = Astro.props;
 
 const reviews = await live('reviews');
 
@@ -19,33 +31,77 @@ const check = 'M5 12.5l4.5 4.5L19 7.5';
 ---
 
 {
-  reviews.length > 0 && (
-    <section data-section="Reviews" id="reviews" aria-labelledby="reviews-title" class="bg-bg">
-      <div class="page py-[68px] md:py-[151.2px]">
-        <div class="grid max-w-[920px] justify-items-start gap-4 md:gap-[22px]">
-          <p data-reveal="eyebrow" class="eyebrow text-ink max-md:text-[12px]"><span class="text-coral">//</span> Code review</p>
-          <h2 id="reviews-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
-            Reviewed, then <span class="text-coral">approved.</span>
-          </h2>
-          <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
-            The people who merged the work, in their own words.
-          </p>
-        </div>
+  (reviews.length > 0 || showEmpty) && (
+    <section
+      data-section="Reviews"
+      id="reviews"
+      aria-labelledby={heading ? 'reviews-title' : undefined}
+      aria-label={heading ? undefined : 'Reviews'}
+      class="bg-bg"
+    >
+      <div class:list={['page', pad]}>
+        {heading && (
+          <div class="grid max-w-[920px] justify-items-start gap-4 md:gap-[22px]">
+            <p data-reveal="eyebrow" class="eyebrow text-ink max-md:text-[12px]">
+              <span class="text-coral">//</span> Code review
+            </p>
+            <h2 id="reviews-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+              Reviewed, then <span class="text-coral">approved.</span>
+            </h2>
+            <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+              The people who merged the work, in their own words.
+            </p>
+          </div>
+        )}
 
-        <div data-reveal data-reveal-delay="260" class="mt-10 overflow-clip rounded-[14px] bg-surface shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-16">
+        <div
+          data-reveal
+          data-reveal-delay="260"
+          class:list={['overflow-clip rounded-[14px] bg-surface shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-16', heading && 'mt-10']}
+        >
           <div class="flex min-h-[49px] items-center justify-between gap-4 border-b border-rule bg-field py-2 pr-4 md:min-h-[53px] md:pr-6">
             <p class="-my-2 flex items-center gap-[10px] self-stretch bg-surface px-4 shadow-[inset_0_2px_0_var(--color-coral),1px_0_0_var(--color-rule)] md:px-[22px]">
               <span class="size-[7px] shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
               <span class:list={[mono, 'text-[12.5px] leading-[130%] md:leading-[150%]']}>reviews/clients.md</span>
             </p>
-            <p class="flex shrink-0 items-center gap-2">
-              <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" class="shrink-0">
-                <path d={check} fill="none" stroke="var(--color-coral)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              <span class:list={[mono, 'text-[12.5px] leading-[150%]']}>{reviews.length} of {reviews.length} approved</span>
-            </p>
+            {reviews.length > 0 ? (
+              <p class="flex shrink-0 items-center gap-2">
+                <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" class="shrink-0">
+                  <path d={check} fill="none" stroke="var(--color-coral)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span class:list={[mono, 'text-[12.5px] leading-[150%]']}>
+                  {reviews.length} of {reviews.length} approved
+                </span>
+              </p>
+            ) : (
+              <p class:list={[mono, 'shrink-0 text-[12.5px] leading-[150%] text-muted']}>0 approved</p>
+            )}
           </div>
 
+          {reviews.length === 0 && (
+            <div class="relative md:grid md:grid-cols-[68px_minmax(0,1fr)]">
+              <div class="hidden w-[68px] justify-end border-r border-rule pt-8 pr-4 md:flex" aria-hidden="true">
+                <p class="w-max text-right font-mono text-[12px] leading-8 text-muted tabular-nums">
+                  1<br />2<br />3<br />4
+                </p>
+              </div>
+              <div class="flex min-w-0 items-start gap-4 px-4 py-6 md:gap-5 md:py-8 md:pr-8 md:pl-7">
+                <span class="grid size-10 shrink-0 place-items-center rounded-full shadow-[inset_0_0_0_1px_var(--color-rule-strong)]" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18">
+                    <path d="M5 5h14v10H10l-4 4v-4H5z" fill="none" stroke="var(--color-muted)" stroke-width="1.8" stroke-linejoin="round" />
+                  </svg>
+                </span>
+                <div class="flex max-w-[840px] min-w-0 flex-col gap-1.5">
+                  <p class="text-[17px] leading-7 tracking-[-0.005em] md:text-[21px] md:leading-8 md:tracking-[-0.012em]">Reviews are on their way.</p>
+                  <p class="text-[15.5px] leading-[160%] text-pretty text-muted md:text-[16px]">
+                    Ask me for a reference and I will put you in touch with someone I have shipped with.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {reviews.length > 0 && (
           <div class="relative md:grid md:grid-cols-[68px_minmax(0,1fr)]">
             {/* Line numbers: as many as fit; the column is clipped to the list height. */}
             <div class="absolute inset-y-0 left-0 hidden w-[68px] justify-end overflow-clip border-r border-rule pt-8 pr-4 md:flex" aria-hidden="true">
@@ -89,6 +145,7 @@ const check = 'M5 12.5l4.5 4.5L19 7.5';
               }
             </ul>
           </div>
+          )}
         </div>
       </div>
     </section>

@@ -1,0 +1,290 @@
+---
+// "How a project runs, week by week." Six steps on a vertical rail, from Paper ("Process" / "Process — Mobile").
+// Desktop: when · rail · step · "You get" card. Tablet (from the template): the card drops under the step.
+// Phone: rail on the left, then the coral "when", the step and the card stacked.
+// Motion (template .shpr): as the list scrolls in, each dot pops in and each rail segment draws down,
+// staggered 140ms per step. Without JS or with reduced motion everything is simply shown.
+
+const steps = [
+  {
+    when: 'Before',
+    title: 'The first call',
+    body: 'Thirty minutes. You describe the product, the people who will use it and the deadline. I ask about your data, your team and what already exists.',
+    get: 'A written quote within two working days',
+  },
+  {
+    when: 'Week 0',
+    title: 'Data model and plan',
+    body: 'I model the data first: tables, relations, who can see what. Then a short plan with the screens and the order they ship in. Nothing is built until you sign it off.',
+    get: 'The data model, a plan and a price range',
+  },
+  {
+    when: 'Week 1',
+    title: 'First deploy',
+    body: 'A real screen on a real URL, behind a login, with CI and a preview for every pull request. From here, something ships every week.',
+    get: 'A link you can open on your phone',
+  },
+  {
+    when: 'Weeks 2 to 6',
+    title: 'Ship every week',
+    body: 'One feature at a time, finished before the next one starts: screens, empty and error states, tests. A real deploy every week, not a demo.',
+    get: 'A weekly deploy and a short written update',
+  },
+  {
+    when: 'Throughout',
+    title: 'Typed end to end',
+    body: 'Database, API and screens share one set of TypeScript types. When something changes, the build tells us before your users do.',
+    get: 'Shared types and a passing test suite',
+  },
+  {
+    when: 'Last week',
+    title: 'Handover',
+    body: 'Everything written down: docs in the repository, a recorded walkthrough and a call with whoever runs it next. Software management keeps it running after that.',
+    get: 'The docs, the recording and a support plan',
+  },
+];
+const total = String(steps.length).padStart(2, '0');
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+---
+
+<section aria-label="Project steps">
+  <div class="page pb-16 md:pb-[112px]">
+    <ol class="steps" data-steps>
+      {
+        steps.map((s, i) => (
+          <li class="step" style={`--i:${i}`}>
+            <p class="step-when font-semibold text-balance">{s.when}</p>
+            <div class="step-rail" aria-hidden="true">
+              <i />
+            </div>
+            <div class="step-main">
+              <p class:list={[mono, 'step-n text-[12.5px] leading-[150%] text-muted']}>
+                {String(i + 1).padStart(2, '0')} / {total}
+              </p>
+              <h2 class="step-title font-semibold">{s.title}</h2>
+              <p class="step-body text-muted">{s.body}</p>
+            </div>
+            <div class="step-get grid min-w-0 gap-3 rounded-[14px] bg-surface px-[22px] py-5 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+              <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>You get</p>
+              <p class="grid min-w-0 grid-cols-[20px_minmax(0,1fr)] items-start gap-[10px]">
+                <span class="mt-px grid size-5 place-items-center rounded-[5px] shadow-[inset_0_0_0_1px_#ff7f5073]" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="11" height="11">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="var(--color-coral)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+                <span class="text-[15.5px] leading-[145%] text-pretty md:text-balance">{s.get}</span>
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    <p class:list={[mono, 'mt-[72px] border-t border-rule pt-[22px] text-[12.5px] leading-[150%] text-muted']}>
+      <span class="text-coral">//</span> The length changes from project to project. The order does not.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Phone (< 768px): rail | when / step / card. Values from "Process — Mobile". */
+  .steps {
+    --gap: 48px;
+    --dot: 3px;
+  }
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    padding-bottom: var(--gap);
+  }
+  .step:last-child {
+    padding-bottom: 0;
+  }
+  .step-when {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 15px;
+    line-height: 106%;
+    color: var(--color-coral);
+  }
+  .step-rail {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    position: relative;
+    align-self: stretch;
+    width: 24px;
+    min-height: 34px;
+  }
+  /* The rail runs from this dot down to the next one. */
+  .step-rail::before {
+    content: '';
+    position: absolute;
+    left: 11.5px;
+    width: 1px;
+    top: calc(var(--dot) + 7px);
+    bottom: calc(-1 * var(--gap) - var(--dot) - 7px);
+    background: var(--color-rule-strong);
+    transform-origin: 50% 0;
+  }
+  .step:last-child .step-rail::before {
+    display: none;
+  }
+  .step-rail i {
+    position: absolute;
+    left: 5px;
+    top: var(--dot);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-bg);
+    box-shadow: inset 0 0 0 2px var(--color-coral);
+  }
+  .step:first-child .step-rail i {
+    background: var(--color-coral);
+  }
+  .step-main {
+    grid-column: 2;
+    grid-row: 2;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    max-width: 620px;
+    min-width: 0;
+  }
+  .step-n {
+    padding-top: 8px;
+  }
+  .step-title {
+    font-size: 28px;
+    line-height: 102%;
+    letter-spacing: -0.04em;
+  }
+  .step-body {
+    font-size: 15.5px;
+    line-height: 160%;
+    text-wrap: pretty;
+  }
+  .step-get {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  /* Tablet (768–1199px), from the template: when · rail · step, with the card under the step. */
+  @media (width >= 48rem) {
+    .steps {
+      --gap: 56px;
+      --dot: 10px;
+    }
+    .step {
+      grid-template-columns: minmax(0, 150px) 24px minmax(0, 1fr);
+      column-gap: 28px;
+      row-gap: 0;
+    }
+    .step-when {
+      grid-column: 1;
+      grid-row: 1;
+      padding-top: 5px;
+      font-size: 24px;
+      letter-spacing: -0.045em;
+      text-align: right;
+      color: var(--color-ink);
+    }
+    .step-rail {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+    .step-main {
+      grid-column: 3;
+      grid-row: 1;
+      gap: 14px;
+    }
+    .step-title {
+      font-size: 36px;
+      letter-spacing: -0.045em;
+    }
+    .step-body {
+      font-size: 17px;
+    }
+    .step-get {
+      grid-column: 3;
+      grid-row: 2;
+      margin-top: 22px;
+      max-width: 620px;
+    }
+  }
+
+  /* Desktop (≥ 1200px), from "Process": four columns. */
+  @media (width >= 75rem) {
+    .steps {
+      --gap: 88px;
+    }
+    .step {
+      grid-template-columns: minmax(0, 220px) 24px minmax(0, 1fr) minmax(0, 360px);
+      column-gap: 56px;
+    }
+    .step-when {
+      padding-top: 2px;
+      font-size: 32px;
+      line-height: 106%;
+    }
+    .step-rail {
+      grid-row: 1;
+    }
+    .step-title {
+      font-size: 42px;
+    }
+    .step-get {
+      grid-column: 4;
+      grid-row: 1;
+      margin-top: 0;
+      max-width: none;
+    }
+  }
+
+  /* Motion: armed by JS, played when the list scrolls in. */
+  .steps.is-armed .step-rail i {
+    scale: 0;
+    transition: scale 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 140ms + 120ms);
+  }
+  .steps.is-armed .step-rail::before {
+    transform: scaleY(0);
+    transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.3, 1) calc(var(--i, 0) * 140ms + 200ms);
+  }
+  .steps.is-armed.is-on .step-rail i {
+    scale: 1;
+  }
+  .steps.is-armed.is-on .step-rail::before {
+    transform: scaleY(1);
+  }
+</style>
+
+<script>
+  import { onPageLoad, ready, reducedMotion } from '../../scripts/motion/core';
+
+  onPageLoad(() => {
+    const list = document.querySelector<HTMLElement>('[data-steps]');
+    if (!list || reducedMotion()) return;
+    list.classList.add('is-armed');
+    let io: IntersectionObserver | null = null;
+    let dead = false;
+    ready().then(() => {
+      if (dead) return;
+      io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          list.classList.add('is-on');
+          io?.disconnect();
+        },
+        { rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
+      );
+      io.observe(list);
+    });
+    return () => {
+      dead = true;
+      io?.disconnect();
+      list.classList.remove('is-armed', 'is-on');
+    };
+  });
+</script>

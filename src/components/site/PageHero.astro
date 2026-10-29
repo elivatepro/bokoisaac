@@ -2,9 +2,9 @@
 // Top of an index page (Work, Writing, Services…), from Paper: "// Label", big title, lead, optional stat row.
 // The template's faint grid sits behind it, fading from the top right (84% / 8%).
 // Title: pass `title` and `accent` (the coral tail), e.g. title="Eight products, each one" accent="shipped.".
-// Optional slots: `actions` (buttons under the lead, e.g. About) and `aside` (a card on the right, e.g. the commit
-// card on Stack / Now; it drops below the copy on mobile). `wrapStats` lets stats wrap two to a row on mobile
-// (About). `padClass` / `gapClass` override the default spacing where a page's Paper artboard differs.
+// Buttons under the lead: the `actions` slot or the default slot (About, Process, Reviews, FAQ). `aside` is a
+// card on the right (the commit card on Stack / Now; it drops below the copy on mobile). `wrapStats` lets stats
+// wrap two to a row on mobile (About). `pad` / `gapClass` / `wideGap` / `maxWidth` follow per-page Paper spacing.
 import Eyebrow from '../ui/Eyebrow.astro';
 import GridBg from '../ui/GridBg.astro';
 
@@ -17,9 +17,15 @@ interface Props {
   id?: string;
   /** Lead paragraph max width in px (Paper: 684 on most pages, 760 on Writing). */
   leadMax?: number;
+  /** Text block max width in px (Paper: 940; 1120 on FAQ, where the title fits one line). */
+  maxWidth?: number;
   wrapStats?: boolean;
+  /** Padding of the inner page container (Paper varies it per page). `padClass` is the same thing. */
+  pad?: string;
   padClass?: string;
+  /** Gap between the blocks; `wideGap` = 22px on mobile too (Process, Reviews, FAQ). */
   gapClass?: string;
+  wideGap?: boolean;
 }
 const {
   eyebrow,
@@ -29,20 +35,25 @@ const {
   stats = [],
   id = 'page-title',
   leadMax = 684,
+  maxWidth = 940,
   wrapStats = false,
-  padClass = 'pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]',
-  gapClass = 'gap-4 md:gap-[22px]',
+  pad,
+  padClass,
+  gapClass,
+  wideGap = false,
 } = Astro.props;
+const padding = pad ?? padClass ?? 'pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]';
+const gap = gapClass ?? (wideGap ? 'gap-[22px]' : 'gap-4 md:gap-[22px]');
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
-const hasActions = Astro.slots.has('actions');
+const hasActions = Astro.slots.has('actions') || Astro.slots.has('default');
 const hasAside = Astro.slots.has('aside');
 ---
 
 <section aria-labelledby={id} class="relative isolate">
   <GridBg x="84%" y="8%" />
-  <div class:list={['page relative', padClass]}>
+  <div class:list={['page relative', padding]}>
     <div class:list={['grid grid-cols-[minmax(0,1fr)]', hasAside && 'gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:items-end md:gap-24']}>
-      <div class:list={['grid max-w-[940px] min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start', gapClass]}>
+      <div style={`max-width:${maxWidth}px`} class:list={['grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start', gap]}>
         <Eyebrow data-reveal="eyebrow">{eyebrow}</Eyebrow>
         <h1 {id} data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
           {title} <span class="text-coral">{accent}</span>
@@ -52,6 +63,7 @@ const hasAside = Astro.slots.has('aside');
           hasActions && (
             <div data-reveal data-reveal-delay="240" class="mt-2 flex w-full min-w-0 flex-wrap gap-3 md:w-auto">
               <slot name="actions" />
+              <slot />
             </div>
           )
         }

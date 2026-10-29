@@ -1,0 +1,36 @@
+---
+// Reviews, from Paper ("Boko Isaac - Reviews" → "Reviews" / "Reviews — Mobile" / "Reviews — Empty").
+// Quotes come from Notion Reviews (Published only in production). The hero lead counts them; with none
+// published, the lead and the panel switch to the empty copy.
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import Button from '../components/ui/Button.astro';
+import Reviews from '../components/home/Reviews.astro';
+import Contact from '../components/home/Contact.astro';
+import { live } from '../lib/content';
+import { countWord } from '../lib/words';
+
+const count = (await live('reviews')).length;
+const lead =
+  count === 0
+    ? 'Reviews from the people I have shipped with are being collected. Until they are up, ask me for an introduction.'
+    : `${countWord(count)} ${count === 1 ? 'person' : 'people'} I have shipped with, in their own words. Ask me for an introduction to any of them.`;
+---
+
+<Base title="Reviews" description="What it is like to work with Boko Isaac, in the words of the people he has shipped with.">
+  <PageHero
+    id="reviews-title-page"
+    eyebrow="Reviews"
+    title="What it is like to"
+    accent="work with me."
+    {lead}
+    wideGap
+    pad="pt-[112px] pb-10 md:pt-[208px] md:pb-[60px]"
+  >
+    <Button href="/work" variant="secondary" icon="none">See the work they mean</Button>
+  </PageHero>
+
+  <Reviews heading={false} pad="pt-2 pb-16 md:py-[151.2px]" showEmpty />
+
+  <Contact />
+</Base>

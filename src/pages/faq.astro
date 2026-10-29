@@ -1,0 +1,53 @@
+---
+// FAQ, from Paper ("Boko Isaac - FAQs" → "FAQs" / "FAQs — Mobile"). Questions come from Notion FAQs
+// (Published only in production), the same rows as the Home and Process sections. The page also carries
+// FAQPage structured data built from those rows, for search and answer engines.
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import Button from '../components/ui/Button.astro';
+import Faq from '../components/home/Faq.astro';
+import Contact from '../components/home/Contact.astro';
+import { live } from '../lib/content';
+import { countWord } from '../lib/words';
+
+const faqs = await live('faqs');
+const count = faqs.length;
+const lead =
+  count === 0
+    ? 'Answers to the questions people ask before a project are on their way. Until then, write to me and ask.'
+    : `${countWord(count)} short ${count === 1 ? 'answer' : 'answers'}. If yours is not here, write to me and I will add it.`;
+
+const answered = faqs.filter((f) => f.data.question && f.data.answer);
+const jsonLd = answered.length
+  ? JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: answered.map((f) => ({
+        '@type': 'Question',
+        name: f.data.question,
+        acceptedAnswer: { '@type': 'Answer', text: f.data.answer },
+      })),
+    }).replace(/</g, '\\u003c')
+  : null;
+---
+
+<Base title="FAQ" description="Answers to the questions people ask before a project: availability, pricing, stack, ownership and what happens after launch.">
+  <PageHero
+    id="faq-title-page"
+    eyebrow="FAQ"
+    title="Asked before every"
+    accent="project."
+    {lead}
+    maxWidth={1120}
+    wideGap
+    pad="pt-[112px] pb-4 md:pt-[208px] md:pb-[60px]"
+  >
+    <Button href="mailto:hello@bokoisaac.com" variant="secondary" icon="none">Ask something else</Button>
+  </PageHero>
+
+  <Faq heading={false} pad="pt-12 pb-16 md:py-[151.2px]" />
+
+  <Contact />
+
+  {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+</Base>

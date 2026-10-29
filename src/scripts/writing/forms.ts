@@ -27,7 +27,9 @@ function busy(button: HTMLButtonElement, on: boolean) {
 }
 
 function fieldError(input: HTMLInputElement | HTMLTextAreaElement, msg: HTMLElement | null, text: string | null) {
-  input.toggleAttribute('aria-invalid', !!text);
+  // Tailwind's aria-invalid: variant matches [aria-invalid="true"], so the value has to be set.
+  if (text) input.setAttribute('aria-invalid', 'true');
+  else input.removeAttribute('aria-invalid');
   if (!msg) return;
   msg.textContent = text ?? '';
   msg.classList.toggle('hidden', !text);

@@ -1,0 +1,31 @@
+---
+// Process, from Paper ("Boko Isaac - Process" → "Process" / "Process — Mobile"): hero, the six-step rail,
+// the first four FAQs and "Start a project".
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import Button from '../components/ui/Button.astro';
+import Steps from '../components/process/Steps.astro';
+import Faq from '../components/home/Faq.astro';
+import Contact from '../components/home/Contact.astro';
+---
+
+<Base title="Process" description="How a project runs, week by week: a first call, a data model and plan, then a real deploy every week until handover.">
+  <PageHero
+    id="process-title"
+    eyebrow="Process"
+    title="How a project runs,"
+    accent="week by week."
+    lead="No big reveal at the end. You get a real deploy every week, and you always know what moved and why."
+    wideGap
+    pad="pt-[112px] pb-12 md:pt-[208px] md:pb-[60px]"
+  >
+    <Button href="/contact">Start a project</Button>
+    <Button href="/services" variant="secondary" icon="none">See the services</Button>
+  </PageHero>
+
+  <Steps />
+
+  <Faq title="Asked before every" accent="project." lead="" limit={4} />
+
+  <Contact />
+</Base>
