@@ -1,0 +1,247 @@
+---
+// A service, from Paper ("Services Detail" / "Services Detail — Mobile"): head with the price card, scope and
+// includes, "How it runs" steps, questions, other services, then "Start a project". No hero grid on detail pages.
+import Base from '../../layouts/Base.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import Button from '../../components/ui/Button.astro';
+import Includes from '../../components/services/Includes.astro';
+import Contact from '../../components/home/Contact.astro';
+import { contactHref, relatedTo, services, type Service } from '../../lib/services';
+
+export async function getStaticPaths() {
+  const all = await services();
+  return all.map((service) => ({ params: { slug: service.slug }, props: { service, others: relatedTo(service, all) } }));
+}
+
+interface Props {
+  service: Service;
+  others: Service[];
+}
+const { service: s, others } = Astro.props;
+
+const words = s.name.split(' ');
+const last = words.pop();
+const [stepsLead, stepsAccent] = s.stepsTitle ?? ['From the first note to the', 'handover.'];
+
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+const crumb = 'flex min-h-11 items-center text-[12.5px] leading-4';
+const h2 = 'text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]';
+const block = 'mt-[60px] md:mt-32';
+const card = 'rounded-[14px] bg-surface shadow-[inset_0_0_0_1px_var(--color-rule)]';
+---
+
+<Base title={s.name} description={`${s.summary} ${s.price}${s.timeline ? `, ${s.timeline.toLowerCase()}` : ''}.`}>
+  <article aria-labelledby="service-title">
+    <div class="page pt-[112px] pb-14 md:pt-[208px] md:pb-[112px]">
+      <header class="grid grid-cols-[minmax(0,1fr)] items-start gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:items-end md:gap-24">
+        <div class="grid max-w-[940px] min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-4 md:gap-[22px]">
+          <nav aria-label="Breadcrumb" class:list={[mono, 'min-w-0']}>
+            <ol class="flex flex-wrap items-center gap-x-2">
+              <li class="flex items-center"><a href="/" class:list={[crumb, 'min-w-3 text-muted hover:text-ink']} aria-label="Home">~</a></li>
+              <li class="flex items-center gap-2">
+                <span class="text-rule-strong" aria-hidden="true">/</span><a href="/services" class:list={[crumb, 'text-muted hover:text-ink']}>Services</a>
+              </li>
+              <li class="flex min-w-0 items-center gap-2">
+                <span class="text-rule-strong" aria-hidden="true">/</span><span aria-current="page" class="text-[12.5px] leading-4">{s.name}</span>
+              </li>
+            </ol>
+          </nav>
+          <Eyebrow data-reveal="eyebrow" class="max-md:text-[12px]">Service</Eyebrow>
+          <h1 id="service-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+            {words.length > 0 && <>{words.join(' ')} </>}<span class="text-coral">{last}</span>
+          </h1>
+          <p data-reveal data-reveal-delay="200" class="max-w-[558px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[684px] md:text-[19px]">{s.summary}</p>
+        </div>
+
+        <div data-reveal data-reveal-delay="260" class:list={[card, 'grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[18px] px-[18px] pt-1 pb-[18px] md:px-6 md:pt-2 md:pb-6']}>
+          <dl class="grid min-w-0">
+            <div class="grid min-w-0 gap-[9px] border-b border-rule py-5">
+              <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Price</dt>
+              <dd class="text-[26px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[32px]">{s.price}</dd>
+            </div>
+            {
+              s.timeline && (
+                <div class="grid min-w-0 gap-[9px] border-b border-rule py-5">
+                  <dt class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Timeline</dt>
+                  <dd class="text-[26px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[32px]">{s.timeline}</dd>
+                </div>
+              )
+            }
+          </dl>
+          <Button href={contactHref(s)} class="mt-[6px] w-full justify-between" data-cursor="Start">Start this project</Button>
+          <Button href={contactHref(s, true)} variant="secondary" icon="calendar" class="-mt-2 w-full justify-between">Book a 20-min call</Button>
+          <p class:list={[mono, 'text-[12px] leading-[150%] text-muted']}>Start opens the contact form with this service picked. Or book a quick call first.</p>
+        </div>
+      </header>
+
+      <section aria-label="Scope" class:list={[block, 'grid grid-cols-[minmax(0,1fr)] items-start gap-7 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:gap-24']}>
+        <div data-reveal class="grid max-w-[860px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+          <Eyebrow class="max-md:text-[12px]">Scope</Eyebrow>
+          <p class="text-[19px] leading-[145%] tracking-[-0.012em] text-pretty md:text-[28px] md:leading-[138%]">{s.scope}</p>
+        </div>
+        <div data-reveal data-reveal-delay="80" class:list={[card, 'grid min-w-0 gap-4 px-[18px] py-5 md:p-6']}>
+          <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Includes</p>
+          <Includes items={s.includes} />
+        </div>
+      </section>
+
+      <section aria-labelledby="steps-title" class={block}>
+        <div class="grid max-w-[920px] justify-items-start gap-4 md:gap-[22px]">
+          <Eyebrow data-reveal="eyebrow" class="max-md:text-[12px]">How it runs</Eyebrow>
+          <h2 id="steps-title" data-reveal="words" class={h2}>{stepsLead} <span class="text-coral">{stepsAccent}</span></h2>
+        </div>
+        <ol data-reveal-stagger="80" data-reveal-delay="200" class="steps mt-8 grid grid-cols-[minmax(0,1fr)] md:mt-16 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] md:gap-y-12">
+          {
+            s.steps.map((step, i) => (
+              <li class="step relative min-w-0 pb-[34px] pl-[30px] md:pt-[34px] md:pr-8 md:pb-0 md:pl-0">
+                <span class="step-line absolute bg-rule-strong" aria-hidden="true" />
+                <span class:list={['absolute top-1 left-0 size-[11px] rounded-full shadow-[inset_0_0_0_2px_var(--color-coral)] md:top-0', i === 0 ? 'bg-coral' : 'bg-bg']} aria-hidden="true" />
+                <div class="grid content-start gap-3">
+                  <p class:list={[mono, 'flex gap-[10px] text-[12.5px] leading-[150%]']}>
+                    <span class="text-muted">{String(i + 1).padStart(2, '0')}</span>
+                    <span class="text-coral">{step.when}</span>
+                  </p>
+                  <h3 class="text-[22px] leading-[110%] font-semibold tracking-[-0.045em] md:text-[27px]">{step.title}</h3>
+                  <p class="max-w-[465px] text-[15.5px] leading-[160%] text-muted">{step.body}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section aria-labelledby="questions-title" class:list={[block, 'grid grid-cols-[minmax(0,1fr)] items-start gap-7 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-24']}>
+        <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
+          <Eyebrow data-reveal="eyebrow" class="max-md:text-[12px]">Questions</Eyebrow>
+          <h2 id="questions-title" data-reveal="words" class={h2}>Asked about this <span class="text-coral">service.</span></h2>
+        </div>
+        <div data-reveal-stagger="50" data-reveal-delay="200" class="min-w-0 border-b border-rule">
+          {
+            s.questions.map((item, i) => (
+              <details name="service-questions" class="svc-q group border-t border-rule" open={i === 0}>
+                <summary class="grid min-h-[72px] w-full cursor-pointer list-none grid-cols-[26px_minmax(0,1fr)_40px] items-center gap-x-[10px] py-[14px] md:min-h-[84px] md:grid-cols-[34px_minmax(0,1fr)_44px] md:gap-x-[14px] md:py-[18px] [&::-webkit-details-marker]:hidden">
+                  <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted group-open:text-coral']}>{String(i + 1).padStart(2, '0')}</span>
+                  <span class="text-[19px] leading-[115%] font-semibold tracking-[-0.045em] md:text-[25px]">{item.q}</span>
+                  <span class="grid size-10 place-items-center rounded-[9px] text-ink shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-colors group-open:bg-coral group-open:text-coral-ink group-open:shadow-none md:size-11" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="16" height="16" class="transition-[rotate] duration-300 group-open:rotate-45">
+                      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                    </svg>
+                  </span>
+                </summary>
+                <div class="max-w-[558px] pr-1 pb-6 pl-9 md:max-w-[576px] md:pr-[58px] md:pb-7 md:pl-12">
+                  <p class="text-[15.5px] leading-[160%] text-balance text-muted md:text-[16px]">{item.a}</p>
+                </div>
+              </details>
+            ))
+          }
+        </div>
+      </section>
+
+      <section aria-labelledby="others-title" class:list={[block, 'grid grid-cols-[minmax(0,1fr)] gap-5']}>
+        <h2 id="others-title" class="eyebrow text-ink max-md:text-[12px]" data-reveal="eyebrow"><span class="text-coral">//</span> Other services</h2>
+        <ul data-reveal-stagger="60" data-reveal-delay="160" class="min-w-0 border-t border-rule">
+          {
+            others.map((o) => (
+              <li class="border-b border-rule">
+                <a
+                  href={`/services/${o.slug}`}
+                  data-cursor="See the service"
+                  class="svc-row group grid min-h-[76px] grid-cols-[minmax(0,1fr)_40px] items-baseline gap-x-[14px] gap-y-1.5 py-[18px] md:grid-cols-[minmax(120px,2fr)_minmax(0,4fr)_minmax(0,5fr)_40px] md:gap-x-7 md:gap-y-2 md:py-[22px]"
+                >
+                  <span class:list={[mono, 'col-start-1 text-[12.5px] leading-[150%] text-muted']}>{o.price}</span>
+                  <span class="col-start-1 text-[20px] leading-[112%] font-semibold tracking-[-0.045em] md:col-start-2 md:text-[26px]">{o.name}</span>
+                  <span class="col-start-1 text-[15.5px] leading-[155%] text-muted md:col-start-3">{o.short ?? o.summary}</span>
+                  <span class="svc-row-tile col-start-2 row-span-3 row-start-1 grid size-9 place-items-center self-center justify-self-end rounded-[9px] text-coral md:col-start-4 md:row-span-1" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="15" height="15">
+                      <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+  </article>
+
+  <Contact />
+</Base>
+
+<style>
+  /* Step rail: a vertical line on phones (hidden on the last step), a horizontal line across each column on desktop. */
+  .step-line {
+    top: 4px;
+    bottom: -4px;
+    left: 5px;
+    width: 1px;
+  }
+  .step:last-child .step-line {
+    display: none;
+  }
+  @media (width >= 48rem) {
+    .step-line {
+      top: 5px;
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: 1px;
+    }
+    .step:last-child .step-line {
+      display: block;
+    }
+  }
+
+  /* Smooth open/close where supported, like the Home FAQ. */
+  @supports (interpolate-size: allow-keywords) {
+    .svc-q {
+      interpolate-size: allow-keywords;
+    }
+    .svc-q::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 0.3s ease,
+        content-visibility 0.3s allow-discrete;
+    }
+    .svc-q[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  /* #29 row slide, and the arrow tile fills coral. */
+  .svc-row {
+    transition:
+      padding-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 0.3s ease;
+  }
+  .svc-row-tile {
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  @media (hover: hover) {
+    .svc-row:hover {
+      padding-left: 14px;
+      background-color: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    }
+  }
+  .svc-row:focus-visible {
+    padding-left: 14px;
+  }
+  .svc-row:hover .svc-row-tile,
+  .svc-row:focus-visible .svc-row-tile {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    box-shadow: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .svc-row,
+    .svc-q::details-content {
+      transition: none;
+    }
+  }
+</style>

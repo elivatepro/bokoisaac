@@ -1,0 +1,94 @@
+---
+// A service card on /services, from Paper ("Services" / "Services — Mobile"). The title link is stretched over
+// the whole card. Hover is the house card lift (#27) and the arrow tile fills coral.
+import type { Service } from '../../lib/services';
+import Includes from './Includes.astro';
+
+interface Props {
+  service: Service;
+  index: number;
+}
+const { service: s, index } = Astro.props;
+const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
+---
+
+<article data-cursor="See the service" class="svc-card relative flex h-full min-w-0 flex-col rounded-[14px] bg-surface px-5 pt-[22px] pb-5 md:p-10">
+  <div class="flex min-h-[26px] min-w-0 items-center justify-between gap-3">
+    <p class:list={[mono, 'text-[12.5px] leading-[150%] text-coral']}>{String(index + 1).padStart(2, '0')}</p>
+    {
+      s.timeline && (
+        <p class:list={[mono, 'flex h-[26px] items-center rounded-[7px] px-[9px] text-[12px] leading-none text-muted shadow-[inset_0_0_0_1px_var(--color-rule-strong)]']}>
+          {s.timeline}
+        </p>
+      )
+    }
+  </div>
+  <h2 class="mt-[26px] min-w-0 text-[36px] leading-none font-semibold tracking-[-0.045em] md:mt-14 md:text-[50px]">
+    <a href={`/services/${s.slug}`} class="after:absolute after:inset-0 after:rounded-[14px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-3 focus-visible:after:outline-coral">
+      {s.name}
+    </a>
+  </h2>
+  <p class="mt-[14px] max-w-[465px] text-[15.5px] leading-[155%] text-balance text-muted md:max-w-[510px] md:text-[17px]">{s.summary}</p>
+  <div class="mt-6 grid min-w-0 gap-[14px] border-t border-rule pt-5 md:mt-9 md:pt-7">
+    <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Includes</p>
+    <Includes items={s.includes} columns />
+  </div>
+  <div class="mt-auto flex min-w-0 items-end justify-between gap-4 pt-7 md:pt-11">
+    <div class="grid min-w-0 gap-2">
+      <p class:list={[mono, 'text-[12px] leading-[140%] text-muted']}>Price</p>
+      <p class="text-[24px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[30px]">{s.price}</p>
+    </div>
+    <p class="flex min-w-0 items-center gap-[14px]" aria-hidden="true">
+      <span class:list={[mono, 'svc-see hidden text-[12.5px] leading-[150%] md:inline']}>See the service</span>
+      <span class="svc-tile grid size-11 shrink-0 place-items-center rounded-[12px] text-coral md:size-12">
+        <svg viewBox="0 0 24 24" width="16" height="16">
+          <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </p>
+  </div>
+</article>
+
+<style>
+  .svc-card {
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+    transition:
+      translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s ease;
+  }
+  .svc-tile {
+    box-shadow: inset 0 0 0 1px var(--color-rule-strong);
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  .svc-tile svg {
+    transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .svc-card:hover,
+  .svc-card:focus-within {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  .svc-card:hover .svc-tile,
+  .svc-card:focus-within .svc-tile {
+    background: var(--color-coral);
+    color: var(--color-coral-ink);
+    box-shadow: none;
+  }
+  .svc-card:hover .svc-tile svg,
+  .svc-card:focus-within .svc-tile svg {
+    translate: 2px 0;
+  }
+  .svc-card:hover .svc-see {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .svc-card:hover,
+    .svc-card:focus-within {
+      translate: none;
+    }
+  }
+</style>

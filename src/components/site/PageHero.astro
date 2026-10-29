@@ -20,6 +20,8 @@ interface Props {
   /** Text block max width in px (Paper: 940; 1120 on FAQ, where the title fits one line). */
   maxWidth?: number;
   wrapStats?: boolean;
+  /** Same as wrapStats (Services). */
+  statsLayout?: 'row' | 'wrap';
   /** Padding of the inner page container (Paper varies it per page). `padClass` is the same thing. */
   pad?: string;
   padClass?: string;
@@ -36,12 +38,14 @@ const {
   id = 'page-title',
   leadMax = 684,
   maxWidth = 940,
-  wrapStats = false,
+  wrapStats: wrapProp = false,
+  statsLayout = 'row',
   pad,
   padClass,
   gapClass,
   wideGap = false,
 } = Astro.props;
+const wrapStats = wrapProp || statsLayout === 'wrap';
 const padding = pad ?? padClass ?? 'pt-[112px] pb-7 md:pt-[208px] md:pb-[60px]';
 const gap = gapClass ?? (wideGap ? 'gap-[22px]' : 'gap-4 md:gap-[22px]');
 const mono = 'font-mono font-medium tracking-[0.01em] tabular-nums';
