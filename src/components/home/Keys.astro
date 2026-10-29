@@ -56,16 +56,16 @@ let index = 0;
   <div class="page py-[68px] md:py-[151.2px]">
     <div class="grid items-start gap-x-14 gap-y-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
       <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
-        <p class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}><span class="text-coral">//</span> The stack</p>
-        <h2 id="keys-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+        <p data-reveal="eyebrow" class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}><span class="text-coral">//</span> The stack</p>
+        <h2 id="keys-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
           The keys I <span class="text-coral">press</span> every day.
         </h2>
-        <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+        <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
           The tools I would pick again tomorrow. Point at a key, or tab across the board, to see how long it has been there and what
           it is for.
         </p>
       </div>
-      <div class="grid min-w-0 justify-items-start gap-1">
+      <div data-reveal data-reveal-delay="260" class="grid min-w-0 justify-items-start gap-1">
         <p class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>{total} tools · {groups.length} groups</p>
         <a href="/stack" class:list={[mono, 'group flex min-h-11 items-center gap-[9px] rounded-sm text-[13px] leading-none tracking-[0.01em]']}>
           <span class="text-muted">02</span>
@@ -93,7 +93,12 @@ let index = 0;
                 {g.name}
                 <span class="text-muted italic lg:not-italic">{pad(g.keys.length)}</span>
               </p>
-              <div class:list={['flex min-w-0 flex-wrap gap-2 lg:gap-2.5', stagger[gi]]}>
+              <div
+                data-reveal-stagger="14"
+                data-reveal-delay={300 + Math.min(index, 20) * 14}
+                data-reveal-y="10"
+                class:list={['flex min-w-0 flex-wrap gap-2 lg:gap-2.5', stagger[gi]]}
+              >
                 {g.keys.map((k) => {
                   const i = index++;
                   return (
@@ -119,6 +124,8 @@ let index = 0;
 
       <div
         id="keys-card"
+        data-reveal
+        data-reveal-delay="380"
         aria-live="polite"
         class="-order-1 grid min-w-0 rounded-[14px] bg-surface px-[18px] pt-5 pb-[22px] shadow-[inset_0_0_0_1px_var(--color-rule)] lg:order-none lg:px-7 lg:pt-[26px] lg:pb-7"
       >
@@ -201,7 +208,10 @@ let index = 0;
 </style>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-keys]').forEach((board) => {
+  import { onPageLoad } from '../../scripts/motion/core';
+
+  // Runs on every page load: pages swap without a full reload (ClientRouter).
+  onPageLoad(() => document.querySelectorAll<HTMLElement>('[data-keys]').forEach((board) => {
     const keys = [...board.querySelectorAll<HTMLButtonElement>('[data-key]')];
     const cards = [...board.querySelectorAll<HTMLElement>('[data-card]')];
     const press = (i: number) => {
@@ -221,5 +231,5 @@ let index = 0;
       k.addEventListener('focus', () => press(i));
       k.addEventListener('click', () => press(i));
     });
-  });
+  }));
 </script>

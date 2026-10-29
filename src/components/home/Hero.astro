@@ -8,11 +8,20 @@ const stats = [
   { value: '8', label: 'Products shipped' },
   { value: '2', label: 'Languages, EN & FR' },
 ];
+
+// Headline words, split at build time for the intro (#12). `c` = extra classes (coral words).
+const lines: { t: string; c?: string }[][] = [
+  [{ t: 'Full-stack' }, { t: 'engineer' }],
+  [{ t: 'shipping' }, { t: 'software' }],
+  [{ t: 'that', c: 'lg:text-coral' }, { t: 'just', c: 'text-coral' }, { t: 'works.', c: 'text-coral' }],
+];
+const headline = lines.map((l) => l.map((w) => w.t).join(' ')).join(' ');
+let word = 0;
 ---
 
-<section aria-labelledby="hero-title" class="relative isolate overflow-clip bg-bg">
+<section aria-labelledby="hero-title" class="relative isolate overflow-clip bg-bg" data-hero>
   <!-- Portrait: full-width 472px band on mobile, right 48% on desktop. -->
-  <div class="absolute inset-x-0 top-0 h-[472px] overflow-clip bg-field lg:bottom-0 lg:left-[52%] lg:h-auto">
+  <div class="absolute inset-x-0 top-0 h-[472px] overflow-clip bg-field lg:bottom-0 lg:left-[52%] lg:h-auto" data-portrait>
     <Image
       src={portrait}
       alt="Boko Isaac, in a dark suit and white shirt, looking at the camera"
@@ -30,7 +39,7 @@ const stats = [
 
     <div class="flex flex-1 items-start pt-[322px] pb-11 lg:items-end lg:pt-10 lg:pb-[60px]">
       <div class="w-full max-w-[900px] lg:w-[64%]">
-        <p class="mb-[18px] font-mono text-xs leading-4 font-medium tracking-[0.01em] text-ink lg:mb-[26px] lg:text-[13px]">
+        <p style="--d: 50ms" class="hero-up mb-[18px] font-mono text-xs leading-4 font-medium tracking-[0.01em] text-ink lg:mb-[26px] lg:text-[13px]">
           <span class="text-coral">//</span>{' '}
           <span class="lg:hidden">Full-stack engineer · TypeScript, Node.js</span>
           <span class="hidden lg:inline">Full-stack software engineer · TypeScript, Node.js, PostgreSQL</span>
@@ -38,30 +47,44 @@ const stats = [
 
         <h1
           id="hero-title"
+          aria-label={headline}
           class="text-[37.6px] leading-none font-semibold tracking-[-0.045em] text-ink lg:text-[clamp(56px,5.65vw,94px)] lg:leading-[0.95]"
         >
-          <span class="block">Full-stack engineer</span>
-          <span class="block">shipping software</span>
-          <span class="block"><span class="lg:text-coral">that</span> <span class="text-coral">just works.</span></span>
+          {
+            lines.map((l) => (
+              <span class="block" aria-hidden="true">
+                {l.map((w, j) => (
+                  <>
+                    {j > 0 && ' '}
+                    <span class="hw">
+                      <span class:list={['hwi', w.c]} style={`--i: ${word++}`}>
+                        {w.t}
+                      </span>
+                    </span>
+                  </>
+                ))}
+              </span>
+            ))
+          }
         </h1>
 
-        <div class="mt-6 flex max-w-[780px] flex-col gap-6 lg:mt-9 lg:flex-row lg:flex-wrap lg:items-end lg:justify-between lg:gap-10 xl:flex-nowrap">
+        <div style="--d: 500ms" class="hero-up mt-6 flex max-w-[780px] flex-col gap-6 lg:mt-9 lg:flex-row lg:flex-wrap lg:items-end lg:justify-between lg:gap-10 xl:flex-nowrap">
           <p class="text-[15px] leading-[1.6] text-pretty text-muted lg:max-w-[400px] lg:text-base">
             Six years building web and mobile products, from field-service platforms to fintech wallets. TypeScript end to end, and a stubborn eye on what breaks in production.
           </p>
           <div class="flex shrink-0 flex-wrap gap-3 lg:flex-nowrap">
-            <Button href="/work" class="grow justify-between lg:grow-0">See the work</Button>
+            <Button href="/work" data-magnet class="grow justify-between lg:grow-0">See the work</Button>
             <!-- /cv.pdf doesn't exist yet. -->
-            <Button href="/cv.pdf" variant="secondary" icon="download" class="grow justify-between lg:grow-0" download>Download CV</Button>
+            <Button href="/cv.pdf" variant="secondary" icon="download" data-magnet class="grow justify-between lg:grow-0" download>Download CV</Button>
           </div>
         </div>
 
         <dl class="mt-9 flex max-w-[780px] flex-wrap gap-y-5 border-t border-rule pt-[22px] lg:mt-[52px] lg:flex-nowrap">
           {
-            stats.map((s) => (
-              <div class="flex min-w-0 grow basis-[33%] flex-col gap-2 pr-3 lg:basis-0 lg:pr-5">
+            stats.map((s, i) => (
+              <div style={`--d: ${620 + i * 90}ms`} class="hero-up flex min-w-0 grow basis-[33%] flex-col gap-2 pr-3 lg:basis-0 lg:pr-5">
                 <dt class="font-mono text-xs leading-4 font-medium tracking-[0.01em] text-muted">{s.label}</dt>
-                <dd class="-order-1 text-[30px] leading-none font-semibold tracking-[-0.04em] text-ink [font-feature-settings:'lnum','tnum'] lg:text-[42px]">
+                <dd data-count class="-order-1 text-[30px] leading-none font-semibold tracking-[-0.04em] text-ink [font-feature-settings:'lnum','tnum'] lg:text-[42px]">
                   {s.value}
                 </dd>
               </div>
@@ -71,14 +94,24 @@ const stats = [
       </div>
     </div>
 
-    <!-- Decorative overlays on the portrait. Static for now: Paper has no hover/"source" state designed. -->
-    <div class="pointer-events-none absolute inset-x-5 top-0 h-[472px] md:inset-x-14 lg:inset-y-0 lg:right-14 lg:left-[52%] lg:h-auto" aria-hidden="true">
-      <div class="absolute top-[84px] right-0 flex h-10 items-center gap-2.5 rounded-[11px] border border-rule-strong bg-bg/60 pr-3.5 pl-1.5 font-mono text-[12.5px] leading-none font-medium backdrop-blur-[10px] lg:top-28">
-        <span class="grid h-7 place-items-center rounded-[7px] bg-coral px-2 text-coral-ink italic lg:not-italic">{'{ }'}</span>
-        <span class="text-ink">View source</span>
-      </div>
+    <!-- Overlays on the portrait. The toggle drives the "source code" canvas (#14); until that script
+         starts (or with reduced motion) it stays out of the tab order and the accessibility tree. -->
+    <div class="pointer-events-none absolute inset-x-5 top-0 h-[472px] md:inset-x-14 lg:inset-y-0 lg:right-14 lg:left-[52%] lg:h-auto">
+      <button
+        type="button"
+        data-source-toggle
+        aria-pressed="false"
+        aria-hidden="true"
+        tabindex="-1"
+        data-cursor="Decompile"
+        style="--d: 700ms"
+        class="hero-fade-in absolute top-[84px] right-0 flex h-10 cursor-pointer items-center gap-2.5 rounded-[11px] border border-rule-strong bg-bg/60 pr-3.5 pl-1.5 font-mono text-[12.5px] leading-none font-medium backdrop-blur-[10px] transition-colors hover:border-ink/40 lg:top-28"
+      >
+        <span class="grid h-7 place-items-center rounded-[7px] bg-coral px-2 text-coral-ink italic lg:not-italic" aria-hidden="true">{'{ }'}</span>
+        <span class="text-ink" data-source-label>View source</span>
+      </button>
 
-      <div class="absolute right-0 bottom-[220px] hidden w-[330px] max-w-[80%] flex-col gap-[9px] rounded-[14px] border border-rule bg-surface/82 px-[18px] py-4 font-mono font-medium backdrop-blur-[14px] lg:flex">
+      <div aria-hidden="true" style="--d: 900ms" class="hero-fade-in absolute right-0 bottom-[220px] hidden w-[330px] max-w-[80%] flex-col gap-[9px] rounded-[14px] border border-rule bg-surface/82 px-[18px] py-4 font-mono font-medium backdrop-blur-[14px] lg:flex">
         <div class="flex items-center gap-2 text-xs leading-[1.35]">
           <span class="size-[7px] shrink-0 rounded-full bg-coral"></span>
           <span class="text-coral">main</span>
@@ -88,7 +121,7 @@ const stats = [
         <p class="text-xs leading-[1.35] text-ink">+212 −1,048 · merged 3 days ago</p>
       </div>
 
-      <p class="absolute bottom-16 left-[14%] hidden w-max font-mono text-xs leading-4 font-medium text-muted lg:block">
+      <p aria-hidden="true" style="--d: 900ms" class="hero-fade-in absolute bottom-16 left-[14%] hidden w-max font-mono text-xs leading-4 font-medium text-muted lg:block">
         Move over the picture to read the source
       </p>
     </div>
@@ -96,6 +129,57 @@ const stats = [
 </section>
 
 <style>
+  /* #12 Hero intro: CSS keyframes so it needs no JS and has no flash. `backwards` fill only, so every
+     element ends on its own static styles. Paused while the loader/transition panel covers the page. */
+  .hw {
+    display: inline-block;
+    overflow: clip;
+    padding: 0.06em 0.02em 0.12em;
+    margin: -0.06em -0.02em -0.12em;
+  }
+  .hwi {
+    display: inline-block;
+    animation:
+      hero-rise 1s cubic-bezier(0.16, 0.84, 0.24, 1) backwards,
+      hero-op 0.6s ease backwards;
+    animation-delay: calc(120ms + 70ms * var(--i));
+  }
+  .hero-up {
+    animation:
+      hero-op 0.8s ease backwards,
+      hero-up 0.9s cubic-bezier(0.16, 0.84, 0.24, 1) backwards;
+    animation-delay: var(--d);
+  }
+  .hero-fade-in {
+    animation: hero-op 0.8s ease backwards;
+    animation-delay: var(--d);
+  }
+  :global(html.is-holding) :is(.hwi, .hero-up, .hero-fade-in) {
+    animation-play-state: paused;
+  }
+  @keyframes hero-rise {
+    from {
+      transform: translateY(108%);
+    }
+  }
+  @keyframes hero-up {
+    from {
+      transform: translateY(18px);
+    }
+  }
+  @keyframes hero-op {
+    from {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hwi,
+    .hero-up,
+    .hero-fade-in {
+      animation: none;
+    }
+  }
+
   .hero-fade {
     background-image:
       linear-gradient(in oklab 0deg, #0b0c0e 0%, #0b0c0e8c 22%, #0000 48%),
@@ -110,3 +194,7 @@ const stats = [
     }
   }
 </style>
+
+<script>
+  import '../../scripts/home/hero';
+</script>

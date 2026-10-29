@@ -17,15 +17,15 @@ const email = 'hello@bokoisaac.com';
         <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-[72px]">
           <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-12">
             <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
-              <Eyebrow class="max-md:text-[12px]">Questions</Eyebrow>
-              <h2 id="faq-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+              <Eyebrow class="max-md:text-[12px]" data-reveal="eyebrow">Questions</Eyebrow>
+              <h2 id="faq-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
                 Asked before the first <span class="text-coral">call.</span>
               </h2>
-              <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+              <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
                 The things most teams want to know before we talk. If yours is not here, ask it directly.
               </p>
             </div>
-            <div class="hidden w-full max-w-[400px] md:block">
+            <div data-reveal data-reveal-delay="260" class="hidden w-full max-w-[400px] md:block">
               <div class="grid justify-items-start gap-3 rounded-[14px] bg-surface p-6 shadow-[inset_0_0_0_1px_var(--color-rule)]">
                 <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</h3>
                 <p class="mb-2 text-[15px] leading-[150%] text-muted">Replies within one working day</p>
@@ -35,7 +35,7 @@ const email = 'hello@bokoisaac.com';
           </div>
 
           <div class="min-w-0">
-            <div class="border-b border-rule">
+            <div class="border-b border-rule" data-reveal-stagger="50" data-reveal-delay="240">
               {
                 faqs.map((f, i) => (
                   <details class="faq group border-t border-rule" open={i === 0}>
@@ -64,7 +64,7 @@ const email = 'hello@bokoisaac.com';
               }
             </div>
 
-            <div class="mt-9 grid justify-items-start gap-3 rounded-[14px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-rule)] md:hidden">
+            <div data-reveal data-reveal-delay="260" class="mt-9 grid justify-items-start gap-3 rounded-[14px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-rule)] md:hidden">
               <h3 class="text-[24px] leading-[110%] font-semibold tracking-[-0.045em] text-balance">Something else?</h3>
               <p class="mb-2 text-[15px] leading-[150%] text-muted">Replies within one working day</p>
               <Button href={`mailto:${email}`} variant="secondary" class="w-full justify-between">Ask by email</Button>

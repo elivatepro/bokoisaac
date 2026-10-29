@@ -1,0 +1,45 @@
+/*
+ * #11 Section reveal system. Hidden states apply only while <html> has `rv-on` (added by reveal.ts,
+ * never with reduced motion), so content is fully visible without JS. States per element:
+ *   hidden  = no class   ·   animating = .rv-in   ·   finished = .rv-done (no reveal styles at all)
+ * Transforms use `transform` (not `translate`) so they never fight Tailwind 4's translate utilities.
+ */
+html.rv-on [data-reveal]:not([data-reveal='words'], .rv-in, .rv-done),
+html.rv-on [data-reveal-stagger]:not(.rv-in, .rv-done) > * {
+  opacity: 0;
+  transform: translate3d(0, var(--rv-y, 18px), 0);
+}
+html.rv-on [data-reveal='eyebrow']:not(.rv-in, .rv-done) {
+  transform: translate3d(0, var(--rv-y, 10px), 0);
+}
+html.rv-on [data-reveal='words']:not(.rv-in, .rv-done) .rv-wi {
+  transform: translate3d(0, 110%, 0);
+}
+
+/* Fade-rise helper: opacity .7s ease, translate .8s reveal curve. */
+[data-reveal].rv-in:not([data-reveal='words']),
+[data-reveal-stagger].rv-in > * {
+  transition:
+    opacity 0.7s ease var(--rv-dl, 0ms),
+    transform 0.8s cubic-bezier(0.16, 0.84, 0.24, 1) var(--rv-dl, 0ms);
+}
+/* Eyebrow: same fade, translate on the UI curve. */
+[data-reveal='eyebrow'].rv-in {
+  transition:
+    opacity 0.7s ease var(--rv-dl, 0ms),
+    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) var(--rv-dl, 0ms);
+}
+
+/* Word-rise heading: each word in an overflow-clipped slot. */
+.rv-w {
+  display: inline-block;
+  overflow: clip;
+  padding: 0.08em 0.03em 0.16em;
+  margin: -0.08em -0.03em -0.16em;
+}
+.rv-wi {
+  display: inline-block;
+}
+[data-reveal='words'].rv-in .rv-wi {
+  transition: transform 0.8s cubic-bezier(0.16, 0.84, 0.24, 1) var(--rv-dl, 0ms);
+}

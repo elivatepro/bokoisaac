@@ -48,9 +48,9 @@ const columns: { title: string; links: { label: string; href: string; external?:
 const mono = 'font-mono font-medium tracking-[0.01em]';
 ---
 
-<footer data-site="Footer" class="relative overflow-clip border-t border-rule bg-field">
+<footer data-site="Footer" data-footer class="relative overflow-clip border-t border-rule bg-field">
   <div class="page pt-[60px] pb-5 md:pt-[112px] md:pb-[212px]">
-    <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-11 md:grid-cols-[minmax(0,1fr)_auto] md:gap-[72px]">
+    <div data-reveal-stagger="120" class="grid grid-cols-[minmax(0,1fr)] items-start gap-11 md:grid-cols-[minmax(0,1fr)_auto] md:gap-[72px]">
       <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-start gap-[22px]">
         <p class="max-w-[378px] text-[27px] leading-[106%] font-semibold tracking-[-0.045em] text-balance md:max-w-[560px] md:text-[40px]">
           Full-stack engineer, Remote
@@ -60,9 +60,10 @@ const mono = 'font-mono font-medium tracking-[0.01em]';
           <a
             href={`mailto:${email}`}
             aria-describedby="footer-email-label"
-            class="pb-[5px] text-[17px] leading-[130%] font-medium [overflow-wrap:anywhere] underline-offset-[5px] hover:underline hover:decoration-coral md:text-[19px]"
+            data-cursor="Write email"
+            class="link-draw pb-[5px] text-[17px] leading-[130%] font-medium [overflow-wrap:anywhere] md:text-[19px]"
           >
-            {email}
+            <span class="link-draw-l">{email}</span>
           </a>
         </div>
         <p class="flex items-center gap-[10px]">
@@ -84,12 +85,12 @@ const mono = 'font-mono font-medium tracking-[0.01em]';
                   <li class="min-w-0">
                     <a
                       href={l.href}
-                      class="group inline-flex min-h-11 items-center gap-1.5 text-[16px] leading-[120%] md:min-h-10"
+                      class="link-draw group inline-flex min-h-11 items-center gap-1.5 text-[16px] leading-[120%] md:min-h-10"
                       {...(l.external && l.href !== '#' ? { rel: 'me noopener', target: '_blank' } : {})}
                     >
-                      <span class="underline-offset-4 group-hover:underline group-hover:decoration-coral">{l.label}</span>
+                      <span class="link-draw-l">{l.label}</span>
                       {l.external && (
-                        <span class="text-[12px] leading-[120%] text-muted transition-transform group-hover:translate-x-px group-hover:-translate-y-px" aria-hidden="true">
+                        <span class="text-[12px] leading-[120%] text-muted transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-focus-visible:translate-x-0.5 group-focus-visible:-translate-y-0.5" aria-hidden="true">
                           ↗
                         </span>
                       )}
@@ -114,9 +115,13 @@ const mono = 'font-mono font-medium tracking-[0.01em]';
     </div>
 
     <div class="@container mt-5 w-full overflow-clip md:mt-10" aria-hidden="true">
-      <p class="w-max pt-px pb-px text-[58px] leading-[86%] font-semibold tracking-[-1.5px] whitespace-nowrap md:text-[min(17.9cqw,252px)] md:tracking-[-0.0238em]">
+      <p data-wordmark class="w-max pt-px pb-px text-[58px] leading-[86%] font-semibold tracking-[-1.5px] whitespace-nowrap md:text-[min(17.9cqw,252px)] md:tracking-[-0.0238em]">
         BokoIsaac
       </p>
     </div>
   </div>
 </footer>
+
+<script>
+  import '../../scripts/sections/footer';
+</script>

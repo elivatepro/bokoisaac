@@ -22,16 +22,16 @@ const mono = 'font-mono font-medium';
   <div class="page py-[68px] md:py-[151.2px]">
     <div class="grid items-start gap-x-14 gap-y-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
       <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
-        <p class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>// The numbers</p>
-        <h2 id="numbers-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+        <p data-reveal="eyebrow" class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>// The numbers</p>
+        <h2 id="numbers-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
           Numbers, not adjectives.
         </h2>
-        <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty md:max-w-[578px] md:text-[17px]">
+        <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty md:max-w-[578px] md:text-[17px]">
           Every release is checked on a mid-range phone and a throttled connection before it goes out. These are the medians, not
           the best run of the day.
         </p>
       </div>
-      <div class="grid min-w-0 justify-items-start gap-1.5">
+      <div data-reveal data-reveal-delay="260" class="grid min-w-0 justify-items-start gap-1.5">
         <p class="flex items-center gap-2.5">
           <span class="size-2 shrink-0 rounded-full bg-coral-ink" aria-hidden="true"></span>
           <span class:list={[mono, 'text-[12.5px] leading-[150%] tracking-[0.01em] tabular-nums']}>median of the last 12 launches</span>
@@ -50,7 +50,7 @@ const mono = 'font-mono font-medium';
     </div>
 
     <h3 class="sr-only">Lighthouse scores</h3>
-    <ul class="mt-11 grid grid-cols-2 md:mt-16 md:grid-cols-4 md:border-t md:border-field/36">
+    <ul data-scores data-reveal-stagger="80" data-reveal-delay="120" class="mt-11 grid grid-cols-2 md:mt-16 md:grid-cols-4 md:border-t md:border-field/36">
       {
         scores.map((s, i) => (
           <li
@@ -69,6 +69,7 @@ const mono = 'font-mono font-medium';
                 <circle cx="100" cy="100" r="96" pathLength="100" fill="none" stroke="rgb(74 28 12 / 40%)" stroke-width="5" stroke-dasharray="0.3 2.2" />
                 {s.score < 100 && <circle cx="100" cy="100" r="82" fill="none" stroke="rgb(74 28 12 / 18%)" stroke-width="11" />}
                 <circle
+                  data-ring={s.score}
                   cx="100"
                   cy="100"
                   r="82"
@@ -81,7 +82,7 @@ const mono = 'font-mono font-medium';
                 />
               </svg>
               <p class="absolute inset-0 grid content-center justify-items-center gap-0.5 text-center">
-                <span class="text-[34cqw] leading-[90%] font-semibold tracking-[-0.045em] tabular-nums">{s.score}</span>
+                <span data-score class="text-[34cqw] leading-[90%] font-semibold tracking-[-0.045em] tabular-nums">{s.score}</span>
                 <span class:list={[mono, 'text-[12.5px] leading-[150%] tracking-[0.01em] tabular-nums']}>of 100</span>
               </p>
             </div>
@@ -90,7 +91,7 @@ const mono = 'font-mono font-medium';
       }
     </ul>
 
-    <div class="mt-5 rounded-[14px] bg-field px-[18px] pt-5 pb-[22px] text-ink shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-7 md:px-8 md:pt-[26px] md:pb-8">
+    <div data-vitals data-reveal data-reveal-delay="380" class="mt-5 rounded-[14px] bg-field px-[18px] pt-5 pb-[22px] text-ink shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-7 md:px-8 md:pt-[26px] md:pb-8">
       <div class="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1.5 border-b border-rule pb-[18px] md:mb-6">
         <h3 class:list={[mono, 'text-[12.5px] leading-[150%] tracking-[0.01em]']}>Core Web Vitals</h3>
         <p class:list={[mono, 'text-[12px] leading-[140%] tracking-[0.01em] text-muted']}>field data, 75th percentile</p>
@@ -118,7 +119,7 @@ const mono = 'font-mono font-medium';
               </p>
               <p class="mt-1.5 mb-0.5 text-[40px] leading-none font-semibold tracking-[-0.045em] tabular-nums md:text-[54px]">{v.value}</p>
               <div class="relative h-3 rounded-[3px] bg-ink/10" aria-hidden="true">
-                <div class="absolute inset-y-0 left-0 rounded-[3px] bg-coral" style={`width: ${v.fill}%`} />
+                <div data-bar class="absolute inset-y-0 left-0 rounded-[3px] bg-coral" style={`width: ${v.fill}%`} />
                 <div class="absolute -inset-y-[5px] right-0 w-0.5 rounded-[1px] bg-coral" />
               </div>
               <div class="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1">
@@ -138,3 +139,65 @@ const mono = 'font-mono font-medium';
     </div>
   </div>
 </section>
+
+<script>
+  import { gsap, reducedMotion } from '../../scripts/motion/core';
+  import { counter } from '../../scripts/motion/count';
+  import { EASE_UI, onPage } from '../../scripts/motion/page';
+  import { whenRevealed } from '../../scripts/motion/reveal';
+
+  // #22 Score rings draw (dashoffset 100 → 100 − score, .9s, 200 + 110i ms) while the scores count up
+  // (#13, 900 ms), then the vitals bars grow from the left (scaleX, .9s, 460 + 120i ms). Each group
+  // starts when it scrolls into view; everything is cleared back to the static markup afterwards.
+  onPage(() => {
+    const scores = document.querySelector<HTMLElement>('[data-scores]');
+    const vitals = document.querySelector<HTMLElement>('[data-vitals]');
+    if (!scores || !vitals || reducedMotion()) return;
+
+    const rings = [...scores.querySelectorAll<SVGCircleElement>('[data-ring]')];
+    const counters = [...scores.querySelectorAll<HTMLElement>('[data-score]')].map((el) => counter(el, 900));
+    const bars = [...vitals.querySelectorAll<HTMLElement>('[data-bar]')];
+
+    gsap.set(rings, { strokeDasharray: '100 100', strokeDashoffset: 100 });
+    gsap.set(bars, { scaleX: 0, transformOrigin: '0% 50%' });
+
+    const offRings = whenRevealed(scores, (instant) => {
+      rings.forEach((ring, i) => {
+        const score = Number(ring.dataset.ring);
+        if (instant) return gsap.set(ring, { clearProps: 'strokeDasharray,strokeDashoffset' });
+        gsap.to(ring, {
+          strokeDashoffset: 100 - score,
+          duration: 0.9,
+          delay: (200 + i * 110) / 1000,
+          ease: EASE_UI,
+          onComplete: () => {
+            gsap.set(ring, { clearProps: 'strokeDasharray,strokeDashoffset' });
+            if (!ring.getAttribute('style')) ring.removeAttribute('style');
+          },
+        });
+      });
+      counters.forEach((c, i) => (instant ? c?.restore() : c?.play(200 + i * 110)));
+    });
+    const offBars = whenRevealed(vitals, (instant) => {
+      bars.forEach((bar, i) => {
+        if (instant) return gsap.set(bar, { clearProps: 'transform,transformOrigin' });
+        gsap.to(bar, {
+          scaleX: 1,
+          duration: 0.9,
+          delay: (460 + i * 120) / 1000,
+          ease: EASE_UI,
+          onComplete: () => gsap.set(bar, { clearProps: 'transform,transformOrigin' }),
+        });
+      });
+    });
+
+    return () => {
+      offRings();
+      offBars();
+      gsap.killTweensOf([...rings, ...bars]);
+      gsap.set(rings, { clearProps: 'strokeDasharray,strokeDashoffset' });
+      gsap.set(bars, { clearProps: 'transform,transformOrigin' }); // keep the inline width
+      counters.forEach((c) => c?.restore());
+    };
+  });
+</script>

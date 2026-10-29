@@ -6,6 +6,10 @@ import desk from '../../assets/home/about-desk.webp';
 // "Now" rows come from the Notion Now database (Show = true in production; every row in dev).
 const now = (await live('now')).map((e) => e.data);
 const latest = now.reduce<Date | null>((max, r) => (r.updated && (!max || r.updated > max) ? r.updated : max), null);
+// Statement words, split at build time so they can light up one by one on scroll (#21).
+const statement =
+  'I build full-stack software that holds up in the real world. Six years across field services, fintech and education taught me that reliability is a feature, the data model is the product, and the best code is the code the next person can';
+const words = statement.split(' ');
 const updated = latest?.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 
@@ -13,13 +17,23 @@ const updated = latest?.toLocaleDateString('en-GB', { month: 'long', year: 'nume
   <div class="page py-[68px] lg:py-[151.2px]">
     <div class="grid grid-cols-1 items-start gap-9 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end lg:gap-[117.6px]">
       <div class="grid min-w-0 justify-items-start gap-5 lg:gap-[30px]">
-        <h2 id="about-title" class="eyebrow max-w-full text-xs/[1.5] text-ink lg:text-[13px]"><span class="text-coral">//</span> About</h2>
-        <p class="max-w-[638.4px] text-[30.4px] leading-[1.14] font-semibold tracking-[-0.045em] text-balance text-ink lg:max-w-[1134px] lg:text-[54px] lg:leading-[1.1]">
-          I build full-stack software that holds up in the real world. Six years across field services, fintech and education taught me that reliability is a feature, the data model is the product, and the best code is the code the next person can <span class="text-coral lg:text-ink">read.</span>
+        <h2 id="about-title" data-reveal="eyebrow" class="eyebrow max-w-full text-xs/[1.5] text-ink lg:text-[13px]"><span class="text-coral">//</span> About</h2>
+        <p
+          data-statement
+          data-reveal
+          data-reveal-delay="80"
+          data-reveal-y="14"
+          class="max-w-[638.4px] text-[30.4px] leading-[1.14] font-semibold tracking-[-0.045em] text-balance text-ink lg:max-w-[1134px] lg:text-[54px] lg:leading-[1.1]"
+        >
+          {words.map((w) => (
+            <>
+              <span class="aw">{w}</span>{' '}
+            </>
+          ))}<span class="aw text-coral lg:text-ink">read.</span>
         </p>
       </div>
 
-      <figure class="grid w-[min(64%,260px)] min-w-0 gap-3 lg:w-auto">
+      <figure data-reveal data-reveal-delay="240" data-reveal-y="22" class="grid w-[min(64%,260px)] min-w-0 gap-3 lg:w-auto">
         <div class="relative aspect-[4/5] overflow-clip rounded-[14px] bg-field">
           <Image
             src={desk}
@@ -37,7 +51,7 @@ const updated = latest?.toLocaleDateString('en-GB', { month: 'long', year: 'nume
       </figure>
     </div>
 
-    <div class="mt-11 lg:mt-24">
+    <div class="mt-11 lg:mt-24" data-reveal data-reveal-delay="320">
       {
         now.length > 0 && (
           <>
@@ -79,3 +93,52 @@ const updated = latest?.toLocaleDateString('en-GB', { month: 'long', year: 'nume
     </div>
   </div>
 </section>
+
+<style>
+  /* #21: while the scrub runs (JS adds .is-scrub), unlit words are dim and light up in reading order. */
+  :global(.is-scrub) .aw {
+    transition: color 0.45s ease;
+  }
+  :global(.is-scrub) .aw:not(.is-lit) {
+    color: color-mix(in srgb, var(--color-ink) 56%, var(--color-bg));
+  }
+</style>
+
+<script>
+  import { ScrollTrigger, reducedMotion } from '../../scripts/motion/core';
+  import { onPage, readyCapped } from '../../scripts/motion/page';
+
+  // #21 Statement words light up on scroll: from the block's top at 78% of the viewport to its bottom
+  // at 46%; lit count = round(progress × words). Reversible. Classes only, no per-frame colour tweens.
+  onPage(() => {
+    const p = document.querySelector<HTMLElement>('[data-statement]');
+    if (!p || reducedMotion()) return;
+    const words = [...p.querySelectorAll<HTMLElement>('.aw')];
+    let lit = -1;
+    let st: ScrollTrigger | null = null;
+    let alive = true;
+    const set = (n: number) => {
+      if (n === lit) return;
+      words.forEach((w, i) => w.classList.toggle('is-lit', i < n));
+      lit = n;
+    };
+    p.classList.add('is-scrub');
+    set(0);
+    readyCapped().then(() => {
+      if (!alive) return;
+      st = ScrollTrigger.create({
+        trigger: p,
+        start: 'top 78%',
+        end: 'bottom 46%',
+        onUpdate: (self) => set(Math.round(self.progress * words.length)),
+        onRefresh: (self) => set(Math.round(self.progress * words.length)),
+      });
+    });
+    return () => {
+      alive = false;
+      st?.kill();
+      p.classList.remove('is-scrub');
+      words.forEach((w) => w.classList.remove('is-lit'));
+    };
+  });
+</script>

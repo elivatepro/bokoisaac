@@ -3,7 +3,6 @@
 // Per the Paper copy, nothing is sent from this section: the form GETs /contact with the picks in the
 // query string (need, budget, name match the Notion Leads properties) so the contact form can prefill them.
 // TODO: when /contact and /api/contact exist, read these params (or the sessionStorage "brief") on the contact form.
-import Eyebrow from '../ui/Eyebrow.astro';
 import Button from '../ui/Button.astro';
 
 // Same option names as the Notion Leads "Need" and "Budget" properties.
@@ -16,18 +15,18 @@ const num = 'font-mono text-[12.5px] leading-[150%] font-medium tracking-[0.01em
 const question = 'text-[16px] leading-[130%] font-medium md:text-[17px]';
 const group = 'grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[14px] border-t border-rule pt-[18px] md:gap-4 md:pt-[22px]';
 const chip =
-  'flex h-11 cursor-pointer items-center rounded-[10px] px-[14px] text-center text-[12.5px] leading-none font-medium tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-colors select-none hover:shadow-[inset_0_0_0_1px_#f1f2ec66] peer-checked:bg-coral peer-checked:font-semibold peer-checked:text-coral-ink peer-checked:shadow-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-coral md:h-10';
+  'flex h-11 cursor-pointer items-center rounded-[10px] px-[14px] text-center text-[12.5px] leading-none font-medium tracking-[0.01em] shadow-[inset_0_0_0_1px_var(--color-rule-strong)] transition-[background-color,color,box-shadow] duration-250 select-none hover:shadow-[inset_0_0_0_1px_#f1f2ec66] peer-checked:bg-coral peer-checked:font-semibold peer-checked:text-coral-ink peer-checked:shadow-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-coral md:h-10';
 const line = 'min-h-[1.7em] pl-[2.2ch] text-ink md:text-muted';
 ---
 
 <section data-section="Contact" id="contact" aria-labelledby="contact-title" class="bg-field">
   <div class="page py-[68px] md:py-[151.2px]">
     <div class="grid max-w-[1040px] justify-items-start gap-4 md:gap-[22px]">
-      <Eyebrow class="max-md:text-[12px]">Start a project</Eyebrow>
-      <h2 id="contact-title" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
+      <p data-reveal="eyebrow" class="eyebrow text-ink max-md:text-[12px]"><span class="text-coral">//</span> Start a project</p>
+      <h2 id="contact-title" data-reveal="words" class="text-[38.4px] leading-[98%] font-semibold tracking-[-0.045em] text-balance md:text-[84px]">
         Tell me what you are <span class="text-coral">building.</span>
       </h2>
-      <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+      <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
         Three quick picks so the first reply is useful. You finish the message on the contact page.
       </p>
     </div>
@@ -36,6 +35,8 @@ const line = 'min-h-[1.7em] pl-[2.2ch] text-ink md:text-muted';
       action="/contact"
       method="get"
       data-brief
+      data-reveal-stagger="80"
+      data-reveal-delay="260"
       class="mt-10 grid grid-cols-[minmax(0,1fr)] items-start gap-9 md:mt-16 md:grid-cols-[minmax(0,1fr)_minmax(0,520px)] md:gap-[72px]"
     >
       <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[30px] md:gap-10">
@@ -81,7 +82,7 @@ const line = 'min-h-[1.7em] pl-[2.2ch] text-ink md:text-muted';
             type="text"
             autocomplete="organization"
             placeholder="Ada at Acme"
-            class="h-[54px] w-full max-w-[520px] rounded-[14px] bg-surface px-[18px] text-[16px] leading-[120%] text-ink shadow-[inset_0_0_0_1px_var(--color-rule-strong)] outline-none placeholder:text-muted focus-visible:shadow-[inset_0_0_0_1px_var(--color-coral)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-coral"
+            class="h-[54px] w-full max-w-[520px] rounded-[14px] bg-surface px-[18px] text-[16px] leading-[120%] text-ink shadow-[inset_0_0_0_1px_var(--color-rule-strong)] outline-none transition-shadow duration-250 placeholder:text-muted hover:shadow-[inset_0_0_0_1px_#f1f2ec66] focus-visible:shadow-[inset_0_0_0_1px_var(--color-coral)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-coral"
           />
         </div>
       </div>
@@ -103,9 +104,9 @@ const line = 'min-h-[1.7em] pl-[2.2ch] text-ink md:text-muted';
           <p class="min-h-[1.7em] text-ink">&#125;</p>
         </div>
         <div class="flex flex-wrap items-center gap-x-[22px] gap-y-[14px] px-2 pt-[18px] pb-1 md:px-3 md:pt-5 md:pb-1.5">
-          <Button type="submit" class="w-full justify-between md:w-auto md:justify-start">Continue to contact</Button>
+          <Button type="submit" data-cursor="Say hello" class="w-full justify-between md:w-auto md:justify-start">Continue to contact</Button>
           <p class="text-[14.5px] leading-[140%] text-muted md:text-ink">
-            or write to <a href={`mailto:${email}`} class="text-ink underline decoration-coral decoration-1 underline-offset-[5px] hover:text-coral">{email}</a>
+            or write to <a href={`mailto:${email}`} data-cursor="Write email" class="text-ink underline decoration-coral decoration-1 underline-offset-[5px] hover:text-coral">{email}</a>
           </p>
         </div>
         <p class="max-w-[540px] px-2 pt-2 pb-[10px] text-[13.5px] leading-[155%] text-pretty text-muted md:px-3 md:pt-[10px] md:pb-3">
@@ -116,47 +117,29 @@ const line = 'min-h-[1.7em] pl-[2.2ch] text-ink md:text-muted';
   </div>
 </section>
 
-<script>
-  // Mirrors the picks into the brief.ts preview and keeps them in sessionStorage for the contact form.
-  const KEY = 'brief';
-  for (const form of document.querySelectorAll<HTMLFormElement>('form[data-brief]')) {
-    const lines = Object.fromEntries(
-      [...form.querySelectorAll<HTMLElement>('[data-brief-line]')].map((el) => [el.dataset.briefLine!, el]),
-    );
-    const label = { need: 'kind', budget: 'budget', name: 'name' } as const;
-
-    const render = () => {
-      const data = new FormData(form);
-      const brief = {
-        need: data.getAll('need').map(String),
-        budget: (data.get('budget') as string | null) ?? null,
-        name: String(data.get('name') ?? '').trim() || null,
-      };
-      for (const key of Object.keys(label) as (keyof typeof label)[]) {
-        const value = brief[key];
-        const empty = value === null || (Array.isArray(value) && value.length === 0);
-        lines[key].textContent = empty
-          ? `${label[key]}: null, // not picked yet`
-          : `${label[key]}: ${Array.isArray(value) ? `[${value.map((v) => JSON.stringify(v)).join(', ')}]` : JSON.stringify(value)},`;
-      }
-      try {
-        sessionStorage.setItem(KEY, JSON.stringify(brief));
-      } catch {}
-    };
-
-    // Restore picks from earlier in this tab.
-    try {
-      const saved = JSON.parse(sessionStorage.getItem(KEY) ?? 'null');
-      if (saved) {
-        for (const input of form.querySelectorAll<HTMLInputElement>('input[name="need"]')) input.checked = saved.need?.includes(input.value);
-        for (const input of form.querySelectorAll<HTMLInputElement>('input[name="budget"]')) input.checked = saved.budget === input.value;
-        const name = form.querySelector<HTMLInputElement>('input[name="name"]');
-        if (name && saved.name) name.value = saved.name;
-      }
-    } catch {}
-
-    form.addEventListener('input', render);
-    form.addEventListener('change', render);
-    render();
+<style>
+  /* #31 brief value flash: the changed value lights up and fades out (0.7s ease-out). */
+  :global(.brief-flash) {
+    border-radius: 4px;
+    animation: brief-set 0.7s ease-out 1;
   }
+  @keyframes brief-set {
+    from {
+      background-color: color-mix(in srgb, var(--color-coral) 55%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-coral) 55%, transparent);
+    }
+    to {
+      background-color: transparent;
+      box-shadow: 0 0 0 3px transparent;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.brief-flash) {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import '../../scripts/sections/contact-brief';
 </script>

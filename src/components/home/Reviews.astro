@@ -3,7 +3,6 @@
 // Rows come from Notion Reviews; the section is hidden when there are none.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import Eyebrow from '../ui/Eyebrow.astro';
 import { live } from '../../lib/content';
 
 const reviews = await live('reviews');
@@ -24,16 +23,16 @@ const check = 'M5 12.5l4.5 4.5L19 7.5';
     <section data-section="Reviews" id="reviews" aria-labelledby="reviews-title" class="bg-bg">
       <div class="page py-[68px] md:py-[151.2px]">
         <div class="grid max-w-[920px] justify-items-start gap-4 md:gap-[22px]">
-          <Eyebrow class="max-md:text-[12px]">Code review</Eyebrow>
-          <h2 id="reviews-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+          <p data-reveal="eyebrow" class="eyebrow text-ink max-md:text-[12px]"><span class="text-coral">//</span> Code review</p>
+          <h2 id="reviews-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
             Reviewed, then <span class="text-coral">approved.</span>
           </h2>
-          <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+          <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
             The people who merged the work, in their own words.
           </p>
         </div>
 
-        <div class="mt-10 overflow-clip rounded-[14px] bg-surface shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-16">
+        <div data-reveal data-reveal-delay="260" class="mt-10 overflow-clip rounded-[14px] bg-surface shadow-[inset_0_0_0_1px_var(--color-rule)] md:mt-16">
           <div class="flex min-h-[49px] items-center justify-between gap-4 border-b border-rule bg-field py-2 pr-4 md:min-h-[53px] md:pr-6">
             <p class="-my-2 flex items-center gap-[10px] self-stretch bg-surface px-4 shadow-[inset_0_2px_0_var(--color-coral),1px_0_0_var(--color-rule)] md:px-[22px]">
               <span class="size-[7px] shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
@@ -61,7 +60,7 @@ const check = 'M5 12.5l4.5 4.5L19 7.5';
                   const photo = photoFor(r.data.name);
                   const meta = [r.data.role, r.data.company].filter(Boolean).join(' · ');
                   return (
-                    <li class="relative min-w-0 px-4 md:pr-8 md:pl-7">
+                    <li class="review relative min-w-0 px-4 md:pr-8 md:pl-7">
                       {i > 0 && <span class="absolute inset-x-0 -top-[14px] h-px bg-rule md:-top-4" aria-hidden="true" />}
                       <span class="absolute inset-y-0 -left-px w-[2px] bg-coral" aria-hidden="true" />
                       <figure class="grid grid-cols-[minmax(0,1fr)] items-start md:grid-cols-[336px_minmax(0,1fr)_auto] md:gap-x-9">
@@ -95,3 +94,15 @@ const check = 'M5 12.5l4.5 4.5L19 7.5';
     </section>
   )
 }
+
+<style>
+  /* #28 diff-line hover: a faint coral wash, like an added line in a diff (hover devices only). */
+  @media (hover: hover) {
+    .review {
+      transition: background-color 0.3s ease;
+    }
+    .review:hover {
+      background-color: color-mix(in srgb, var(--color-coral) 5%, transparent);
+    }
+  }
+</style>

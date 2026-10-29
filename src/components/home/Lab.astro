@@ -31,17 +31,17 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
     <section id="lab" data-section="Lab" aria-labelledby="lab-title" class="overflow-clip bg-field" data-lab>
       <div class="page flex items-end justify-between gap-10 pt-[68px] md:pt-[151.2px]">
         <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
-          <p class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>
+          <p data-reveal="eyebrow" class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>
             <span class="text-coral">//</span> Open source and experiments
           </p>
-          <h2 id="lab-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+          <h2 id="lab-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
             What I build when <span class="text-coral">nobody</span> asks.
           </h2>
-          <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+          <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
             Small libraries, command line tools and sketches. Most started as a fix for one project and stayed useful.
           </p>
         </div>
-        <div class="hidden shrink-0 gap-2 md:flex">
+        <div data-reveal data-reveal-delay="260" class="hidden shrink-0 gap-2 md:flex">
           <button type="button" data-lab-prev aria-label="Previous projects" aria-controls="lab-rail" class="lab-nav">
             <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
               <path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
@@ -58,8 +58,11 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
       <ul
         id="lab-rail"
         data-lab-rail
+        data-reveal-stagger="70"
+        data-reveal-delay="300"
+        data-reveal-max="5"
         aria-label="Lab projects"
-        class="lab-rail mt-7 flex snap-x snap-mandatory gap-3.5 overflow-x-auto overscroll-x-contain px-5 py-3 md:mt-11 md:gap-5"
+        class="lab-rail mt-7 flex gap-3.5 overflow-x-auto overscroll-x-contain px-5 py-3 md:mt-11 md:gap-5"
       >
         {items.map((item) => {
           const cover = coverFor(item.slug);
@@ -68,7 +71,8 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
             <li class="w-[min(320px,100%-36px)] shrink-0 snap-start md:w-[min(400px,100%-44px)]">
               <a
                 href={`/lab/${item.slug}`}
-                class="group flex h-full flex-col rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-rule-strong)]"
+                data-cursor="Open"
+                class="lab-card group flex h-full flex-col rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)]"
               >
                 <div class="relative aspect-[16/10] overflow-clip rounded-[9px] bg-field">
                   {cover && (
@@ -81,7 +85,7 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
                     />
                   )}
                   <div class="absolute inset-0 rounded-[9px] shadow-[inset_0_0_0_1px_var(--color-rule)]" />
-                  <div class="absolute inset-0 bg-field/26" />
+                  <div class="lab-veil absolute inset-0 bg-field/26" />
                   {item.type && (
                     <span
                       class:list={[mono, 'absolute top-2.5 left-2.5 inline-flex h-[26px] items-center rounded-[7px] bg-coral px-[9px] text-[12px] leading-none tracking-[0.01em] text-coral-ink']}
@@ -114,7 +118,7 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
                     )}
                     <span class="ml-auto flex items-center gap-1.5 text-muted transition-colors group-hover:text-ink" aria-hidden="true">
                       Open
-                      <svg viewBox="0 0 24 24" width="13" height="13" class="shrink-0 transition-transform group-hover:translate-x-0.5">
+                      <svg viewBox="0 0 24 24" width="13" height="13" class="shrink-0 transition-transform duration-300 group-hover:translate-x-[3px] group-focus-visible:translate-x-[3px]">
                         <path d={arrow} fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                       </svg>
                     </span>
@@ -127,13 +131,13 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
       </ul>
 
       <div class="page flex items-center justify-between gap-5 pb-[68px] md:gap-8 md:pb-[151.2px]">
-        <div class="relative h-0.5 max-w-[320px] min-w-0 grow basis-0 overflow-clip rounded-[2px] bg-rule-strong" aria-hidden="true">
-          <div data-lab-progress class="absolute inset-y-0 left-0 w-1/5 rounded-[2px] bg-coral" />
+        <div data-lab-track class="lab-track relative h-0.5 max-w-[320px] min-w-0 grow basis-0 overflow-clip rounded-[2px] bg-rule-strong" aria-hidden="true">
+          <div data-lab-progress class="lab-thumb absolute inset-y-0 left-0 rounded-[2px] bg-coral" />
         </div>
-        <a href="/lab" class:list={[mono, 'group flex min-h-11 items-center gap-[9px] rounded-sm text-[13px] leading-none tracking-[0.01em]']}>
-          <span class="text-muted">02</span>
-          <span class="py-1.5 underline-offset-4 group-hover:underline">Everything in the lab</span>
-          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 text-coral transition-transform group-hover:translate-x-0.5">
+        <a href="/lab" data-reveal data-reveal-delay="260" class:list={[mono, 'link-draw flex min-h-11 items-center gap-[9px] rounded-sm text-[13px] leading-none tracking-[0.01em]']}>
+          <span class="link-draw-n text-muted">02</span>
+          <span class="link-draw-l py-1.5">Everything in the lab</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 text-coral">
             <path d={arrow} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </a>
@@ -156,6 +160,66 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
       scroll-padding-inline: max(56px, 50% - 704px);
     }
   }
+  /* Snap only for touch and phones (#26); on desktop it would fight drag and inertia. */
+  @media (pointer: coarse), (width < 810px) {
+    .lab-rail {
+      scroll-snap-type: x mandatory;
+    }
+  }
+  .lab-rail.is-drag,
+  .lab-rail.is-glide {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+  .lab-rail.is-drag {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  /* Progress: thumb width = visible share, translated by scroll progress. */
+  .lab-thumb {
+    width: calc(var(--f, 0.2) * 100%);
+    transform: translateX(calc(var(--p, 0) * (1 / var(--f, 0.2) - 1) * 100%));
+  }
+  .lab-track.is-fit {
+    visibility: hidden;
+  }
+
+  /* #27 card hover lift. */
+  .lab-card {
+    --ui: cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition:
+      translate 0.5s var(--ui),
+      box-shadow 0.3s ease;
+  }
+  .lab-card :global(img) {
+    transition:
+      filter 0.5s ease,
+      scale 0.5s ease;
+  }
+  .lab-veil {
+    transition: opacity 0.5s ease;
+  }
+  .lab-card:hover,
+  .lab-card:focus-visible {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+  .lab-card:hover :global(img),
+  .lab-card:focus-visible :global(img) {
+    filter: brightness(84%) contrast(104%) grayscale(10%);
+  }
+  .lab-card:hover .lab-veil,
+  .lab-card:focus-visible .lab-veil {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lab-card:hover,
+    .lab-card:focus-visible {
+      translate: none;
+    }
+  }
+
   .lab-nav {
     display: grid;
     place-items: center;
@@ -168,10 +232,16 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
     cursor: pointer;
     transition:
       opacity 200ms ease,
-      border-color 200ms ease;
+      border-color 200ms ease,
+      color 200ms ease,
+      scale 120ms ease;
   }
   .lab-nav:hover:not(:disabled) {
-    border-color: rgb(241 242 236 / 40%);
+    border-color: var(--color-coral);
+    color: var(--color-coral);
+  }
+  .lab-nav:active:not(:disabled) {
+    scale: 0.96;
   }
   .lab-nav:disabled {
     opacity: 0.38;
@@ -185,29 +255,5 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
 </style>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-lab]').forEach((section) => {
-    const rail = section.querySelector<HTMLElement>('[data-lab-rail]');
-    const prev = section.querySelector<HTMLButtonElement>('[data-lab-prev]');
-    const next = section.querySelector<HTMLButtonElement>('[data-lab-next]');
-    const bar = section.querySelector<HTMLElement>('[data-lab-progress]');
-    if (!rail) return;
-
-    const step = () => {
-      const card = rail.querySelector('li');
-      const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
-      return card ? card.getBoundingClientRect().width + gap : rail.clientWidth;
-    };
-    const update = () => {
-      const max = rail.scrollWidth - rail.clientWidth;
-      if (bar) bar.style.width = `${Math.min(100, ((rail.scrollLeft + rail.clientWidth) / rail.scrollWidth) * 100)}%`;
-      if (prev) prev.disabled = rail.scrollLeft <= 1;
-      if (next) next.disabled = rail.scrollLeft >= max - 1;
-    };
-
-    prev?.addEventListener('click', () => rail.scrollBy({ left: -step() }));
-    next?.addEventListener('click', () => rail.scrollBy({ left: step() }));
-    rail.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    update();
-  });
+  import '../../scripts/sections/lab-rail';
 </script>

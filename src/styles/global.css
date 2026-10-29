@@ -61,3 +61,470 @@
   line-height: 150%;
   letter-spacing: 0.01em;
 }
+
+/* ───────────────────────── Site-wide motion (docs/framer-animations.md #1–#10) ───────────────────────── */
+
+:root {
+  --ease-ui: cubic-bezier(0.2, 0.8, 0.2, 1); /* UI, hovers */
+  --ease-draw: cubic-bezier(0.2, 0.7, 0.2, 1); /* underline draws */
+  --ease-reveal: cubic-bezier(0.16, 0.84, 0.24, 1); /* section reveals */
+  --ease-wipe: cubic-bezier(0.65, 0, 0.25, 1); /* loader + page wipe */
+  --ease-icon: cubic-bezier(0.3, 0.9, 0.2, 1); /* button icons */
+}
+
+/* Template rule: under reduced motion every animation/transition collapses to its end state. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Programmatic focus target after client-side navigation. */
+#main:focus {
+  outline: none;
+}
+
+/* #3 Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* #8 Pulse dot: put .pulse-dot on a round, coloured dot. Ring uses --pulse (defaults to coral). */
+.pulse-dot {
+  --pulse: var(--color-coral);
+  animation: pulse 2.2s ease-out infinite;
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--pulse) 60%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 9px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* #8 Blinking block caret: .caret-blink on the caret element. */
+.caret-blink {
+  animation: blink 1.15s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* #10 "More" link underline draw.
+   <a class="link-draw"><span class="link-draw-n">08</span><span class="link-draw-l">All projects</span><svg/></a>
+   The label gets a 1px coral underline drawn from the left, the number turns coral, a direct <svg> child nudges 3px. */
+.link-draw .link-draw-l {
+  position: relative;
+}
+.link-draw .link-draw-l::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-coral);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-draw);
+}
+.link-draw .link-draw-n {
+  transition: color 0.25s;
+}
+.link-draw > svg {
+  transition: translate 0.3s var(--ease-ui);
+}
+.link-draw:hover .link-draw-l::after,
+.link-draw:focus-visible .link-draw-l::after {
+  transform: scaleX(1);
+}
+.link-draw:hover .link-draw-n,
+.link-draw:focus-visible .link-draw-n {
+  color: var(--color-coral);
+}
+.link-draw:hover > svg,
+.link-draw:focus-visible > svg {
+  translate: 3px 0;
+}
+
+/* #9 Buttons (ui/Button.astro) */
+.btn {
+  transition:
+    translate 0.35s var(--ease-ui),
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s,
+    scale 0.12s;
+}
+.btn:active {
+  scale: 0.97;
+}
+.btn-ico-a,
+.btn-ico-b {
+  transition: transform 0.45s var(--ease-icon);
+}
+.btn-ico-b {
+  transform: translateX(-34px);
+}
+.btn:hover .btn-ico-a,
+.btn:focus-visible .btn-ico-a {
+  transform: translateX(34px);
+}
+.btn:hover .btn-ico-b,
+.btn:focus-visible .btn-ico-b {
+  transform: translateX(0);
+}
+.btn:hover .btn-drop,
+.btn:focus-visible .btn-drop {
+  animation: btn-drop 0.6s var(--ease-icon);
+}
+@keyframes btn-drop {
+  40% {
+    transform: translateY(22px);
+  }
+  41% {
+    transform: translateY(-22px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* #5 Header condenses on scroll; #6 nav underline */
+.site-header {
+  --bar: 60px;
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 50;
+  height: var(--bar);
+  pointer-events: none;
+  transition: height 0.35s var(--ease-ui);
+}
+.site-header > div > * {
+  pointer-events: auto;
+}
+.site-header::before,
+.site-header::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  pointer-events: none;
+}
+.site-header::before {
+  inset-block: 0;
+  background: var(--color-bg);
+  transition: opacity 0.3s ease;
+}
+.site-header::after {
+  bottom: 0;
+  height: 1px;
+  background: var(--color-rule);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-ui);
+}
+@media (width >= 64rem) {
+  .site-header {
+    --bar: 88px;
+  }
+  .site-header.is-moved {
+    --bar: 72px;
+  }
+  .site-header:not(.is-moved)::before {
+    opacity: 0;
+  }
+  .site-header:not(.is-moved)::after {
+    transform: scaleX(0);
+  }
+}
+.nav-l {
+  position: relative;
+}
+.nav-l::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9px;
+  height: 1px;
+  background: var(--color-coral);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-draw);
+}
+.nav-l .nav-n {
+  transition: color 0.25s;
+}
+.nav-l:hover::after,
+.nav-l:focus-visible::after,
+.nav-l[aria-current]::after {
+  transform: scaleX(1);
+}
+.nav-l:hover .nav-n,
+.nav-l:focus-visible .nav-n,
+.nav-l[aria-current] .nav-n {
+  color: var(--color-coral);
+}
+
+/* #7 Mobile menu sheet (a modal <dialog>) */
+.menu {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  overscroll-behavior: contain;
+}
+.menu::backdrop {
+  background: transparent;
+}
+.menu[open] {
+  display: flex;
+  flex-direction: column;
+  animation: menu-in 0.32s ease both;
+}
+.menu[open] .menu-li {
+  animation: menu-li 0.5s var(--ease-ui) both;
+  animation-delay: calc(60ms + var(--i, 0) * 35ms);
+}
+@keyframes menu-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes menu-li {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+}
+/* Burger lines fold into an X (the sheet's close button starts as the burger). */
+.menu[open] .menu-x span {
+  animation: menu-x 0.35s var(--ease-ui) both;
+}
+.menu[open] .menu-x span + span {
+  animation-name: menu-x2;
+}
+@keyframes menu-x {
+  from {
+    translate: 0 -4.5px;
+    rotate: 0deg;
+  }
+  to {
+    translate: 0 0;
+    rotate: 45deg;
+  }
+}
+@keyframes menu-x2 {
+  from {
+    translate: 0 4.5px;
+    rotate: 0deg;
+  }
+  to {
+    translate: 0 0;
+    rotate: -45deg;
+  }
+}
+html.menu-open {
+  overflow: hidden;
+}
+.menu-row .menu-n {
+  transition: color 0.25s;
+}
+.menu-row:hover .menu-n,
+.menu-row:focus-visible .menu-n,
+.menu-row[aria-current] .menu-n {
+  color: var(--color-coral);
+}
+.menu-row > svg {
+  transition: translate 0.3s var(--ease-ui);
+}
+.menu-row:hover > svg,
+.menu-row:focus-visible > svg {
+  translate: 4px 0;
+}
+
+/* #1 + #2 Loader and page-transition panel (#shl in layouts/Base.astro).
+   html.shl-go = boot loader (set pre-paint). .shl.is-leave = covering on the way out,
+   .is-cover = fully covered (arrival), .is-lift = draining downward. */
+.shl {
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  visibility: hidden;
+  pointer-events: none;
+}
+html.shl-go .shl,
+.shl.is-boot,
+.shl.is-leave,
+.shl.is-cover,
+.shl.is-lift {
+  visibility: visible;
+}
+html.shl-go .shl,
+.shl.is-boot,
+.shl.is-leave,
+.shl.is-cover {
+  pointer-events: auto;
+}
+.shl.is-leave,
+.shl.is-cover {
+  cursor: progress !important;
+}
+html.shl-go,
+html.is-holding {
+  overflow: hidden !important;
+}
+.shl-wipe {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg);
+  transform-origin: 50% 100%;
+}
+.shl.is-leave .shl-wipe {
+  transform-origin: 50% 0;
+  animation: shl-close 0.5s var(--ease-wipe) both;
+}
+.shl.is-lift .shl-wipe {
+  animation: shl-open 0.5s var(--ease-wipe) both;
+}
+.shl-scan {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: var(--color-coral);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--color-coral) 70%, transparent);
+  opacity: 0;
+}
+.shl.is-leave .shl-scan,
+.shl.is-lift .shl-scan {
+  opacity: 1;
+  animation: shl-run 0.5s var(--ease-wipe) both;
+}
+.shl-body {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+html.shl-go .shl-body,
+.shl.is-boot .shl-body {
+  display: block;
+}
+.shl.is-lift .shl-body {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.shl-caret {
+  animation: blink 1s steps(1) infinite;
+}
+.shl-fill {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.shl.is-run .shl-fill {
+  animation: shl-fill var(--shl-ms, 900ms) cubic-bezier(0.3, 0.1, 0.3, 1) both;
+}
+@keyframes shl-close {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes shl-open {
+  to {
+    transform: scaleY(0);
+  }
+}
+@keyframes shl-run {
+  from {
+    transform: translateY(-2px);
+  }
+  to {
+    transform: translateY(100vh);
+  }
+}
+@keyframes shl-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* #4 Cursor (scripts/site/cursor.ts). The native cursor is hidden only while html.has-cursor is set,
+   and is kept in text fields so the I-beam and caret placement still work. */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+html.has-cursor :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='submit'], [type='button']), textarea, select, [contenteditable='true']) {
+  cursor: auto !important;
+}
+.cur {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9990;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+  will-change: transform;
+}
+.cur.is-on {
+  opacity: 1;
+}
+.cur-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px;
+  border-radius: 50%;
+  background: var(--color-coral);
+  box-shadow: 0 0 0 1.5px var(--color-bg);
+  transition: scale 0.25s var(--ease-ui);
+}
+.cur.is-press .cur-dot {
+  scale: 0.6;
+}
+.cur-label {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  padding: 6px 9px;
+  border-radius: 7px;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font: 500 12px/1 var(--font-mono);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.cur.has-label .cur-label {
+  opacity: 1;
+}

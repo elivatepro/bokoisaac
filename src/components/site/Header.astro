@@ -1,6 +1,10 @@
 ---
-// Site header from Paper. Sits absolutely over the top of the page (88px on desktop over the hero;
-// 60px solid bar with a bottom rule on mobile).
+// Site header from Paper. Fixed over the top of the page: 88px and transparent over the hero on desktop,
+// condensing to 72px with a solid background and a hairline once the page scrolls past 40px
+// (scripts/site/header.ts). Mobile is a 60px solid bar with a bottom rule.
+// Below lg the burger opens the menu sheet (Paper: "Home — Mobile menu (open)"; scripts/site/menu.ts).
+import Button from '../ui/Button.astro';
+
 const links = [
   { n: '01', label: 'Work', href: '/work' },
   { n: '02', label: 'Services', href: '/services' },
@@ -8,6 +12,7 @@ const links = [
   { n: '04', label: 'Lab', href: '/lab' },
   { n: '05', label: 'Writing', href: '/writing' },
 ];
+const email = 'hello@bokoisaac.com';
 const path = Astro.url.pathname;
 const current = (href: string) => path === href || path.startsWith(`${href}/`);
 const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
@@ -20,11 +25,11 @@ const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
   Skip to content
 </a>
 
-<header class="absolute inset-x-0 top-0 z-50 h-[60px] border-b border-rule bg-bg lg:h-[88px] lg:border-b-0 lg:bg-transparent">
-  <div class="page flex h-full items-center justify-between gap-3 lg:gap-6">
-    <a href="/" class="flex min-h-11 shrink-0 items-baseline gap-1.5 py-[11px]" aria-label="Boko Isaac, home">
+<header class="site-header" data-header>
+  <div class="page relative flex h-full items-center justify-between gap-3 lg:gap-6">
+    <a href="/" class="flex min-h-11 shrink-0 items-baseline gap-1.5 py-[11px]" aria-label="Boko Isaac, home" data-cursor="Home">
       <span class="text-[20px] leading-none font-semibold tracking-[-0.03em] text-ink">Boko Isaac</span>
-      <span class="h-[17px] w-[9px] shrink-0 translate-y-0.5 bg-coral" aria-hidden="true"></span>
+      <span class="caret-blink h-[17px] w-[9px] shrink-0 translate-y-0.5 bg-coral" aria-hidden="true"></span>
     </a>
 
     <nav aria-label="Main" class="hidden min-w-0 lg:block">
@@ -35,9 +40,9 @@ const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
               <a
                 href={l.href}
                 aria-current={current(l.href) ? 'page' : undefined}
-                class="group inline-flex min-h-11 items-center gap-2 py-2 font-mono text-[13px] leading-[150%] font-medium tracking-[0.01em]"
+                class="nav-l inline-flex min-h-11 items-center gap-2 py-2 font-mono text-[13px] leading-[150%] font-medium tracking-[0.01em]"
               >
-                <span class="text-muted transition-colors group-hover:text-coral group-aria-[current=page]:text-coral">{l.n}</span>
+                <span class="nav-n text-muted">{l.n}</span>
                 <span class="text-ink">{l.label}</span>
               </a>
             </li>
@@ -48,7 +53,7 @@ const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
 
     <div class="flex shrink-0 items-center gap-2.5 lg:gap-[22px]">
       <p class="hidden items-center gap-[9px] xl:flex">
-        <span class="size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+        <span class="pulse-dot size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
         <span class="font-mono text-[12.5px] leading-[130%] font-medium tracking-[0.01em] text-ink">Open to new work</span>
       </p>
 
@@ -57,6 +62,7 @@ const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
         type="button"
         aria-label="Search"
         aria-keyshortcuts="Meta+K"
+        data-cursor="Search"
         class:list={[glass, 'flex w-11 shrink-0 items-center justify-center xl:w-auto xl:justify-start xl:gap-2.5 xl:pr-2 xl:pl-3.5']}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0 xl:size-[15px]">
@@ -67,15 +73,82 @@ const glass = 'border border-rule-strong bg-bg/55 rounded-[12px] h-11';
         <kbd class="hidden h-[26px] items-center rounded-[7px] bg-ink/8 px-[7px] font-mono text-xs leading-none font-medium text-ink shadow-[inset_0_0_0_1px_var(--color-rule)] xl:flex">⌘K</kbd>
       </button>
 
-      <a href="/contact" class:list={[glass, 'flex items-center px-[18px] text-[13px] leading-none font-semibold tracking-[-0.005em] whitespace-nowrap text-ink backdrop-blur-[8px] transition-colors hover:border-ink/40']}>
+      <a
+        href="/contact"
+        data-cursor="Say hello"
+        class:list={[glass, 'flex items-center px-[18px] text-[13px] leading-none font-semibold tracking-[-0.005em] whitespace-nowrap text-ink backdrop-blur-[8px] transition-colors hover:border-ink/40']}
+      >
         Get in touch
       </a>
 
-      {/* TODO: the mobile menu's open state isn't designed in Paper yet, so this button doesn't open anything. */}
-      <button type="button" aria-label="Menu" aria-expanded="false" class:list={[glass, 'relative w-11 shrink-0 lg:hidden']}>
+      <button
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="site-menu"
+        data-menu-open
+        data-cursor="Open menu"
+        class:list={[glass, 'relative w-11 shrink-0 lg:hidden']}
+      >
         <span class="absolute inset-x-3 top-4 h-[1.5px] rounded-[2px] bg-ink" aria-hidden="true"></span>
         <span class="absolute inset-x-3 top-[25px] h-[1.5px] rounded-[2px] bg-ink" aria-hidden="true"></span>
       </button>
     </div>
   </div>
 </header>
+
+<dialog id="site-menu" class="menu" aria-label="Menu" data-menu>
+  <div class="relative h-[60px] shrink-0 border-b border-rule">
+    <div class="page flex h-full items-center justify-between gap-3">
+      <a href="/" class="flex min-h-11 shrink-0 items-baseline gap-1.5 py-[11px]" aria-label="Boko Isaac, home">
+        <span class="text-[20px] leading-none font-semibold tracking-[-0.03em] text-ink">Boko Isaac</span>
+        <span class="caret-blink h-[17px] w-[9px] shrink-0 translate-y-0.5 bg-coral" aria-hidden="true"></span>
+      </a>
+      <div class="flex shrink-0 items-center gap-2.5">
+        <button type="button" aria-label="Search" class:list={[glass, 'flex w-11 shrink-0 items-center justify-center']}>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0">
+            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"></circle>
+            <path d="M20 20l-4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+        </button>
+        <a href="/contact" class:list={[glass, 'flex items-center px-[18px] text-[13px] leading-none font-semibold tracking-[-0.005em] whitespace-nowrap text-ink']}>
+          Get in touch
+        </a>
+        <button type="button" aria-label="Close menu" autofocus data-menu-close class:list={[glass, 'menu-x relative w-11 shrink-0 border-ink/40']}>
+          <span class="absolute inset-x-3 top-[20.25px] h-[1.5px] rotate-45 rounded-[2px] bg-ink" aria-hidden="true"></span>
+          <span class="absolute inset-x-3 top-[20.25px] h-[1.5px] -rotate-45 rounded-[2px] bg-ink" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page flex grow flex-col justify-between overflow-y-auto pt-8 pb-7" data-lenis-prevent>
+    <nav aria-label="Main" class="flex flex-col gap-[18px]">
+      <p class="menu-li eyebrow text-muted" style="--i:0" aria-hidden="true">// Menu</p>
+      <ul class="border-t border-rule">
+        {
+          links.map((l, i) => (
+            <li class="menu-li border-b border-rule" style={`--i:${i + 1}`}>
+              <a href={l.href} aria-current={current(l.href) ? 'page' : undefined} class="menu-row flex h-[76px] items-center">
+                <span class="menu-n w-11 shrink-0 font-mono text-[13px] leading-[150%] font-medium tracking-[0.01em] text-muted">{l.n}</span>
+                <span class="grow text-[38px] leading-[110%] font-semibold tracking-[-0.035em] text-ink">{l.label}</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0 text-coral">
+                  <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="menu-li mt-10 flex flex-col gap-[22px]" style={`--i:${links.length + 1}`}>
+      <div class="flex items-center gap-[9px] font-mono text-[12.5px] leading-[130%] font-medium tracking-[0.01em]">
+        <span class="pulse-dot size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+        <span class="text-ink">Open to new work</span>
+        <a href={`mailto:${email}`} class="ml-auto flex min-h-11 items-center text-muted hover:text-ink">{email}</a>
+      </div>
+      <Button href="/contact" class="w-full justify-between">Get in touch</Button>
+    </div>
+  </div>
+</dialog>

@@ -61,14 +61,14 @@ const mono = 'font-mono font-medium text-[12.5px] leading-[150%] tracking-[0.01e
   <div class="page py-[68px] md:py-[151.2px]">
     <div class="grid items-start gap-[22px] lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)] lg:items-end lg:gap-14">
       <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
-        <p class="font-mono text-[12px] leading-[150%] font-medium tracking-[0.01em] md:text-[13px]">
+        <p data-reveal="eyebrow" class="font-mono text-[12px] leading-[150%] font-medium tracking-[0.01em] md:text-[13px]">
           <span class="text-coral">//</span> git log --career
         </p>
-        <h2 id="timeline-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+        <h2 id="timeline-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
           Six years, every one <span class="text-coral">committed.</span>
         </h2>
       </div>
-      <div class="grid min-w-0 justify-items-start gap-6">
+      <div data-reveal data-reveal-delay="200" class="grid min-w-0 justify-items-start gap-6">
         <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
           Four teams, one direction: closer to the people who use the thing. The short version is below, the long one is a page away.
         </p>
@@ -87,9 +87,10 @@ const mono = 'font-mono font-medium text-[12.5px] leading-[150%] tracking-[0.01e
       </div>
     </div>
 
-    <div class="relative mt-11 lg:mt-[72px]">
-      <div class="absolute inset-y-5 left-1.5 w-0.5 rounded-[2px] bg-coral lg:inset-y-[22px] lg:left-[195px]" aria-hidden="true"></div>
-      <ol class="grid">
+    <div class="relative mt-11 lg:mt-[72px]" data-branch>
+      <div class="absolute inset-y-5 left-1.5 w-0.5 rounded-[2px] bg-rule lg:inset-y-[22px] lg:left-[195px]" aria-hidden="true"></div>
+      <div data-branch-fill class="absolute inset-y-5 left-1.5 w-0.5 origin-top rounded-[2px] bg-coral lg:inset-y-[22px] lg:left-[195px]" aria-hidden="true"></div>
+      <ol class="grid" data-reveal-stagger="70" data-reveal-delay="300" data-reveal-y="12">
         {
           entries.map((e, i) => {
             const last = i === entries.length - 1;
@@ -113,7 +114,7 @@ const mono = 'font-mono font-medium text-[12.5px] leading-[150%] tracking-[0.01e
                   <span class:list={[mono, 'text-muted']}>{e.hash}</span>
                 </p>
                 <div class="relative col-start-1 row-span-3 row-start-1 h-full min-w-0 lg:col-start-2 lg:row-span-1" aria-hidden="true">
-                  <span class="dot absolute top-0.5 left-0 size-3.5 rounded-full lg:top-px lg:left-[13px]" />
+                  <span data-dot class="dot absolute top-0.5 left-0 size-3.5 rounded-full lg:top-px lg:left-[13px]" />
                 </div>
                 <div class="col-start-2 grid max-w-[760px] min-w-0 gap-2 lg:col-start-3 lg:row-start-1 lg:pr-10 lg:pl-4">
                   <p class="flex min-w-0 flex-wrap items-center gap-x-3.5 gap-y-1.5">
@@ -159,4 +160,111 @@ const mono = 'font-mono font-medium text-[12.5px] leading-[150%] tracking-[0.01e
       box-shadow: inset 0 0 0 2px var(--color-muted);
     }
   }
+
+  /* #25 while the branch draws (JS adds .is-drawing): unlit commits are hollow muted rings; a lit one
+     goes back to its static style above with a small overshoot pop, so the end state is the design. */
+  :global(.is-drawing) .dot {
+    transition:
+      background-color 0.35s,
+      box-shadow 0.35s;
+  }
+  :global(.is-drawing) .dot:not(.is-lit) {
+    background: var(--color-bg);
+    box-shadow: inset 0 0 0 2px var(--color-muted);
+  }
+  :global(.is-drawing) .dot.is-lit {
+    animation: dot-pop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1);
+  }
+  @keyframes dot-pop {
+    from {
+      scale: 0.6;
+    }
+  }
 </style>
+
+<script>
+  import { gsap, ScrollTrigger, reducedMotion } from '../../scripts/motion/core';
+  import { onPage, readyCapped } from '../../scripts/motion/page';
+
+  // #25 Career branch line draws on scroll: progress = (64% of the viewport − list top) / list height,
+  // forced to 1 at the page bottom, monotonic (never un-draws), smoothed o += (s − o) × .14 per frame.
+  // A commit lights when the fill reaches it. Once fully drawn, everything returns to the static markup.
+  onPage(() => {
+    const branch = document.querySelector<HTMLElement>('[data-branch]');
+    const fill = branch?.querySelector<HTMLElement>('[data-branch-fill]');
+    if (!branch || !fill || reducedMotion()) return;
+    const dots = [...branch.querySelectorAll<HTMLElement>('[data-dot]')];
+    let offsets: number[] = [];
+    let s = 0;
+    let o = 0;
+    let ticking = false;
+    let st: ScrollTrigger | null = null;
+    let alive = true;
+
+    const measure = () => {
+      // Layout sizes, not the fill's rect: the fill is scaled, so its rect height is not its length.
+      const top = branch.getBoundingClientRect().top + fill.offsetTop;
+      const height = fill.offsetHeight || 1;
+      offsets = dots.map((d) => {
+        const r = d.getBoundingClientRect();
+        return (r.top + r.height / 2 - top) / height;
+      });
+    };
+    const render = () => {
+      fill.style.transform = `scaleY(${o})`;
+      dots.forEach((d, i) => d.classList.toggle('is-lit', o >= offsets[i] - 0.001));
+    };
+    const finish = () => {
+      gsap.ticker.remove(tick);
+      st?.kill();
+      st = null;
+      fill.style.transform = '';
+      dots.forEach((d) => d.classList.add('is-lit'));
+    };
+    const tick = () => {
+      o += (s - o) * 0.14;
+      if (s - o < 0.0015) o = s;
+      render();
+      if (o >= 1) return finish();
+      if (o === s) {
+        gsap.ticker.remove(tick);
+        ticking = false;
+      }
+    };
+    const update = (p: number) => {
+      if (ScrollTrigger.maxScroll(window) - window.scrollY < 2) p = 1;
+      if (p <= s) return;
+      s = Math.min(1, p);
+      if (!ticking) {
+        ticking = true;
+        gsap.ticker.add(tick);
+      }
+    };
+
+    branch.classList.add('is-drawing');
+    fill.style.transform = 'scaleY(0)';
+    readyCapped().then(() => {
+      if (!alive) return;
+      measure();
+      render();
+      st = ScrollTrigger.create({
+        trigger: branch,
+        start: 'top 64%',
+        end: 'bottom 64%',
+        onRefresh: (self) => {
+          measure();
+          update(self.progress);
+        },
+        onUpdate: (self) => update(self.progress),
+      });
+      update(st.progress);
+    });
+
+    return () => {
+      alive = false;
+      finish();
+      branch.classList.remove('is-drawing');
+      dots.forEach((d) => d.classList.remove('is-lit'));
+    };
+  });
+</script>

@@ -3,7 +3,6 @@
 // Rows come from Notion Blog (newest first); the section is hidden when there are none.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import Eyebrow from '../ui/Eyebrow.astro';
 import { live } from '../../lib/content';
 
 const posts = (await live('blog')).sort((a, b) => (b.data.published?.getTime() ?? 0) - (a.data.published?.getTime() ?? 0));
@@ -29,25 +28,25 @@ const latestCover = latest && coverFor(latest.data.slug);
       <div class="page py-[68px] md:py-[151.2px]">
         <div class="flex items-end justify-between gap-10">
           <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
-            <Eyebrow class="max-md:text-[12px]">Writing</Eyebrow>
-            <h2 id="writing-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+            <p data-reveal="eyebrow" class="eyebrow text-ink max-md:text-[12px]"><span class="text-coral">//</span> Writing</p>
+            <h2 id="writing-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
               Notes from the <span class="text-coral">build.</span>
             </h2>
-            <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+            <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
               Short, specific posts about TypeScript, APIs and the unglamorous parts of shipping software.
             </p>
           </div>
-          <a href="/writing" class:list={[mono, 'group hidden min-h-11 shrink-0 items-center gap-[9px] pb-0.5 text-[13px] leading-none md:inline-flex']}>
-            <span class="text-muted">01</span>
-            <span class="py-1.5 underline-offset-4 group-hover:underline">All writing</span>
-            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 transition-transform group-hover:translate-x-0.5">
+          <a href="/writing" data-reveal data-reveal-delay="260" class:list={[mono, 'link-draw hidden min-h-11 shrink-0 items-center gap-[9px] pb-0.5 text-[13px] leading-none md:inline-flex']}>
+            <span class="link-draw-n text-muted">01</span>
+            <span class="link-draw-l py-1.5">All writing</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0">
               <path d={arrow} fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
         </div>
 
         <div class="mt-10 grid grid-cols-[minmax(0,1fr)] gap-9 md:mt-16 md:grid-cols-[minmax(0,1.06fr)_minmax(0,1fr)] md:gap-14">
-          <article class="group relative flex min-w-0 flex-col rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+          <article data-reveal data-reveal-delay="340" data-cursor="Read" class="wr-card group relative flex min-w-0 flex-col rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)]">
             <div class="relative aspect-video overflow-clip rounded-[9px] bg-field md:aspect-[16/10]">
               {latestCover && (
                 <Image
@@ -87,7 +86,7 @@ const latestCover = latest && coverFor(latest.data.slug);
               )}
               <p class="mt-auto flex items-center gap-2 pt-[10px]" aria-hidden="true">
                 <span class:list={[mono, 'text-[12.5px] leading-[150%] group-hover:underline underline-offset-4']}>Read post</span>
-                <svg viewBox="0 0 24 24" width="14" height="14" class="shrink-0 transition-transform group-hover:translate-x-0.5">
+                <svg viewBox="0 0 24 24" width="14" height="14" class="shrink-0 transition-transform duration-300 group-hover:translate-x-[3px] group-focus-within:translate-x-[3px]">
                   <path d={arrow} fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </p>
@@ -96,16 +95,17 @@ const latestCover = latest && coverFor(latest.data.slug);
 
           {
             earlier.length > 0 && (
-              <div class="flex min-w-0 flex-col">
+              <div data-reveal data-reveal-delay="300" class="flex min-w-0 flex-col">
                 <h3 class:list={[mono, 'pb-[14px] text-[12px] leading-[140%] text-muted']}>
                   <span class="text-coral">//</span> Earlier posts
                 </h3>
-                <ul class="grid grow border-b border-rule md:auto-rows-[minmax(84px,1fr)]">
+                <ul data-reveal-stagger="60" data-reveal-delay="380" class="grid grow border-b border-rule md:auto-rows-[minmax(84px,1fr)]">
                   {earlier.map((p) => (
                     <li class="grid min-w-0 border-t border-rule">
                       <a
                         href={href(p.data.slug)}
-                        class="group grid min-w-0 grid-cols-[minmax(0,1fr)_auto_18px] items-center gap-x-3 gap-y-1.5 px-0.5 py-4 [grid-template-areas:'date_read_arr''name_name_arr'] md:grid-cols-[104px_minmax(0,1fr)_auto_20px] md:gap-5 md:px-1 md:[grid-template-areas:'date_name_read_arr']"
+                        data-cursor="Read"
+                        class="wr-row group grid min-w-0 grid-cols-[minmax(0,1fr)_auto_18px] items-center gap-x-3 gap-y-1.5 px-0.5 py-4 [grid-template-areas:'date_read_arr''name_name_arr'] md:grid-cols-[104px_minmax(0,1fr)_auto_20px] md:gap-5 md:px-1 md:[grid-template-areas:'date_name_read_arr']"
                       >
                         <time datetime={day(p.data.published)} class:list={[mono, 'w-max text-[12.5px] leading-[150%] text-muted [grid-area:date]']}>
                           {day(p.data.published)}
@@ -126,9 +126,9 @@ const latestCover = latest && coverFor(latest.data.slug);
           }
         </div>
 
-        <a href="/writing" class:list={[mono, 'group mt-7 inline-flex min-h-11 items-center gap-[9px] text-[13px] leading-none md:hidden']}>
-          <span class="text-muted">01</span>
-          <span class="py-1.5 underline-offset-4 group-hover:underline">All writing</span>
+        <a href="/writing" class:list={[mono, 'link-draw mt-7 inline-flex min-h-11 items-center gap-[9px] text-[13px] leading-none md:hidden']}>
+          <span class="link-draw-n text-muted">01</span>
+          <span class="link-draw-l py-1.5">All writing</span>
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0">
             <path d={arrow} fill="none" stroke="var(--color-coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -137,3 +137,39 @@ const latestCover = latest && coverFor(latest.data.slug);
     </section>
   )
 }
+
+<style>
+  /* #27 feature card lift. */
+  .wr-card {
+    transition:
+      translate 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.3s ease;
+  }
+  .wr-card:hover,
+  .wr-card:focus-within {
+    translate: 0 -4px;
+    box-shadow: inset 0 0 0 1px var(--color-coral);
+  }
+
+  /* #29 row slide: padding-left 4px -> 14px plus a soft surface wash. */
+  .wr-row {
+    transition:
+      padding-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 0.3s ease;
+  }
+  .wr-row:hover,
+  .wr-row:focus-visible {
+    padding-left: 14px;
+    background-color: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wr-card:hover,
+    .wr-card:focus-within {
+      translate: none;
+    }
+    .wr-row {
+      transition: none;
+    }
+  }
+</style>

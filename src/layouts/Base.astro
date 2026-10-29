@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import Header from '../components/site/Header.astro';
 import Footer from '../components/site/Footer.astro';
@@ -13,7 +14,7 @@ const { title, description = 'Boko Isaac builds full-stack products, mobile apps
 const fullTitle = title ? `${title} — ${site}` : `${site} — Software engineer`;
 ---
 
-<html lang="en">
+<html lang="en" transition:animate="none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,12 +25,75 @@ const fullTitle = title ? `${title} — ${site}` : `${site} — Software enginee
     <meta property="og:description" content={description} />
     <meta name="theme-color" content="#0B0C0E" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <ClientRouter />
+    {/* Boot loader, before first paint: cover the page on the first visit of a session (#1).
+        Skipped for reduced motion; a 5s failsafe uncovers the page if the loader script never runs. */}
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        try {
+          if (matchMedia('(prefers-reduced-motion: reduce)').matches || sessionStorage.getItem('bi-loaded')) return;
+        } catch (e) {
+          return;
+        }
+        d.classList.add('shl-go', 'is-holding');
+        setTimeout(function () {
+          if (!d.classList.contains('shl-go')) return;
+          d.classList.remove('shl-go', 'is-holding');
+          window.dispatchEvent(new Event('site:ready'));
+        }, 5000);
+      })();
+    </script>
   </head>
   <body class="min-h-dvh bg-bg text-ink">
+    {/* Loader + page-transition panel. Persisted across ClientRouter swaps so the wipe can span a navigation. */}
+    <div id="shl" class="shl" aria-hidden="true" transition:persist="site-shl">
+      <div class="shl-wipe"></div>
+      <div class="shl-scan"></div>
+      <div class="shl-body">
+        <div class="page flex h-full flex-col justify-center" aria-hidden="true">
+          <div class="flex w-full max-w-[460px] flex-col gap-4 font-mono text-[14px] leading-[150%] font-medium tracking-[0.01em]">
+            <p class="flex items-center whitespace-pre text-ink">
+              <span class="text-coral">&gt; </span><span data-shl-text>boko isaac — full-stack engineer</span><span
+                class="shl-caret ml-1 inline-block h-[1.15em] w-[0.6em] bg-coral"></span>
+            </p>
+            <div class="relative h-[2px]">
+              <div class="absolute inset-x-0 top-[0.5px] h-px bg-ink/16"></div>
+              <div class="shl-fill absolute inset-0 bg-coral"></div>
+            </div>
+            <p class="min-h-[1.5em] text-[12.5px] text-muted" data-shl-sub></p>
+          </div>
+        </div>
+        <button
+          type="button"
+          data-shl-skip
+          class="absolute right-5 bottom-5 flex h-11 items-center rounded-[12px] border border-rule-strong px-4 font-mono text-[12.5px] font-medium text-ink hover:border-ink/40 md:right-[56px] md:bottom-8"
+        >
+          Skip intro
+        </button>
+      </div>
+    </div>
+
     <Header />
-    <main id="main">
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer />
+
+    {/* Custom cursor (#4); see scripts/site/cursor.ts for the data-cursor="Label" convention. */}
+    <div id="cursor" class="cur" aria-hidden="true" transition:persist="site-cursor">
+      <div class="cur-dot"></div>
+      <div class="cur-label"></div>
+    </div>
+
+    <script>
+      import '../scripts/site/loader';
+      import '../scripts/site/transition';
+      import '../scripts/site/smooth';
+      import '../scripts/site/cursor';
+      import '../scripts/site/header';
+      import '../scripts/site/menu';
+      import '../scripts/motion/reveal';
+    </script>
   </body>
 </html>

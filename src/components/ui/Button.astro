@@ -1,6 +1,7 @@
 ---
 // Buttons from Paper: label + 38px square icon tile. Primary = coral; secondary = outlined dark glass.
-// The arrow tile holds two arrows (one parked off to the left, as in Paper); on hover they slide right together.
+// Motion (#9, CSS in global.css): on hover/focus the arrow slides out right while a second one slides in from the
+// left; the download icon drops out the bottom and falls back in from the top. Primary fills ink on hover.
 interface Props {
   href?: string;
   variant?: 'primary' | 'secondary';
@@ -19,9 +20,9 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
   href={href}
   type={href ? undefined : type}
   class:list={[
-    'group inline-flex h-[54px] shrink-0 items-center gap-3.5 rounded-[14px] pl-[22px] text-sm leading-none font-semibold tracking-[-0.005em] transition-colors',
+    'btn inline-flex h-[54px] shrink-0 items-center gap-3.5 rounded-[14px] pl-[22px] text-sm leading-none font-semibold tracking-[-0.005em]',
     icon === 'none' ? 'pr-[22px]' : 'pr-2',
-    primary ? 'bg-coral text-coral-ink hover:bg-[#ff8f66]' : 'border border-rule-strong bg-bg/55 text-ink backdrop-blur-[8px] hover:border-ink/40',
+    primary ? 'bg-coral text-coral-ink hover:bg-ink focus-visible:bg-ink' : 'border border-rule-strong bg-bg/55 text-ink backdrop-blur-[8px] hover:border-ink/40',
     className,
   ]}
   {...rest}
@@ -37,15 +38,15 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
       >
         {icon === 'arrow' ? (
           <>
-            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="col-start-1 row-start-1 transition-transform duration-300 ease-out group-hover:translate-x-[34px] motion-reduce:transition-none">
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="btn-ico-a col-start-1 row-start-1">
               <path d={arrow} fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="col-start-1 row-start-1 -translate-x-[34px] transition-transform duration-300 ease-out group-hover:translate-x-0 motion-reduce:transition-none">
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="btn-ico-b col-start-1 row-start-1">
               <path d={arrow} fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </>
         ) : (
-          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" class="btn-drop">
             <path d="M12 4v13M6 12l6 6 6-6M5 21h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         )}

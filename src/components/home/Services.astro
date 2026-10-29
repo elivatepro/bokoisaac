@@ -34,17 +34,17 @@ const cols = 'lg:grid-cols-[76px_minmax(0,5fr)_minmax(0,6fr)_200px_44px]';
       <div class="page py-[68px] md:py-[151.2px]">
         <div class="grid items-start gap-x-14 gap-y-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div class="grid max-w-[920px] min-w-0 justify-items-start gap-4 md:gap-[22px]">
-            <p class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>
+            <p data-reveal="eyebrow" class:list={[mono, 'text-[12px] leading-[150%] tracking-[0.01em] md:text-[13px]']}>
               <span class="text-coral">//</span> Services
             </p>
-            <h2 id="services-title" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
+            <h2 id="services-title" data-reveal="words" class="text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-balance md:text-[64px]">
               Four ways to put me to <span class="text-coral">work.</span>
             </h2>
-            <p class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
+            <p data-reveal data-reveal-delay="200" class="max-w-[527px] text-[15.5px] leading-[160%] text-pretty text-muted md:max-w-[578px] md:text-[17px]">
               A clear scope, a written plan before any code, and a price agreed up front. Open a row to see what is in it.
             </p>
           </div>
-          <a href="/services" class:list={[mono, 'group inline-flex min-h-11 items-center gap-[9px] justify-self-start rounded-sm text-[13px] leading-none tracking-[0.01em]']}>
+          <a href="/services" data-reveal data-reveal-delay="260" class:list={[mono, 'group inline-flex min-h-11 items-center gap-[9px] justify-self-start rounded-sm text-[13px] leading-none tracking-[0.01em]']}>
             <span class="text-muted">03</span>
             <span class="py-1.5 underline-offset-4 group-hover:underline">All services</span>
             <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="shrink-0 text-coral transition-transform group-hover:translate-x-0.5">
@@ -53,7 +53,7 @@ const cols = 'lg:grid-cols-[76px_minmax(0,5fr)_minmax(0,6fr)_200px_44px]';
           </a>
         </div>
 
-        <ul class="mt-9 border-b border-rule md:mt-16" data-services>
+        <ul class="mt-9 border-b border-rule md:mt-16" data-services data-reveal-stagger="80" data-reveal-delay="300">
           {services.map((s, i) => {
             const open = i === 0;
             const id = `service-${s.slug}`;
@@ -188,7 +188,10 @@ const cols = 'lg:grid-cols-[76px_minmax(0,5fr)_minmax(0,6fr)_200px_44px]';
 </style>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-services] .service').forEach((row) => {
+  import { onPageLoad } from '../../scripts/motion/core';
+
+  // Runs on every page load: pages swap without a full reload (ClientRouter).
+  onPageLoad(() => document.querySelectorAll<HTMLElement>('[data-services] .service').forEach((row) => {
     const button = row.querySelector<HTMLButtonElement>('button[aria-expanded]');
     const panel = row.querySelector<HTMLElement>('.service-panel');
     if (!button || !panel) return;
@@ -198,5 +201,5 @@ const cols = 'lg:grid-cols-[76px_minmax(0,5fr)_minmax(0,6fr)_200px_44px]';
       row.toggleAttribute('data-open', open);
       panel.inert = !open;
     });
-  });
+  }));
 </script>

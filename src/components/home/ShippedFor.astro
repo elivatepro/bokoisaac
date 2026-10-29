@@ -2,6 +2,9 @@
 const clients = ['Quality Installs Co.', 'Elivate', 'Startix Media', 'EduSkillUp', 'QPIMS', 'Elivate Wallet', 'Roudio', 'Book Read-Along'];
 // Paper's track holds the list four times (two identical halves), so it can loop seamlessly.
 const run = [...clients, ...clients];
+// Template speed (#16): duration = items x 26 / speed(5) s for a track of two halves of 8 names (83.2 s per 8 names).
+// Each of our halves holds 16 names, so the loop takes twice as long at the same pixel speed.
+const loop = `${(run.length * 2 * 26) / 5}s`;
 const facts = [
   { key: 'status', value: 'Open to new work', dot: true },
   { key: 'timezone', value: 'Remote · Worldwide' },
@@ -12,16 +15,16 @@ const facts = [
 <section aria-labelledby="shipped-for" class="relative z-10 bg-bg">
   <div class="page py-[34px] md:py-11">
     <div class="grid grid-cols-1 items-center gap-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-10">
-      <h2 id="shipped-for" class="eyebrow max-w-full text-xs/[1.5] text-ink md:text-[13px]"><span class="text-coral">//</span> Shipped for</h2>
+      <h2 id="shipped-for" data-reveal="eyebrow" class="eyebrow max-w-full text-xs/[1.5] text-ink md:text-[13px]"><span class="text-coral">//</span> Shipped for</h2>
 
-      <div class="marquee -mx-5 min-w-0 overflow-clip md:mx-0">
-        <div class="marquee-track flex w-max">
+      <div data-reveal data-reveal-delay="120" data-reveal-y="10" class="marquee -mx-5 min-w-0 overflow-clip md:mx-0">
+        <div class="marquee-track flex w-max" style={`--loop:${loop}`}>
           {
             [0, 1].map((copy) => (
-              <ul class="flex shrink-0 items-center" aria-hidden={copy === 1 ? 'true' : undefined}>
+              <ul class="flex shrink-0 items-center" aria-hidden={copy === 1 ? 'true' : undefined} data-copy={copy === 1 ? '' : undefined}>
                 {run.map((name, i) => (
-                  <li class="flex items-center" aria-hidden={i >= clients.length ? 'true' : undefined}>
-                    <span class="w-max text-[22px] leading-[1.2] font-semibold tracking-[-0.045em] text-muted md:text-[27px]">{name}</span>
+                  <li class="flex items-center" aria-hidden={i >= clients.length ? 'true' : undefined} data-copy={i >= clients.length ? '' : undefined}>
+                    <span class="w-max text-[22px] leading-[1.2] font-semibold tracking-[-0.045em] text-muted transition-colors duration-300 hover:text-ink md:text-[27px]">{name}</span>
                     <span class="mx-[18px] w-max font-mono text-[13px] leading-[1.2] font-medium text-coral italic opacity-85 md:mx-[26px] md:text-[15px] md:not-italic" aria-hidden="true">
                       /
                     </span>
@@ -34,7 +37,7 @@ const facts = [
       </div>
     </div>
 
-    <ul class="mt-6 flex flex-col flex-wrap gap-2.5 border-t border-rule pt-[18px] font-mono text-[12.5px] leading-[1.5] font-medium tracking-[0.01em] [font-feature-settings:'tnum'] md:mt-[30px] md:flex-row md:gap-x-10 md:pt-[22px]">
+    <ul data-reveal data-reveal-delay="220" data-reveal-y="10" class="mt-6 flex flex-col flex-wrap gap-2.5 border-t border-rule pt-[18px] font-mono text-[12.5px] leading-[1.5] font-medium tracking-[0.01em] [font-feature-settings:'tnum'] md:mt-[30px] md:flex-row md:gap-x-10 md:pt-[22px]">
       {
         facts.map((f) => (
           <li class="flex min-w-0 items-baseline gap-2.5 md:items-center">
@@ -53,7 +56,7 @@ const facts = [
     mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
   }
   .marquee-track {
-    animation: marquee 70s linear infinite;
+    animation: marquee var(--loop, 166.4s) linear infinite;
   }
   .marquee:hover .marquee-track {
     animation-play-state: paused;
@@ -63,9 +66,23 @@ const facts = [
       transform: translateX(-50%);
     }
   }
+  /* Reduced motion: a static, wrapped row of the names (one copy), as in the template. */
   @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      mask-image: none;
+      margin-inline: 0;
+    }
     .marquee-track {
       animation: none;
+      width: auto;
+    }
+    .marquee-track > ul {
+      flex-wrap: wrap;
+      flex-shrink: 1;
+      row-gap: 8px;
+    }
+    [data-copy] {
+      display: none;
     }
   }
 </style>
