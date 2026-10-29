@@ -29,3 +29,6 @@ assets/hero/response*.json
 # wrangler local state
 .wrangler/
 .dev.vars
+
+# Agent worktrees (local only)
+.claude/worktrees/
