@@ -72,7 +72,7 @@ function setup(root: HTMLElement, signal: AbortSignal) {
         b.className = 'cal-day';
         b.textContent = String(d);
         b.dataset.day = key;
-        b.setAttribute('aria-selected', String(key === selected));
+        b.setAttribute('aria-pressed', String(key === selected));
         b.setAttribute('aria-label', `${label}, ${byDay.get(key)!.length} times free`);
         cells.push(b);
       } else {

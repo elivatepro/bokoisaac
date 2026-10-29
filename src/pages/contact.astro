@@ -72,7 +72,8 @@ const errIcon = 'M12 7.5v5.5';
         <p data-reveal data-reveal-delay="200" class="max-w-[684px] text-[15.5px] leading-[160%] text-muted md:text-[19px]">
           A few lines are enough. I read every message myself and reply with questions, a rough price and my first free date.
         </p>
-        <dl data-reveal data-reveal-delay="260" class="mt-2 grid w-full max-w-[560px] grid-cols-[minmax(0,1fr)] border-t border-rule md:mt-[18px]">
+        <div data-reveal data-reveal-delay="260" class="mt-2 grid w-full max-w-[560px] grid-cols-[minmax(0,1fr)] border-t border-rule md:mt-[18px]">
+          <dl class="contents">
           {
             facts.map((f) => (
               <div class="grid min-h-14 min-w-0 grid-cols-[84px_minmax(0,1fr)] items-baseline gap-[14px] border-b border-rule py-4 md:min-h-16 md:grid-cols-[96px_minmax(0,1fr)] md:py-[18px]">
@@ -89,11 +90,12 @@ const errIcon = 'M12 7.5v5.5';
               </div>
             ))
           }
+          </dl>
           <div class="flex min-w-0 items-center gap-[10px] pt-[18px]">
             <span class="pulse-dot size-2 shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
             <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>Replies within one working day</span>
           </div>
-        </dl>
+        </div>
       </div>
 
       <div id="message" data-reveal data-reveal-delay="300" data-contact-card class="grid min-w-0 scroll-mt-[110px] grid-cols-[minmax(0,1fr)] gap-[22px] rounded-[14px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-rule)] md:gap-[26px] md:p-10">
@@ -282,7 +284,7 @@ const errIcon = 'M12 7.5v5.5';
             <div class="flex gap-[6px]" aria-hidden="true">
               {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d) => <span class:list={[mono, 'w-10 shrink-0 text-center text-[12px] leading-[140%] text-muted']}>{d}</span>)}
             </div>
-            <div data-cal-days class="grid grid-cols-[repeat(7,40px)] gap-[6px]" role="grid" aria-label="Pick a day"></div>
+            <div data-cal-days class="grid grid-cols-[repeat(7,40px)] gap-[6px]" role="group" aria-label="Pick a day"></div>
           </div>
 
           <div class="flex w-full min-w-0 flex-1 flex-col gap-[10px]">
@@ -401,7 +403,7 @@ const errIcon = 'M12 7.5v5.5';
   [data-cal-days] :global(button.cal-day:hover) {
     box-shadow: inset 0 0 0 1px var(--color-coral);
   }
-  [data-cal-days] :global(button.cal-day[aria-selected='true']) {
+  [data-cal-days] :global(button.cal-day[aria-pressed='true']) {
     background: var(--color-coral);
     color: var(--color-coral-ink);
     font-weight: 600;
