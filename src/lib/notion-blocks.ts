@@ -1,6 +1,6 @@
 import type { BlockObjectResponse, RichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';
 import { isFullBlock } from '@notionhq/client';
-import { notion } from './notion';
+import { notion, withRetry } from './notion';
 
 // Renders a Notion page body to the HTML the post template styles (.post-body in pages/writing/[slug].astro).
 // Supported: paragraphs, headings (H1/H2 → h2, H3 → h3), bulleted + numbered lists, quotes, callouts (as quotes),
@@ -48,7 +48,7 @@ async function children(id: string): Promise<BlockObjectResponse[]> {
   const out: BlockObjectResponse[] = [];
   let cursor: string | undefined;
   do {
-    const res = await notion().blocks.children.list({ block_id: id, start_cursor: cursor, page_size: 100 });
+    const res = await withRetry(() => notion().blocks.children.list({ block_id: id, start_cursor: cursor, page_size: 100 }));
     out.push(...res.results.filter(isFullBlock));
     cursor = res.has_more ? (res.next_cursor ?? undefined) : undefined;
   } while (cursor);

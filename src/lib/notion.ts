@@ -25,11 +25,24 @@ export function notion(): Client {
   return client;
 }
 
+/** Retries a read a few times with back-off. Database queries are POSTs, which the client never retries on a
+ *  500, and one Notion hiccup shouldn't fail a deploy. */
+export async function withRetry<T>(fn: () => Promise<T>, tries = 4): Promise<T> {
+  for (let i = 1; ; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (i >= tries) throw err;
+      await new Promise((r) => setTimeout(r, 800 * 2 ** i));
+    }
+  }
+}
+
 export async function queryAll(dataSourceId: string): Promise<PageObjectResponse[]> {
   const pages: PageObjectResponse[] = [];
   let cursor: string | undefined;
   do {
-    const res = await notion().dataSources.query({ data_source_id: dataSourceId, start_cursor: cursor, page_size: 100 });
+    const res = await withRetry(() => notion().dataSources.query({ data_source_id: dataSourceId, start_cursor: cursor, page_size: 100 }));
     pages.push(...res.results.filter(isFullPage));
     cursor = res.has_more ? (res.next_cursor ?? undefined) : undefined;
   } while (cursor);
