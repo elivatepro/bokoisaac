@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  # Hourly: rebuild only if something changed in Notion. The 03:07 UTC run rebuilds regardless.
+  schedule:
+    - cron: '7 * * * *'
+  # "Run workflow" button in GitHub (works from the mobile app too) to publish right away.
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check Notion for changes
+        id: notion
+        if: github.event_name == 'schedule'
+        run: |
+          if [ "$(date -u +%H)" = "03" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; echo "Daily full rebuild"; exit 0; fi
+          node scripts/notion-changed.mjs
+
+      - name: Build
+        if: steps.notion.outcome == 'skipped' || steps.notion.outputs.changed == 'true'
+        run: npm run build
+
+      - name: Deploy to Cloudflare
+        if: steps.notion.outcome == 'skipped' || steps.notion.outputs.changed == 'true'
+        run: npx wrangler deploy
