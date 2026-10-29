@@ -1,8 +1,8 @@
 ---
 // "Tell me what you are building." Three quick picks that hand off to the contact page.
 // Per the Paper copy, nothing is sent from this section: the form GETs /contact with the picks in the
-// query string (need, budget, name match the Notion Leads properties) so the contact form can prefill them.
-// TODO: when /contact and /api/contact exist, read these params (or the sessionStorage "brief") on the contact form.
+// query string (need, budget, name match the Notion Leads properties). The contact form prefills from these, or from
+// the sessionStorage "brief" kept by scripts/sections/contact-brief.ts (see scripts/contact/form.ts).
 import Button from '../ui/Button.astro';
 import GridBg from '../ui/GridBg.astro';
 
