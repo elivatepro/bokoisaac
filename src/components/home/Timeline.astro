@@ -1,6 +1,7 @@
 ---
 // "Six years, every one committed." Career as a git log. Static copy from Paper (Home, desktop + mobile).
 import Button from '../ui/Button.astro';
+import { known } from '../../lib/dates';
 
 type Entry = {
   from: string;
@@ -103,12 +104,18 @@ const mono = 'font-mono font-medium text-[12.5px] leading-[150%] tracking-[0.01e
               >
                 <p class="col-start-2 flex min-w-0 flex-wrap gap-x-3.5 gap-y-1 pb-2.5 lg:col-start-1 lg:row-start-1 lg:grid lg:gap-1 lg:pt-px lg:pb-0">
                   <span class:list={[mono]}>
-                    {e.from}
-                    {e.to && (
+                    {known(e.from) ? (
                       <>
-                        <span class="text-muted italic lg:text-ink lg:not-italic"> to </span>
-                        {e.to}
+                        {e.from}
+                        {e.to && (
+                          <>
+                            <span class="text-muted italic lg:text-ink lg:not-italic"> to </span>
+                            {e.to}
+                          </>
+                        )}
                       </>
+                    ) : (
+                      known(e.to) && <>Until {e.to}</>
                     )}
                   </span>
                   <span class:list={[mono, 'text-muted']}>{e.hash}</span>

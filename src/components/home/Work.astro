@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { known } from '../../lib/dates';
 // JetBrains Mono 600 for the "after" figures (global.css only loads 500).
 import '@fontsource/jetbrains-mono/600.css';
 import Button from '../ui/Button.astro';
@@ -43,7 +44,7 @@ const mono12 = 'font-mono text-xs leading-[1.4] font-medium tracking-[0.01em]';
                     <span class="text-coral">{String(i + 1).padStart(2, '0')}</span> of {total}
                   </p>
                   <p class="text-ink">
-                    {p.client} · {p.year}
+                    {p.client}{known(p.year) && ` · ${p.year}`}
                   </p>
                 </div>
 

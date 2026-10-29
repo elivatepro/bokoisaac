@@ -2,6 +2,7 @@
 // A project card on /work, from Paper ("Work" / "Work — Mobile"). The whole card opens the case: the title link
 // is stretched over it. Hover is the house card lift (#27) plus a slow image zoom.
 import { Image } from 'astro:assets';
+import { known } from '../../lib/dates';
 import Metric from './Metric.astro';
 import type { Project } from '../../lib/projects';
 
@@ -32,7 +33,7 @@ const mono12 = 'font-mono text-[12px] leading-[140%] font-medium tracking-[0.01e
   </div>
   <div class="flex min-w-0 flex-1 basis-0 flex-col gap-3 px-3 pt-[18px] pb-3 md:px-4 md:pt-[22px] md:pb-[14px]">
     <p class:list={[mono12, 'flex flex-wrap justify-between gap-x-4 gap-y-1 text-muted']}>
-      <span>{p.client} · {p.year}</span>
+      <span>{p.client}{known(p.year) && ` · ${p.year}`}</span>
       <span>{p.role}</span>
     </p>
     <h2 class="text-[32px] leading-[102%] font-semibold tracking-[-0.045em] md:text-[40px]">

@@ -35,7 +35,7 @@ function setup(form: HTMLFormElement, signal: AbortSignal) {
       const val = document.createElement('span');
       val.textContent = text;
       if (!first) val.className = 'brief-flash';
-      lines[key].replaceChildren(`${label[key]}: `, val, empty ? ', // not picked yet' : ',');
+      lines[key].replaceChildren(`${label[key]}: `, val, empty ? (key === 'name' ? ', // not typed yet' : ', // not picked yet') : ',');
     }
     first = false;
     try {

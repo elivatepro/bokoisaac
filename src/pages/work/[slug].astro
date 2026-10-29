@@ -3,6 +3,7 @@
 // card, the cover, "Built with" and "Next case". The problem / approach / result write-up only appears for
 // projects with a `study` in lib/projects.ts, so nothing is shown that hasn't been written yet.
 import { Image } from 'astro:assets';
+import { known } from '../../lib/dates';
 import Base from '../../layouts/Base.astro';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
 import Metric from '../../components/work/Metric.astro';
@@ -32,7 +33,8 @@ const sections: { title: string; kind: 'problem' | 'approach' | 'result' }[] = s
   : [];
 const facts = [
   { label: 'Client', value: p.client },
-  { label: 'Year', value: p.year },
+  // No confirmed year yet: show the main stack in that cell instead of a placeholder.
+  known(p.year) ? { label: 'Year', value: p.year } : { label: 'Built with', value: p.stack.slice(0, 2).join(', ') },
   { label: 'Role', value: p.role },
   { label: 'Kind', value: p.tag },
 ];

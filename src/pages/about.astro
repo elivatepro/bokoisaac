@@ -2,6 +2,7 @@
 // About, from Paper ("Boko Isaac - About" → "About" / "About — Mobile"): hero, the story in three parts with the
 // desk photo, six principles, the "Now" card, the code-review reviews (shared with Home) and "Start a project".
 import { Image } from 'astro:assets';
+import { period } from '../lib/dates';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/site/PageHero.astro';
 import Eyebrow from '../components/ui/Eyebrow.astro';
@@ -80,7 +81,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
                 <li class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[10px] border-b border-rule pt-[22px] pb-[26px] md:grid-cols-[minmax(150px,1fr)_minmax(0,3.4fr)] md:gap-x-8 md:pt-[30px] md:pb-[34px]">
                   <p class:list={[mono, 'flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1 text-[12.5px] leading-[150%] md:mt-1']}>
                     <span class="text-muted">{pad(i + 1)}</span>
-                    <span>{s.when}</span>
+                    {period(s.when) && <span>{period(s.when)}</span>}
                   </p>
                   <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
                     <h3 class="max-w-[462px] text-[21px] leading-[112%] font-semibold tracking-[-0.045em] text-balance md:max-w-[616px] md:text-[28px]">{s.title}</h3>

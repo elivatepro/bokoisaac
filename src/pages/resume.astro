@@ -5,6 +5,7 @@
 // Education and Certificates are still placeholders in Paper ("To confirm"), so entries marked `confirmed: false`
 // are left out, and a section with nothing confirmed is hidden.
 import Base from '../layouts/Base.astro';
+import { period } from '../lib/dates';
 import Eyebrow from '../components/ui/Eyebrow.astro';
 import Button from '../components/ui/Button.astro';
 import Contact from '../components/home/Contact.astro';
@@ -132,7 +133,7 @@ const rowLast = 'last:border-b-0 last:pb-0';
               {
                 experience.map((e) => (
                   <li class:list={['resume-job grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2 border-b border-rule pt-6 pb-[26px] md:grid-cols-[132px_minmax(0,1fr)] md:gap-x-6', rowLast]}>
-                    <p class:list={[mono, 'text-[12.5px] leading-[150%] text-muted md:mt-[3px]']}>{e.when}</p>
+                    <p class:list={[mono, 'text-[12.5px] leading-[150%] text-muted md:mt-[3px]']}>{period(e.when)}</p>
                     <div class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2">
                       <h3 class="text-[24px] leading-[115%] font-semibold tracking-[-0.045em]">{e.role}</h3>
                       <p class="text-[15px] leading-[140%] font-medium">{e.where}</p>
