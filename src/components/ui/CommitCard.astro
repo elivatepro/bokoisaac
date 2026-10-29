@@ -1,0 +1,24 @@
+---
+// The small "git commit" card from Paper (Stack and Now heroes): branch + repo, a commit message, a meta line.
+// Decorative, so it is hidden from screen readers; the page copy already says the same thing.
+interface Props {
+  repo: string;
+  message: string;
+  meta: string;
+  branch?: string;
+}
+const { repo, message, meta, branch = 'main' } = Astro.props;
+---
+
+<div
+  aria-hidden="true"
+  class="flex w-full max-w-[420px] min-w-0 flex-col gap-[9px] rounded-[14px] border border-rule bg-surface/82 px-[18px] py-4 font-mono font-medium backdrop-blur-[14px]"
+>
+  <p class="flex min-w-0 items-center gap-2 text-[12px] leading-[135%]">
+    <span class="size-[7px] shrink-0 rounded-full bg-coral"></span>
+    <span class="text-coral">{branch}</span>
+    <span class="ml-auto line-clamp-1 min-w-0 text-muted">{repo}</span>
+  </p>
+  <p class="min-w-0 text-[13.5px] leading-[135%]">{message}</p>
+  <p class="min-w-0 text-[12px] leading-[135%] text-muted">{meta}</p>
+</div>
