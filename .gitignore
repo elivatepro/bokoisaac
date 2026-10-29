@@ -25,3 +25,7 @@ pnpm-debug.log*
 
 # raw image-generation API responses (base64 copies of the PNGs)
 assets/hero/response*.json
+
+# wrangler local state
+.wrangler/
+.dev.vars
