@@ -13,8 +13,10 @@ interface Limiter {
 }
 
 /**
- * Bot check for the form endpoints, run after the honeypot. Two layers:
- * 1. FORM_LIMIT (wrangler.jsonc "ratelimits"): a few posts per minute per IP, across all three forms.
+ * Bot check for the form endpoints, run after the honeypot. In front of this, a zone rate limiting rule in the
+ * Cloudflare dashboard (Security → WAF → Rate limiting rules) blocks an IP for 10s after 4 posts to /api/* in 10s.
+ * 1. FORM_LIMIT (wrangler.jsonc "ratelimits"): a looser per-IP limit. Cloudflare counts it approximately, so a
+ *    burst can get past it; the zone rule is the strict one.
  * 2. Cloudflare Turnstile: the form sends the token from scripts/turnstile.ts as "turnstile". Only enforced once
  *    the TURNSTILE_SECRET_KEY secret exists, so the site key and secret have to be switched on together.
  * Pages and crawlers never touch this: it only guards POSTs to /api/*.
