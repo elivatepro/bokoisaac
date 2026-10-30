@@ -8,11 +8,12 @@ import ServiceCard from '../../components/services/ServiceCard.astro';
 import Reviews from '../../components/home/Reviews.astro';
 import Contact from '../../components/home/Contact.astro';
 import { services as allServices } from '../../lib/services';
+import { collectionPage } from '../../lib/seo';
 
 const services = await allServices();
 ---
 
-<Base title="Services" description="Eight ways to work together, each with a defined scope, a timeline and a price to start from.">
+<Base title="Services" jsonLd={[collectionPage('/services', 'Services', services.map((s) => ({ name: s.name, path: `/services/${s.slug}` })))]} description="Eight ways to work together, each with a defined scope, a timeline and a price to start from.">
   <PageHero
     id="services-title"
     eyebrow="Services"

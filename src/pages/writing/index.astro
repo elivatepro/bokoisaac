@@ -6,6 +6,7 @@ import PageHero from '../../components/site/PageHero.astro';
 import Newsletter from '../../components/writing/Newsletter.astro';
 import Contact from '../../components/home/Contact.astro';
 import { day, postHref, posts as allPosts, readTime } from '../../lib/posts';
+import { collectionPage } from '../../lib/seo';
 
 const posts = await allPosts();
 const topic = (p: (typeof posts)[number]) => p.data.tags[0] ?? null;
@@ -22,7 +23,7 @@ const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text
 const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
 
-<Base title="Writing" description="Notes from shipping real software. Written after the project, with the numbers and the code." og={{ title: 'Notes from shipping real software' }}>
+<Base title="Writing" jsonLd={[collectionPage('/writing', 'Writing', posts.map((p) => ({ name: p.data.title, path: postHref(p.data.slug) })))]} description="Notes from shipping real software. Written after the project, with the numbers and the code." og={{ title: 'Notes from shipping real software' }}>
   <PageHero
     id="writing-title"
     eyebrow="Writing"

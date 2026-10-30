@@ -5,6 +5,7 @@ import PageHero from '../../components/site/PageHero.astro';
 import LabCard from '../../components/lab/LabCard.astro';
 import Contact from '../../components/home/Contact.astro';
 import { lab, num } from '../../lib/lab';
+import { collectionPage } from '../../lib/seo';
 
 const kinds = [...new Set(lab.map((l) => l.kind))].map((k) => ({ name: k, count: lab.filter((l) => l.kind === k).length }));
 const stars = lab.reduce((s, l) => s + (l.stars ?? 0), 0);
@@ -13,7 +14,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text-[12.5px] leading-none font-medium tracking-[0.01em]';
 ---
 
-<Base title="Lab" description="Tools I am building to give away: small TypeScript libraries, command line tools and experiments, MIT licensed when they ship.">
+<Base title="Lab" jsonLd={[collectionPage('/lab', 'Lab', lab.map((l) => ({ name: l.name, path: `/lab/${l.slug}` })))]} description="Tools I am building to give away: small TypeScript libraries, command line tools and experiments, MIT licensed when they ship.">
   <PageHero
     id="lab-title"
     eyebrow="Lab"

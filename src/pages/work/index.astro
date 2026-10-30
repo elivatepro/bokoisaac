@@ -5,13 +5,14 @@ import PageHero from '../../components/site/PageHero.astro';
 import ProjectCard from '../../components/work/ProjectCard.astro';
 import Contact from '../../components/home/Contact.astro';
 import { projects } from '../../lib/projects';
+import { collectionPage } from '../../lib/seo';
 
 const kinds = [...new Set(projects.map((p) => p.tag))].map((k) => ({ name: k, count: projects.filter((p) => p.tag === k).length }));
 const pad = (n: number) => String(n).padStart(2, '0');
 const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text-[12.5px] leading-none font-medium tracking-[0.01em]';
 ---
 
-<Base title="Work" description="Eight products, each one shipped: field-service platforms, invoicing, wallets and learning tools." og={{ title: 'Eight products, each one shipped' }}>
+<Base title="Work" jsonLd={[collectionPage('/work', 'Work', projects.map((p) => ({ name: p.name, path: `/work/${p.slug}` })))]} description="Eight products, each one shipped: field-service platforms, invoicing, wallets and learning tools." og={{ title: 'Eight products, each one shipped' }}>
   <PageHero
     id="work-title"
     eyebrow="Work"

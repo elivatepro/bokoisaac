@@ -207,6 +207,9 @@ export interface Service extends Copy {
   slug: string;
   name: string;
   price: string;
+  /** Raw price, for structured data. */
+  priceFrom: number | null;
+  priceUnit: 'project' | 'month' | 'hour';
   order: number;
 }
 
@@ -230,6 +233,8 @@ export async function services(): Promise<Service[]> {
         slug: d.slug,
         name: d.name,
         price: priceLabel(d.priceFrom, d.priceUnit),
+        priceFrom: d.priceFrom,
+        priceUnit: d.priceUnit,
         order: d.order,
         summary: d.summary || copy.summary,
         timeline: d.timeline || copy.timeline,

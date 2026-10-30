@@ -24,16 +24,16 @@ interface Props {
   og?: OgCard | false;
   type?: 'website' | 'article' | 'profile';
   /** Extra schema.org nodes for this page (Article, BreadcrumbList…); Person + WebSite are always included. */
-  jsonLd?: Record<string, unknown>[];
+  jsonLd?: (Record<string, unknown> | null)[];
   noindex?: boolean;
   /** ISO dates for article metadata. */
   published?: Date | null;
   modified?: Date | null;
 }
 
-const { title, description = SITE.description, og = {}, type = 'website', jsonLd = [], noindex = false, published, modified } = Astro.props;
+const { title, description = SITE.summary, og = {}, type = 'website', jsonLd = [], noindex = false, published, modified } = Astro.props;
 const fullTitle = title ? `${title} — ${SITE.name}` : `${SITE.name} — ${SITE.jobTitle}`;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const canonical = new URL(Astro.url.pathname.replace(/(.)\/$/, '$1'), Astro.site).href;
 
 // Share card: the home page and pages that opt out use the exported default card.
 const path = Astro.url.pathname.replace(/^\/|\/$/g, '');
@@ -50,7 +50,7 @@ const card =
       };
 const image = new URL(card ? `/og/${path}.png` : '/og/default.png', Astro.site).href;
 const imageAlt = card ? `${card.title} — ${SITE.name}` : `${SITE.name}, ${SITE.tagline}`;
-const ld = { '@context': 'https://schema.org', '@graph': [person, website, ...jsonLd] };
+const ld = { '@context': 'https://schema.org', '@graph': [person, website, ...jsonLd.filter(Boolean)] };
 
 ---
 
@@ -91,7 +91,7 @@ const ld = { '@context': 'https://schema.org', '@graph': [person, website, ...js
     <meta name="twitter:image" content={image} />
     <meta name="twitter:image:alt" content={imageAlt} />
     {card && <meta name="bi-og" content={JSON.stringify(card)} />}
-    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    <script type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
     <ClientRouter />
     {/* Boot loader, before first paint: cover the page on the first visit of a session (#1).
         Skipped for reduced motion; a 5s failsafe uncovers the page if the loader script never runs. */}

@@ -9,6 +9,7 @@ import Faq from '../components/home/Faq.astro';
 import Contact from '../components/home/Contact.astro';
 import { live } from '../lib/content';
 import { countWord } from '../lib/words';
+import { faqPage } from '../lib/seo';
 
 const faqs = await live('faqs');
 const count = faqs.length;
@@ -18,20 +19,10 @@ const lead =
     : `${countWord(count)} short ${count === 1 ? 'answer' : 'answers'}. If yours is not here, write to me and I will add it.`;
 
 const answered = faqs.filter((f) => f.data.question && f.data.answer);
-const jsonLd = answered.length
-  ? JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: answered.map((f) => ({
-        '@type': 'Question',
-        name: f.data.question,
-        acceptedAnswer: { '@type': 'Answer', text: f.data.answer },
-      })),
-    }).replace(/</g, '\\u003c')
-  : null;
+const faqLd = faqPage(answered.map((f) => ({ q: f.data.question, a: f.data.answer })), '/faq');
 ---
 
-<Base title="FAQ" description="Answers to the questions people ask before a project: availability, pricing, stack, ownership and what happens after launch.">
+<Base title="FAQ" description="Answers to the questions people ask before a project: availability, pricing, stack, ownership and what happens after launch." jsonLd={[faqLd]}>
   <PageHero
     id="faq-title-page"
     eyebrow="FAQ"
@@ -48,6 +39,4 @@ const jsonLd = answered.length
   <Faq heading={false} pad="pt-12 pb-16 md:py-[151.2px]" />
 
   <Contact />
-
-  {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
 </Base>

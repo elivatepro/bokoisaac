@@ -21,6 +21,9 @@ const ogCards = () => ({
 // https://astro.build/config
 export default defineConfig({
   site: 'https://bokoisaac.com',
+  // URLs have no trailing slash (/about), matching every internal link; Cloudflare serves them that way and
+  // redirects /about/ → /about (assets.html_handling in wrangler.jsonc).
+  trailingSlash: 'never',
   vite: {
     plugins: [tailwindcss()]
   },

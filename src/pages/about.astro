@@ -10,6 +10,7 @@ import Button from '../components/ui/Button.astro';
 import Reviews from '../components/home/Reviews.astro';
 import Contact from '../components/home/Contact.astro';
 import { live } from '../lib/content';
+import { profilePage } from '../lib/seo';
 import desk from '../assets/home/about-desk.webp';
 
 const story = [
@@ -49,7 +50,7 @@ const h2 = 'text-[38.4px] leading-none font-semibold tracking-[-0.045em] text-ba
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
-<Base title="About" description="Boko Isaac is a full-stack engineer: six years of TypeScript and Node.js on field-service platforms, fintech wallets and learning tools.">
+<Base title="About" type="profile" jsonLd={[profilePage('/about', 'About Boko Isaac')]} description="Boko Isaac is a full-stack engineer: six years of TypeScript and Node.js on field-service platforms, fintech wallets and learning tools.">
   <PageHero
     id="about-title"
     eyebrow="About"

@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button.astro';
 import Includes from '../../components/services/Includes.astro';
 import Contact from '../../components/home/Contact.astro';
 import { contactHref, relatedTo, services, type Service } from '../../lib/services';
+import { SITE, breadcrumbs, faqPage, person } from '../../lib/seo';
 
 export async function getStaticPaths() {
   const all = await services();
@@ -19,6 +20,32 @@ interface Props {
 }
 const { service: s, others } = Astro.props;
 
+const url = `${SITE.url}/services/${s.slug}`;
+const serviceLd = {
+  '@type': 'Service',
+  '@id': `${url}#service`,
+  name: s.name,
+  description: s.summary,
+  url,
+  serviceType: s.name,
+  provider: { '@id': person['@id'] },
+  areaServed: 'Worldwide',
+  availableLanguage: SITE.languages,
+  ...(s.priceFrom != null && {
+    offers: {
+      '@type': 'Offer',
+      url,
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        priceCurrency: 'USD',
+        ...(s.priceUnit === 'hour' ? { price: s.priceFrom } : { minPrice: s.priceFrom }),
+        ...(s.priceUnit !== 'project' && { unitText: s.priceUnit.toUpperCase() }),
+      },
+    },
+  }),
+};
+
 const words = s.name.split(' ');
 const last = words.pop();
 const [stepsLead, stepsAccent] = s.stepsTitle ?? ['From the first note to the', 'handover.'];
@@ -30,7 +57,11 @@ const block = 'mt-[60px] md:mt-32';
 const card = 'rounded-[14px] bg-surface shadow-[inset_0_0_0_1px_var(--color-rule)]';
 ---
 
-<Base title={s.name} description={`${s.summary} ${s.price}${s.timeline ? `, ${s.timeline.toLowerCase()}` : ''}.`}>
+<Base
+  title={s.name}
+  description={`${s.summary} ${s.price}${s.timeline ? `, ${s.timeline.toLowerCase()}` : ''}.`}
+  jsonLd={[serviceLd, breadcrumbs([['Services', '/services'], [s.name, `/services/${s.slug}`]]), faqPage(s.questions, `/services/${s.slug}`)]}
+>
   <article aria-labelledby="service-title">
     <div class="page pt-[112px] pb-14 md:pt-[208px] md:pb-[112px]">
       <header class="grid grid-cols-[minmax(0,1fr)] items-start gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] md:items-end md:gap-24">

@@ -56,6 +56,6 @@ export const GET: APIRoute = async () => {
     for (const p of writing) lines.push(`- [${p.data.title}](${u(postHref(p.data.slug))}): ${p.data.excerpt}`);
   }
 
-  lines.push('', '## Optional', '', `- [Sitemap](${u('/sitemap-index.xml')})`, '');
+  lines.push('', '## Optional', '', `- [Full text](${u('/llms-full.txt')}): every service, case study, FAQ and post in one file`, `- [Sitemap](${u('/sitemap-index.xml')})`, '');
   return new Response(lines.join('\n'), { headers: { 'content-type': 'text/plain; charset=utf-8' } });
 };

@@ -14,6 +14,8 @@
 		// Unknown paths get dist/client/404.html with a 404 status. Pages are prerendered; only /api/* runs on
 		// the worker (newsletter + comments). Add any future on-demand route to "run_worker_first": with
 		// not_found_handling set, browser navigations and form posts otherwise skip the worker.
+		// /about serves about/index.html; /about/ redirects to /about, the canonical URL.
+		"html_handling": "drop-trailing-slash",
 		"not_found_handling": "404-page",
 		"run_worker_first": ["/api/*"]
 	},
