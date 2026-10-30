@@ -1,7 +1,8 @@
 // Cloudflare Turnstile for the newsletter, comment and contact forms (checked server-side by lib/api.ts human()).
 // The script only loads the first time someone focuses a form, the check runs while they type, and the widget
 // stays hidden unless Cloudflare wants a click. Submit waits for the token. Empty SITE_KEY = Turnstile off.
-export const SITE_KEY = '';
+// Widget "bokoisaac.com forms" in the bokoisaac Cloudflare account; its secret is the TURNSTILE_SECRET_KEY GitHub secret.
+export const SITE_KEY = '0x4AAAAAAFsQcMMjct4LtQXj';
 
 interface Turnstile {
   render(el: HTMLElement, options: Record<string, unknown>): string;
