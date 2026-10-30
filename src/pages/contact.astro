@@ -188,6 +188,8 @@ const errIcon = 'M12 7.5v5.5';
           </div>
 
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+          <!-- Turnstile (scripts/turnstile.ts); only shown when Cloudflare asks for a click. -->
+          <div data-turnstile hidden></div>
 
           <div class="flex min-w-0 flex-wrap items-center gap-x-[22px] gap-y-[14px] pt-1">
             <Button type="submit" data-busy-label="Sending…">Send the message</Button>

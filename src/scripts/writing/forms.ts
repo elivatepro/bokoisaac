@@ -1,6 +1,7 @@
 // Newsletter + comment forms on /writing. Both post JSON to their /api endpoint and switch between the states
 // designed in Paper: sending (button dims, spinner in the icon tile), sent, field errors and a general error.
 import { onPageLoad } from '../motion/core';
+import { guard } from '../turnstile';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -41,6 +42,7 @@ function newsletter(root: HTMLElement, signal: AbortSignal) {
   const msg = root.querySelector<HTMLElement>('[data-newsletter-msg]');
   const done = root.querySelector<HTMLElement>('[data-newsletter-done]')!;
   const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const turnstile = guard(form, root.querySelector('[data-turnstile]'), signal);
 
   const show = (state: string | null) => {
     if (state === 'ok') {
@@ -60,7 +62,7 @@ function newsletter(root: HTMLElement, signal: AbortSignal) {
       const email = input.value.trim();
       if (!EMAIL.test(email)) return show('invalid'), input.focus();
       busy(button, true);
-      const res = await post('/api/subscribe', { email, website: (form.elements.namedItem('website') as HTMLInputElement).value });
+      const res = await post('/api/subscribe', { email, website: (form.elements.namedItem('website') as HTMLInputElement).value, turnstile: await turnstile() });
       busy(button, false);
       show(res.ok ? 'ok' : res.error === 'invalid_email' ? 'invalid' : 'error');
     },
@@ -76,6 +78,7 @@ function comments(form: HTMLFormElement, signal: AbortSignal) {
   const name = form.elements.namedItem('name') as HTMLInputElement;
   const email = form.elements.namedItem('email') as HTMLInputElement;
   const comment = form.elements.namedItem('comment') as HTMLTextAreaElement;
+  const turnstile = guard(form, form.querySelector('[data-turnstile]'), signal);
   const msg = (el: HTMLElement) => form.querySelector<HTMLElement>(`#${el.getAttribute('aria-describedby')?.split(' ').pop()}`);
 
   const showSent = (on: boolean) => {
@@ -119,6 +122,7 @@ function comments(form: HTMLFormElement, signal: AbortSignal) {
         email: email.value.trim(),
         comment: comment.value.trim(),
         website: (form.elements.namedItem('website') as HTMLInputElement).value,
+        turnstile: await turnstile(),
       });
       busy(button, false);
       if (res.ok) {

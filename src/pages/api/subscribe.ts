@@ -1,6 +1,6 @@
 // POST /api/subscribe { email } → adds the address to Buttondown, which sends its own confirmation email.
 import type { APIRoute } from 'astro';
-import { EMAIL, readBody, reply, secret } from '../../lib/api';
+import { EMAIL, human, readBody, reply, secret } from '../../lib/api';
 
 export const prerender = false;
 
@@ -8,6 +8,7 @@ export const POST: APIRoute = async ({ request }) => {
   const body = await readBody(request);
   const back = { path: new URL(request.headers.get('referer') ?? '/writing', request.url).pathname, param: 'newsletter', hash: 'newsletter' };
   if (body.website) return reply(request, true, null, back); // honeypot: pretend it worked
+  if (!(await human(request, body))) return reply(request, false, 'blocked', back);
   const email = (body.email ?? '').trim().slice(0, 254);
   if (!EMAIL.test(email)) return reply(request, false, 'invalid_email', back);
 

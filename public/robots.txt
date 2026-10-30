@@ -1,5 +1,8 @@
 # Everyone is welcome, including AI search and answer engines.
+# Bot protection only covers the form endpoints under /api/ (rate limit + Turnstile), never the pages.
+# Content signals (contentsignals.org): search, AI answers and AI training are all allowed.
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 Disallow: /api/
 

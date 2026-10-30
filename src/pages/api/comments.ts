@@ -1,7 +1,7 @@
 // POST /api/comments { post, slug, name, email?, comment } → a new row in the Notion Comments database with
 // Approved unchecked. It only appears on the post after Boko ticks Approved and the site rebuilds.
 import type { APIRoute } from 'astro';
-import { EMAIL, readBody, reply, secret } from '../../lib/api';
+import { EMAIL, human, readBody, reply, secret } from '../../lib/api';
 
 export const prerender = false;
 
@@ -13,6 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
   const slug = (body.slug ?? '').replace(/[^a-z0-9-]/g, '');
   const back = { path: slug ? `/writing/${slug}` : '/writing', param: 'comment', hash: 'comments' };
   if (body.website) return reply(request, true, null, back); // honeypot
+  if (!(await human(request, body))) return reply(request, false, 'blocked', back);
 
   const name = (body.name ?? '').trim().slice(0, 80);
   const email = (body.email ?? '').trim().slice(0, 254);

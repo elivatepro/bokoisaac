@@ -2,6 +2,7 @@
 // → sent (thank-you panel) or error (red banner, text kept, bad field ringed). Prefills the picks made in the
 // home page's "Start a project" section, from the query string (?need=&budget=&name=) or sessionStorage "brief".
 import { onPageLoad } from '../motion/core';
+import { guard } from '../turnstile';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const ICON =
@@ -53,6 +54,7 @@ function setup(form: HTMLFormElement, signal: AbortSignal) {
     email: form.elements.namedItem('email') as HTMLInputElement,
     message: form.elements.namedItem('message') as HTMLTextAreaElement,
   };
+  const turnstile = guard(form, form.querySelector('[data-turnstile]'), signal);
   const msgFor = (el: HTMLElement) => card.querySelector<HTMLElement>(`#${el.getAttribute('aria-describedby')}`);
 
   const fieldError = (el: HTMLInputElement | HTMLTextAreaElement, text: string | null) => {
@@ -132,6 +134,7 @@ function setup(form: HTMLFormElement, signal: AbortSignal) {
 
       busy(true);
       const data = new FormData(form);
+      const token = await turnstile();
       let res: { ok: boolean; error?: string } = { ok: false, error: 'server' };
       try {
         const r = await fetch(form.action, {
@@ -144,6 +147,7 @@ function setup(form: HTMLFormElement, signal: AbortSignal) {
             need: data.getAll('need').join('|'),
             budget: (data.get('budget') as string | null) ?? '',
             website: (data.get('website') as string | null) ?? '',
+            turnstile: token,
           }),
         });
         res = await r.json();

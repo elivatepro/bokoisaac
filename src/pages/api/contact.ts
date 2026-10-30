@@ -3,7 +3,7 @@
 // 2. Emails Boko through Resend from the verified bokoisaac.com domain, with Reply-To set to the sender.
 // The message counts as sent when either step works; it only fails when both do.
 import type { APIRoute } from 'astro';
-import { EMAIL, readBody, reply, secret } from '../../lib/api';
+import { EMAIL, human, readBody, reply, secret } from '../../lib/api';
 
 export const prerender = false;
 
@@ -18,6 +18,7 @@ export const POST: APIRoute = async ({ request }) => {
   const body = await readBody(request);
   const back = { path: '/contact', param: 'sent', hash: 'message' };
   if (body.website) return reply(request, true, null, back); // honeypot
+  if (!(await human(request, body))) return reply(request, false, 'blocked', back);
 
   const name = (body.name ?? '').trim().slice(0, 120);
   const email = (body.email ?? '').trim().slice(0, 254);

@@ -21,6 +21,7 @@ jobs:
       NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
@@ -48,9 +49,9 @@ jobs:
         if: steps.notion.outcome == 'skipped' || steps.notion.outputs.changed == 'true'
         run: npx wrangler deploy
 
-      # /api/subscribe, /api/comments and /api/contact read these at runtime, so the Worker gets them as encrypted secrets.
+      # /api/subscribe, /api/comments and /api/contact read these at runtime (TURNSTILE_SECRET_KEY is skipped while unset), so the Worker gets them as encrypted secrets.
       # Piped as JSON on stdin: the values never touch a file or the log.
       - name: Sync Worker secrets
         if: steps.notion.outcome == 'skipped' || steps.notion.outputs.changed == 'true'
         run: |
-          node -e 'process.stdout.write(JSON.stringify({ NOTION_TOKEN: process.env.NOTION_TOKEN, BUTTONDOWN_API_KEY: process.env.BUTTONDOWN_API_KEY, RESEND_API_KEY: process.env.RESEND_API_KEY }))' | npx wrangler secret bulk
+          node -e 'const k = ["NOTION_TOKEN", "BUTTONDOWN_API_KEY", "RESEND_API_KEY", "TURNSTILE_SECRET_KEY"]; process.stdout.write(JSON.stringify(Object.fromEntries(k.filter((n) => process.env[n]).map((n) => [n, process.env[n]]))))' | npx wrangler secret bulk
