@@ -84,7 +84,7 @@ export const projects: Project[] = [
     slug: 'elivate-wallet',
     name: 'Elivate Wallet',
     client: 'Elivate',
-    year: '20XX',
+    year: '2026',
     summary: 'A digital wallet across web and mobile, from the API to the screens people tap.',
     role: 'Full-stack engineer',
     before: '14 min',

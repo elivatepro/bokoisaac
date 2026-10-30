@@ -13,18 +13,18 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const chip = 'wf-chip flex h-10 items-center gap-2 rounded-[10px] px-[14px] text-[12.5px] leading-none font-medium tracking-[0.01em]';
 ---
 
-<Base title="Lab" description="Tools I built, then gave away: small TypeScript libraries, command line tools and experiments, all MIT licensed.">
+<Base title="Lab" description="Tools I am building to give away: small TypeScript libraries, command line tools and experiments, MIT licensed when they ship.">
   <PageHero
     id="lab-title"
     eyebrow="Lab"
-    title="Tools I built, then"
-    accent="gave away."
-    lead="Small fixes that started on client projects, and a few experiments I keep to learn what comes next. All TypeScript, all MIT licensed."
+    title="Tools I am building to"
+    accent="give away."
+    lead="Small fixes that started on client projects, and a few experiments I keep to learn what comes next. All TypeScript, all in progress, and MIT licensed when they ship."
     stats={[
       { label: 'projects', value: lab.length },
       // Stars / downloads appear once they are real numbers; until then, two facts the page already states.
       ...(stars ? [{ label: 'stars', value: num(stars) }] : [{ label: 'written in', value: 'TypeScript' }]),
-      ...(downloads ? [{ label: 'downloads', value: num(downloads) }] : [{ label: 'license', value: 'MIT' }]),
+      ...(downloads ? [{ label: 'downloads', value: num(downloads) }] : [{ label: 'status', value: 'In progress' }]),
     ]}
   />
 

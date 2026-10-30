@@ -1,6 +1,6 @@
 ---
 // A Lab card on /lab, from Paper ("Lab" / "Lab — Mobile"). The whole card opens the item (title link stretched over
-// it); the install line stays selectable. Hover is the house card lift (#27) plus a slow image zoom.
+// it); the install line stays selectable. Unpublished items show an "In progress" line in the same box. Hover is the house card lift (#27) plus a slow image zoom.
 import { Image } from 'astro:assets';
 import { num, type LabItem } from '../../lib/lab';
 
@@ -38,10 +38,20 @@ const arrow = 'M5 12h14M13 6l6 6-6 6';
       </a>
     </h2>
     <p class="text-[15px] leading-[150%] text-pretty text-muted">{item.summary}</p>
-    <p class="relative z-1 mt-1.5 mb-2 flex min-h-[38px] min-w-0 items-center gap-2.5 rounded-[9px] bg-field px-3 shadow-[inset_0_0_0_1px_var(--color-rule)]">
-      <span class:list={[mono, 'shrink-0 text-coral']} aria-hidden="true">$</span>
-      <code class:list={[mono, 'min-w-0 py-2 leading-[145%] wrap-anywhere select-all']}>{item.install}</code>
-    </p>
+    {
+      item.install ? (
+        <p class="relative z-1 mt-1.5 mb-2 flex min-h-[38px] min-w-0 items-center gap-2.5 rounded-[9px] bg-field px-3 shadow-[inset_0_0_0_1px_var(--color-rule)]">
+          <span class:list={[mono, 'shrink-0 text-coral']} aria-hidden="true">$</span>
+          <code class:list={[mono, 'min-w-0 py-2 leading-[145%] wrap-anywhere select-all']}>{item.install}</code>
+        </p>
+      ) : (
+        <p class:list={[mono, 'mt-1.5 mb-2 flex min-h-[38px] min-w-0 items-center gap-2.5 rounded-[9px] bg-field px-3 shadow-[inset_0_0_0_1px_var(--color-rule)]']}>
+          <span class="size-[7px] shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+          <span>In progress</span>
+          <span class="text-muted">not published yet</span>
+        </p>
+      )
+    }
     <div class:list={[mono, 'mt-auto flex min-w-0 flex-wrap items-center gap-x-[18px] gap-y-2 border-t border-rule pt-3.5']}>
       {
         item.stars != null && (

@@ -7,7 +7,7 @@ import Base from '../../layouts/Base.astro';
 import Eyebrow from '../../components/ui/Eyebrow.astro';
 import Button from '../../components/ui/Button.astro';
 import Contact from '../../components/home/Contact.astro';
-import { lab, num, type LabItem } from '../../lib/lab';
+import { lab, num, type LabItem, status } from '../../lib/lab';
 
 export function getStaticPaths() {
   return lab.map((item, i) => ({
@@ -27,10 +27,11 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(
 const stats = [
   item.stars != null && { label: 'stars', value: num(item.stars) },
   item.downloads != null && { label: 'downloads', value: num(item.downloads) },
-  { label: 'license', value: item.license },
+  item.install ? { label: 'license', value: item.license } : { label: 'status', value: 'In progress' },
 ].filter(Boolean) as { label: string; value: string }[];
 const facts = [
   { label: 'Kind', value: item.kind },
+  { label: 'Status', value: status(item) },
   { label: 'License', value: item.license },
 ];
 
@@ -81,13 +82,25 @@ const copyIcon = 'M5 12.5l4.5 4.5L19 7.5';
         </div>
 
         <div data-reveal data-reveal-delay="300" class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[14px]">
-          <figure class="lab-code">
-            <figcaption>
-              <span>Install</span>
-              <button type="button" data-copy aria-label="Copy the install command"><span data-copy-label>Copy</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d={copyIcon} fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
-            </figcaption>
-            <pre data-lenis-prevent><code>{item.install}</code></pre>
-          </figure>
+          {
+            item.install ? (
+              <figure class="lab-code">
+                <figcaption>
+                  <span>Install</span>
+                  <button type="button" data-copy aria-label="Copy the install command"><span data-copy-label>Copy</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d={copyIcon} fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+                </figcaption>
+                <pre data-lenis-prevent><code>{item.install}</code></pre>
+              </figure>
+            ) : (
+              <div class="lab-code">
+                <p class="lab-code-bar"><span>Status</span></p>
+                <p class="flex items-start gap-2.5 px-4 py-[18px] text-[14.5px] leading-[155%] text-muted">
+                  <span class="mt-[7px] size-[7px] shrink-0 rounded-full bg-coral" aria-hidden="true"></span>
+                  <span><span class="text-ink">In progress.</span> Not published yet, so there is nothing to install. The README below shows how it will work.</span>
+                </p>
+              </div>
+            )
+          }
           <div class="min-w-0 rounded-[14px] bg-surface p-2 shadow-[inset_0_0_0_1px_var(--color-rule)]">
             <div class="relative aspect-[16/10] overflow-clip rounded-[9px] bg-field">
               <Image src={item.image} alt={item.alt} widths={[420, 840]} sizes="(min-width: 768px) 404px, 100vw" loading="eager" class="absolute inset-0 size-full object-cover saturate-[0.92] contrast-[1.04]" />
@@ -212,6 +225,7 @@ const copyIcon = 'M5 12.5l4.5 4.5L19 7.5';
                   <span class:list={[mono, 'text-[12.5px] leading-[150%] text-muted']}>
                     {m.kind}
                     {m.stars != null && <> · {num(m.stars)} stars</>}
+                    {!m.install && <> · In progress</>}
                   </span>
                   <span class="text-[26px] leading-[112%] font-semibold tracking-[-0.045em] max-md:col-start-1">{m.name}</span>
                   <span class="text-[15.5px] leading-[155%] text-pretty text-muted max-md:col-start-1">{m.summary}</span>
@@ -287,7 +301,8 @@ const copyIcon = 'M5 12.5l4.5 4.5L19 7.5';
     background: var(--color-field);
     box-shadow: inset 0 0 0 1px var(--color-rule);
   }
-  .lab-code figcaption {
+  .lab-code figcaption,
+  .lab-code-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;

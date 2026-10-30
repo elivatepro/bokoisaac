@@ -14,7 +14,7 @@ type Entry = {
   stack: string[];
 };
 
-// "20XX" years are placeholders in Paper, waiting on the real dates.
+// Start years come from the first commit on GitHub (Boko's rule); "20XX" is still unknown and stays hidden.
 const entries: Entry[] = [
   {
     from: '2025',
@@ -27,7 +27,7 @@ const entries: Entry[] = [
     stack: ['Next.js', 'TypeScript', 'Supabase'],
   },
   {
-    from: '20XX',
+    from: '2025',
     to: '2025',
     hash: '7e0230a',
     company: 'Elivate',
@@ -36,7 +36,7 @@ const entries: Entry[] = [
     stack: ['React', 'Node.js', 'PostgreSQL'],
   },
   {
-    from: '20XX',
+    from: '2025',
     to: '20XX',
     hash: '0cec1ce',
     company: 'Freelance',
@@ -45,7 +45,7 @@ const entries: Entry[] = [
     stack: ['React', 'Python', 'Docker'],
   },
   {
-    from: '20XX',
+    from: '2023',
     hash: '39a7e40',
     company: 'Startix Media',
     ref: 'initial',
@@ -107,7 +107,7 @@ const mono = 'font-mono font-medium text-[12.5px] leading-[150%] tracking-[0.01e
                     {known(e.from) ? (
                       <>
                         {e.from}
-                        {e.to && (
+                        {known(e.to) && e.to !== e.from && (
                           <>
                             <span class="text-muted italic lg:text-ink lg:not-italic"> to </span>
                             {e.to}

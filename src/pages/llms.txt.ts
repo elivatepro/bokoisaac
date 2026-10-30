@@ -33,7 +33,7 @@ export const GET: APIRoute = async () => {
     `- [About](${u('/about')}): background and how Boko works`,
     `- [Resume](${u('/resume')}): experience and skills`,
     `- [Writing](${u('/writing')}): notes from real projects ([RSS](${u('/writing/rss.xml')}))`,
-    `- [Lab](${u('/lab')}): open-source tools and experiments`,
+    `- [Lab](${u('/lab')}): open-source tools and experiments, in progress`,
     `- [Reviews](${u('/reviews')}): what clients say`,
     `- [FAQ](${u('/faq')}): common questions before a project`,
     `- [Contact](${u('/contact')}): start a project or book a call`,

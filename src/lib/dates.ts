@@ -8,7 +8,7 @@ export const known = (y?: string | null): y is string => !!y && !/X/i.test(y);
 export function period(when: string): string {
   const [from, to] = when.split(/\s+to\s+/i);
   if (to === undefined) return known(from) ? from : '';
-  if (known(from) && known(to)) return when;
+  if (known(from) && known(to)) return from === to ? from : when;
   if (known(to)) return `Until ${to}`;
   if (known(from)) return `From ${from}`;
   return '';

@@ -165,19 +165,19 @@ const COPY: Record<string, Copy> = {
   },
   'team-embed': {
     stepsTitle: ['From the first day to the', 'review.'],
-    summary: 'A senior full-stack engineer inside your team, three days a week.',
+    summary: 'A senior full-stack engineer inside your team, part-time or full-time.',
     timeline: '3 months minimum',
-    includes: ['Three fixed days a week', 'Code review and pairing', 'Weekly written update', 'No lock-in after month three'],
+    includes: ['Part-time or full-time', 'Code review and pairing', 'Weekly written update', 'No lock-in after month three'],
     scope:
-      'A senior full-stack engineer inside your team: in your standups, your repository and your chat. I take features end to end, review code and pair with your developers, on three fixed days a week.',
+      'A senior full-stack engineer inside your team: in your standups, your repository and your chat. I take features end to end, review code and pair with your developers, part-time or full-time.',
     steps: [
       { when: 'Week 1', title: 'Onboarding', body: 'Access, the codebase, the people, and a first small fix shipped.' },
       { when: 'Weeks 2 to 4', title: 'First feature', body: 'A real feature taken end to end through your process, with reviews both ways.' },
-      { when: 'Every week', title: 'Steady work', body: 'Features, reviews and pairing on fixed days, plus a short written update.' },
+      { when: 'Every week', title: 'Steady work', body: 'Features, reviews and pairing on the days we agree, plus a short written update.' },
       { when: 'Month three', title: 'Review', body: 'We look at how it is going and decide together whether to carry on.' },
     ],
     questions: [
-      { q: 'Which days do you work?', a: 'Three fixed days a week, agreed at the start, so your team always knows when I am around.' },
+      { q: 'Part-time or full-time?', a: 'Either. We agree the days at the start, so your team always knows when I am around, and you can change it after month three.' },
       { q: 'Do you use our tools?', a: 'Yes. Your repository, your tickets, your chat and your review rules.' },
       { q: 'Why three months minimum?', a: 'It takes a few weeks to be really useful inside a team. After month three there is no lock-in.' },
     ],
