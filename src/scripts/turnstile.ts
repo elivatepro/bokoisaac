@@ -55,6 +55,7 @@ export function guard(form: HTMLFormElement, box: HTMLElement | null, signal: Ab
         id = ts.render(box, {
           sitekey: SITE_KEY,
           appearance: 'interaction-only',
+          theme: 'dark',
           callback: settle,
           'error-callback': () => settle(''),
           'expired-callback': () => (token = ''),
